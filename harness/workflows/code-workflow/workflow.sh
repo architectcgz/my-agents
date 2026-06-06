@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCAFFOLD_VERSION="2026-06-06.2"
+SCAFFOLD_VERSION="2026-06-06.3"
 
 usage() {
   cat <<'EOF' >&2
@@ -156,7 +156,8 @@ read -r -d '' CHECK_TASK_INTAKE <<'EOF' || true
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd "$(git rev-parse --show-toplevel)"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$script_dir/.."
 
 if [[ -x "scripts/check-open-todos.sh" ]]; then
   bash scripts/check-open-todos.sh --quiet-if-empty
@@ -394,7 +395,8 @@ read -r -d '' CHECK_STARTUP_GATE_SH <<'EOF' || true
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd "$(git rev-parse --show-toplevel)"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$script_dir/.."
 
 python3 harness/checks/check_startup_gate.py "$@"
 EOF

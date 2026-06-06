@@ -91,6 +91,7 @@ Keep the harness as a map, not a manual. In the current local standard:
 - `scripts/check-consistency.sh`: deterministic guard against drift.
 - `scripts/check-test-workflow.sh`: deterministic guard that checks whether test workflow instructions are documented and actually wired into enforcement paths.
 - `scripts/check-open-todos.sh`: non-blocking reminder for unchecked backlog items under `docs/todo/`, plus completed files that still need archiving.
+- `scripts/check-skill-sync-reminder.sh`: non-blocking reminder that asks whether project harness changes should stay local or be synchronized into `~/.agents/skills/` or `~/.agents/harness/`.
 - Shared non-trivial task workflow package: install and verify `~/.agents/harness/workflows/code-workflow/`, but keep its behavior definition in the `code-workflow` skill instead of duplicating it here.
 
 When strict upstream reference mode is requested, use `concepts/`, `thinking/`, `practice/`, `feedback/`, `works/`, `prompts/`, and `references/` as demonstrated by `deusyu/harness-engineering`.
@@ -106,6 +107,7 @@ When strict upstream reference mode is requested, use `concepts/`, `thinking/`, 
 - If a repo has dirty worktree changes, avoid touching those files unless the task requires it.
 - Feedback records should include a sedimentation status section that names whether the lesson is already absorbed, project-only, awaiting skill sync, mechanized, or obsolete. Once a lesson is fully captured by a global skill, global AGENTS rule, project policy, or mechanical check, remove the long feedback body and keep only an index note or rely on Git history.
 - Add or preserve a non-blocking skill-sync reminder when feedback, reuse knowledge, prompts, policies, or templates change. The reminder should force a conscious decision: keep project-only knowledge local, or move cross-project methods and anti-patterns into the relevant global skill.
+- Prefer the shared harness implementation at `~/.agents/harness/skill-sync/remind_skill_sync.py`; project repositories should usually keep only a thin wrapper script and local hook wiring.
 - Reuse-first policies should cover both frontend and backend creation surfaces. Frontend surfaces usually include pages, components, hooks, stores, API wrappers, forms, tables, modals, layouts, and schemas. Backend surfaces usually include services, handlers, repositories, ports, jobs/workers, mappers, read models, runtime composition, schemas, and migrations.
 - Reuse-index reminders should fire during active implementation, especially when a new module, feature slice, service cluster, or module-internal layer is becoming a reusable pattern for the first time.
 - New harness/project initialization should include project documentation architecture by reusing `documentation-architecture` assets, normally `docs/documentation-rules.md` and `docs/README.md`. Project `AGENTS.md` should only route to those files, not duplicate the full documentation policy.

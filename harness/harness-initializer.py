@@ -137,6 +137,9 @@ def insert_hook(path: Path) -> None:
 if [[ -x scripts/check-consistency.sh ]]; then
   bash scripts/check-consistency.sh
 fi
+if [[ -x scripts/check-skill-sync-reminder.sh ]]; then
+  bash scripts/check-skill-sync-reminder.sh --staged
+fi
 # {END}: pre-commit"""
     if start in text and end in text:
         before, rest = text.split(start, 1)
@@ -227,7 +230,8 @@ def todo_reminder_script() -> str:
     return r"""#!/usr/bin/env bash
 set -euo pipefail
 
-cwd="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cwd="$(cd "$script_dir/.." && pwd)"
 python3 ~/.agents/harness/todo/remind_todos.py --cwd "$cwd" "$@"
 """
 
@@ -236,8 +240,19 @@ def todo_governance_check_script() -> str:
     return r"""#!/usr/bin/env bash
 set -euo pipefail
 
-cwd="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cwd="$(cd "$script_dir/.." && pwd)"
 python3 ~/.agents/harness/todo/check_todo_governance.py --cwd "$cwd"
+"""
+
+
+def skill_sync_reminder_script() -> str:
+    return r"""#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cwd="$(cd "$script_dir/.." && pwd)"
+python3 ~/.agents/harness/skill-sync/remind_skill_sync.py --cwd "$cwd" "$@"
 """
 
 
@@ -945,6 +960,9 @@ def ctf_current_check_script() -> str:
     return r"""#!/usr/bin/env bash
 set -euo pipefail
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$script_dir/.."
+
 fail=0
 
 red() { printf '\033[31m%s\033[0m' "$1"; }
@@ -1018,6 +1036,7 @@ check_file "docs/README.md"
 check_file "docs/improvements/README.md"
 check_file "scripts/check-open-todos.sh"
 check_file "scripts/check-todo-governance.sh"
+check_file "scripts/check-skill-sync-reminder.sh"
 for dir in requirements contracts spec design todo architecture plan operations reviews reports improvements refs; do
   check_dir "docs/$dir"
 done
@@ -1057,6 +1076,7 @@ check_file "scripts/check-commit-message.sh"
 check_file "scripts/check-test-workflow.sh"
 if [[ -f ".githooks/pre-commit" ]]; then
   check_contains ".githooks/pre-commit" 'scripts/check-consistency\.sh' "pre-commit runs scripts/check-consistency.sh"
+  check_contains ".githooks/pre-commit" 'scripts/check-skill-sync-reminder\.sh --staged' "pre-commit runs scripts/check-skill-sync-reminder.sh"
 else
   echo "  $(red FAIL) — missing .githooks/pre-commit"
   fail=1
@@ -1105,6 +1125,9 @@ exit "$fail"
 def check_script() -> str:
     return r"""#!/usr/bin/env bash
 set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$script_dir/.."
 
 fail=0
 
@@ -1201,6 +1224,7 @@ check_file "scripts/check-commit-message.sh"
 check_file "scripts/check-test-workflow.sh"
 if [[ -f ".githooks/pre-commit" ]]; then
   check_contains ".githooks/pre-commit" 'scripts/check-consistency\.sh' "pre-commit runs scripts/check-consistency.sh"
+  check_contains ".githooks/pre-commit" 'scripts/check-skill-sync-reminder\.sh --staged' "pre-commit runs scripts/check-skill-sync-reminder.sh"
 else
   echo "  $(red FAIL) — missing .githooks/pre-commit"
   fail=1
@@ -1217,6 +1241,7 @@ check_file "docs/documentation-rules.md"
 check_file "docs/README.md"
 check_file "scripts/check-open-todos.sh"
 check_file "scripts/check-todo-governance.sh"
+check_file "scripts/check-skill-sync-reminder.sh"
 check_contains "docs/documentation-rules.md" 'No Circular References' "documentation rules forbid circular references"
 check_contains "AGENTS.md" 'scripts/check-open-todos\.sh' "AGENTS references todo reminder"
 
@@ -1267,6 +1292,7 @@ def main() -> None:
         write(repo / "scripts/check-test-workflow.sh", test_workflow_check_script(), executable=True)
         write(repo / "scripts/check-open-todos.sh", todo_reminder_script(), executable=True)
         write(repo / "scripts/check-todo-governance.sh", todo_governance_check_script(), executable=True)
+        write(repo / "scripts/check-skill-sync-reminder.sh", skill_sync_reminder_script(), executable=True)
         write(repo / "scripts/check-commit-message.sh", commit_message_check_script(), executable=True)
         write(repo / "harness/policies/commit-message.json", commit_message_policy_content(args.profile))
 
@@ -1334,6 +1360,7 @@ bash scripts/check-consistency.sh
         hook_docs = """## Harness 检查
 
 - `pre-commit`：运行 `scripts/check-consistency.sh`，其中会继续执行 `scripts/check-test-workflow.sh`，检查严格参考 harness 的顶层目录、导航、资料计数和测试工作流约束。
+- `pre-commit`：非阻塞运行 `scripts/check-skill-sync-reminder.sh --staged`，提醒把跨项目规则上收全局 skill 或 shared harness。
 - `commit-msg`：运行 `scripts/check-commit-message.sh`，由共享检查器读取 `harness/policies/commit-message.json` 校验标题、正文和激活任务的 `Task:` 绑定。
 - 原有 API 合同同步逻辑继续保留。"""
         message = "Initialized strict-reference harness"
@@ -1345,6 +1372,7 @@ bash scripts/check-consistency.sh
         write(repo / "scripts/check-test-workflow.sh", test_workflow_check_script(), executable=True)
         write(repo / "scripts/check-open-todos.sh", todo_reminder_script(), executable=True)
         write(repo / "scripts/check-todo-governance.sh", todo_governance_check_script(), executable=True)
+        write(repo / "scripts/check-skill-sync-reminder.sh", skill_sync_reminder_script(), executable=True)
         write(repo / "scripts/check-commit-message.sh", commit_message_check_script(), executable=True)
         write(repo / "harness/policies/commit-message.json", commit_message_policy_content(args.profile))
 
@@ -1420,6 +1448,7 @@ bash scripts/check-consistency.sh
         hook_docs = """## Harness 检查
 
 - `pre-commit`：运行 `scripts/check-consistency.sh`，其中会继续执行 `scripts/check-test-workflow.sh`，检查 CTF 探索版 harness 的目录、导航、本地私有 reuse 索引归属和测试工作流约束。
+- `pre-commit`：非阻塞运行 `scripts/check-skill-sync-reminder.sh --staged`，提醒把跨项目规则上收全局 skill 或 shared harness。
 - `commit-msg`：运行 `scripts/check-commit-message.sh`，由共享检查器读取 `harness/policies/commit-message.json` 校验标题、正文和激活任务的 `Task:` 绑定。
 - 原有项目 hook 逻辑继续保留。"""
         message = "Initialized CTF-current harness"
