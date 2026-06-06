@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 import subprocess
 
@@ -352,6 +353,97 @@ exit "$fail"
 """
 
 
+def commit_message_policy_content(profile: str) -> str:
+    ctf = profile == "ctf-platform"
+    examples = {
+        "fix": "fix(frontend): 修正拓扑页导出按钮禁用态" if ctf else "fix(api): 修正登录接口限流判断",
+        "refactor": "refactor(topology): 拆分画布工作区组件" if ctf else "refactor(harness): 拆分任务启动脚本",
+        "docs": "docs: 补齐提交信息约束说明" if ctf else "docs(workflow): 补齐提交规范说明",
+    }
+    policy = {
+        "allowed_types": [
+            "feat",
+            "fix",
+            "refactor",
+            "docs",
+            "test",
+            "chore",
+            "build",
+            "ci",
+            "perf",
+            "style",
+            "revert",
+        ],
+        "require_chinese_description": True,
+        "body": {
+            "min_detail_lines": 2,
+            "min_visible_chars": 20,
+            "ignored_prefixes": ["Task:"],
+        },
+        "task": {
+            "required_when_active": True,
+            "line_prefix": "Task:",
+        },
+        "messages": {
+            "invalid_subject": "\n".join(
+                [
+                    "[commit-msg] 提交信息格式不符合约束。",
+                    "要求：英文类型 + 可选英文/模块 scope + 中文描述",
+                    "示例：",
+                    f"  {examples['fix']}",
+                    f"  {examples['refactor']}",
+                    f"  {examples['docs']}",
+                ]
+            ),
+            "missing_chinese_description": "\n".join(
+                [
+                    "[commit-msg] 提交描述必须包含中文说明。",
+                    "示例：",
+                    f"  {examples['fix']}",
+                ]
+            ),
+            "missing_detail_lines": "\n".join(
+                [
+                    "[commit-msg] 普通提交不能只有简短标题，必须补充详细正文。",
+                    "要求：",
+                    "  - 标题后保留空行",
+                    "  - 正文至少两行有效内容",
+                    "  - 建议直接使用多个 -m 组织提交信息",
+                    "示例：",
+                    '  git commit -m "docs(workflow): 收紧提交说明校验" \\',
+                    '    -m "要求普通提交必须携带详细正文，不能只写单行标题。" \\',
+                    '    -m "同步更新 hook 说明和仓库约定，减少后续提交漂移。"',
+                ]
+            ),
+            "detail_too_short": "\n".join(
+                [
+                    "[commit-msg] 提交正文信息量不足，请补充更具体的变更说明。",
+                    "要求：",
+                    "  - 正文至少两行有效内容",
+                    "  - 正文总信息量至少达到 20 个非空白字符",
+                    "示例：",
+                    '  git commit -m "docs(workflow): 收紧提交说明校验" \\',
+                    '    -m "要求普通提交必须携带详细正文，不能只写单行标题。" \\',
+                    '    -m "同步更新 hook 说明和仓库约定，减少后续提交漂移。"',
+                ]
+            ),
+            "missing_task_binding": "\n".join(
+                [
+                    "[commit-msg] 当前 worktree 存在激活中的非琐碎任务 gate，提交正文必须显式带上 task slug。",
+                    "要求：",
+                    "  - 在正文单独写一行：{task_line_prefix} {task_slug}",
+                    "示例：",
+                    '  git commit -m "refactor(workflow): 拆分 shared skill 校验" \\',
+                    '    -m "把 shared skill 完整性检查从 consistency 总脚本里拆成独立子脚本。" \\',
+                    '    -m "同步让安装脚本与治理审计分别调用，减少职责混写。" \\',
+                    '    -m "{task_line_prefix} {task_slug}"',
+                ]
+            ),
+        },
+    }
+    return json.dumps(policy, ensure_ascii=False, indent=2)
+
+
 def commit_message_check_script() -> str:
     return r"""#!/usr/bin/env bash
 set -euo pipefail
@@ -367,46 +459,31 @@ if [[ ! -f "$message_file" ]]; then
   exit 1
 fi
 
-subject="$(sed -n '1p' "$message_file" | tr -d '\r')"
+root_dir="$(git rev-parse --show-toplevel)"
+agents_home="${AGENTS_HOME:-$HOME/.agents}"
+checker="$agents_home/harness/commit-message/check_commit_message.py"
+policy_file="$root_dir/harness/policies/commit-message.json"
 
-if [[ -z "$subject" ]]; then
-  echo "[commit-msg] 提交信息不能为空" >&2
+if [[ ! -f "$checker" ]]; then
+  echo "[commit-msg] 找不到共享提交信息检查器: $checker" >&2
+  echo "[commit-msg] 请先同步 ~/.agents/harness，或检查 AGENTS_HOME 配置" >&2
   exit 1
 fi
 
-if [[ "$subject" =~ ^Merge[[:space:]] ]] || [[ "$subject" =~ ^Revert[[:space:]] ]]; then
-  exit 0
-fi
-
-pattern='^(feat|fix|refactor|docs|test|chore|build|ci|perf|style|revert)(\([^)]+\))?: .+$'
-if [[ ! "$subject" =~ $pattern ]]; then
-  cat >&2 <<'EOF'
-[commit-msg] 提交信息格式不符合约束。
-要求：英文类型 + 可选英文/模块 scope + 中文描述
-示例：
-  fix(frontend): 修正拓扑页导出按钮禁用态
-  refactor(topology): 拆分画布工作区组件
-  docs: 补齐提交信息约束说明
-EOF
+if [[ ! -f "$policy_file" ]]; then
+  echo "[commit-msg] 找不到项目提交信息策略: $policy_file" >&2
   exit 1
 fi
 
-description="${subject#*: }"
-if ! python3 - "$description" <<'PY'
-import re
-import sys
-
-description = sys.argv[1]
-sys.exit(0 if re.search(r'[\u4e00-\u9fff]', description) else 1)
-PY
-then
-  cat >&2 <<'EOF'
-[commit-msg] 提交描述必须包含中文说明。
-示例：
-  fix(frontend): 修正拓扑页导出按钮禁用态
-EOF
-  exit 1
+cmd=(python3 "$checker" --message-file "$message_file" --policy-file "$policy_file")
+if [[ -x "$root_dir/scripts/check-startup-gate.sh" ]]; then
+  active_task_slug="$(bash "$root_dir/scripts/check-startup-gate.sh" --print-active-slug 2>/dev/null || true)"
+  if [[ -n "$active_task_slug" ]]; then
+    cmd+=(--active-task-slug "$active_task_slug")
+  fi
 fi
+
+exec "${cmd[@]}"
 """
 
 
@@ -1191,6 +1268,7 @@ def main() -> None:
         write(repo / "scripts/check-open-todos.sh", todo_reminder_script(), executable=True)
         write(repo / "scripts/check-todo-governance.sh", todo_governance_check_script(), executable=True)
         write(repo / "scripts/check-commit-message.sh", commit_message_check_script(), executable=True)
+        write(repo / "harness/policies/commit-message.json", commit_message_policy_content(args.profile))
 
         insert_or_replace(
             repo / "AGENTS.md",
@@ -1256,7 +1334,7 @@ bash scripts/check-consistency.sh
         hook_docs = """## Harness 检查
 
 - `pre-commit`：运行 `scripts/check-consistency.sh`，其中会继续执行 `scripts/check-test-workflow.sh`，检查严格参考 harness 的顶层目录、导航、资料计数和测试工作流约束。
-- `commit-msg`：运行 `scripts/check-commit-message.sh`，要求提交信息使用英文类型关键字与中文描述，例如 `fix(harness): 补齐提交信息校验`。
+- `commit-msg`：运行 `scripts/check-commit-message.sh`，由共享检查器读取 `harness/policies/commit-message.json` 校验标题、正文和激活任务的 `Task:` 绑定。
 - 原有 API 合同同步逻辑继续保留。"""
         message = "Initialized strict-reference harness"
     else:
@@ -1268,6 +1346,7 @@ bash scripts/check-consistency.sh
         write(repo / "scripts/check-open-todos.sh", todo_reminder_script(), executable=True)
         write(repo / "scripts/check-todo-governance.sh", todo_governance_check_script(), executable=True)
         write(repo / "scripts/check-commit-message.sh", commit_message_check_script(), executable=True)
+        write(repo / "harness/policies/commit-message.json", commit_message_policy_content(args.profile))
 
         insert_or_replace(
             repo / "AGENTS.md",
@@ -1341,7 +1420,7 @@ bash scripts/check-consistency.sh
         hook_docs = """## Harness 检查
 
 - `pre-commit`：运行 `scripts/check-consistency.sh`，其中会继续执行 `scripts/check-test-workflow.sh`，检查 CTF 探索版 harness 的目录、导航、本地私有 reuse 索引归属和测试工作流约束。
-- `commit-msg`：运行 `scripts/check-commit-message.sh`，要求提交信息使用英文类型关键字与中文描述，例如 `fix(harness): 补齐提交信息校验`。
+- `commit-msg`：运行 `scripts/check-commit-message.sh`，由共享检查器读取 `harness/policies/commit-message.json` 校验标题、正文和激活任务的 `Task:` 绑定。
 - 原有项目 hook 逻辑继续保留。"""
         message = "Initialized CTF-current harness"
 
