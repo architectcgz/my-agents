@@ -12,7 +12,7 @@
 - `<project-pattern-policy>`：项目内记录复用模式的事实源。
 - `<reuse-decision-dir>`：当前任务的 reuse decision 保存目录。
 - `<reuse-index-root>`：本地长期复用索引根目录。
-- `<task-intake-command>`：实现前必须通过的启动 gate 命令。
+- `<task-intake-command>`：非琐碎任务进入实现前的共享 workflow 入口命令。
 
 ## 提示词正文
 
@@ -41,14 +41,18 @@ You must prefer the following order:
 
 You are not allowed to create a parallel implementation if an existing one can be reused, extended, or refactored.
 
-Before implementation, create or update <reuse-decision-dir><task-slug>.md, then run <task-intake-command>.
+Before implementation on a non-trivial task, run <task-intake-command> to enter the repository workflow.
+That workflow should create or bind the task slug, worktree, implementation plan, and local startup gate before coding begins.
 
-Task-scoped reuse decision files can coexist under <reuse-decision-dir> without overwriting each other.
+Capture reuse and owner reasoning in the implementation plan by default.
+Create or update <reuse-decision-dir><task-slug>.md only when the repository rules or task complexity require supplemental evidence.
+
+Task-scoped reuse decision files can coexist under <reuse-decision-dir> without overwriting each other when they are needed.
 Before searching from scratch, also read <reuse-index-root>index.yaml if it exists.
 If the index routes you to a module or subdirectory, also read the nearest mirrored `README.md` under <reuse-index-root><source-path>/.
 After implementation, update the local reuse index entry and the nearest mirrored module `README.md` when future tasks should find the pattern directly.
 
-The Reuse Decision must include:
+If a standalone Reuse Decision is needed, it should include:
 
 - Change type
 - Existing code searched
@@ -67,8 +71,12 @@ Required workflow:
    - Search the repository for similar implementations.
 3. Step 3: Decide
    - Choose reuse, extend, refactor, or create-new-with-reason.
-4. Step 4: Gate
-   - Run <task-intake-command> and pass the startup gate.
-5. Step 5: Implement
-   - Only write code after the first four steps are complete.
+4. Step 4: Enter workflow
+   - Run <task-intake-command> and bind the task startup record.
+5. Step 5: Run the intake analysis gate
+   - Use the relevant `superpowers` analysis pass first, then `grill-with-docs`.
+6. Step 6: Finalize the implementation plan
+   - Record the reuse and owner decision in the plan. Add a standalone reuse decision only if the repo requires extra evidence.
+7. Step 7: Implement
+   - Only write code after the first six steps are complete.
 ```

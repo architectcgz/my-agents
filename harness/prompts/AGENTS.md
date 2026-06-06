@@ -12,4 +12,4 @@
 ## 当前条目
 
 - `architecture-diagram-generation.md`：根据事实源生成架构图输入包的共享模板。
-- `coding-agent-system-prompt.md`：reuse-first coding agent 的共享模板。
+- `coding-agent-system-prompt.md`：编码前复用 / owner 决策与启动 workflow 的共享模板。
