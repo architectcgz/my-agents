@@ -24,7 +24,7 @@ The package entrypoint is `workflow.sh`. Callers should prefer the harness-level
 
 ## Override Model
 
-The diagram below shows where a project should adapt `code-workflow`, and where it should not.
+The diagram below only covers where a project should adapt `code-workflow`, and where it should not.
 
 ![code-workflow override model](assets/override-model.svg)
 
@@ -32,8 +32,21 @@ Read it in layers:
 
 1. Shared package owns workflow semantics and managed assets.
 2. Projects override through `harness/workflow-plugins/code-workflow/<stage>.d/*.sh`.
-3. Plugin scripts call repo-owned checks and docs, which remain the project truth.
-4. The independent review gate is orchestration, not another shell plugin stage.
+3. The project override layer decides plugin sets and execution order.
+
+## Review Chain
+
+The review gate is intentionally a separate orchestration flow, not part of the override diagram above.
+
+![code-workflow review chain](assets/review-chain.svg)
+
+Read it in order:
+
+1. `completion-full` produces implementation-context evidence.
+2. That evidence is compacted into a review packet.
+3. The packet goes to an independent `code-reviewer` agent.
+4. The reviewer uses project docs, project checks, and local rules as the basis.
+5. Only after review passes does the task enter `workflow-governance` / archive / handoff.
 
 Besides startup-gate and archive assets, the package also owns the shared stage mechanism installed into:
 
