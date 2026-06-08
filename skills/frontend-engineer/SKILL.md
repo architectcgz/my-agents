@@ -59,18 +59,27 @@ Act as a frontend engineering agent for frontend implementation, refactor, inter
 1. Read the route view, component, or composable that actually owns the behavior before editing.
 2. Identify the dominant risk first: async execution, state ownership, component contract drift, lifecycle cleanup, or rendering pressure.
 3. If the task touches styling, inspect the existing shared tokens, CSS variables, and component shells before introducing new local rules.
-4. Load only the relevant reference files from `references/` instead of treating every task as the whole frontend rulebook.
-5. Keep the implementation boundary small and explicit. One owner for one workflow is the default.
-6. Before shrinking a large route view, write down what must remain page-owned versus what is safe to move into a child component or composable. Reduce ownership ambiguity first; line-count reduction is only a side effect.
-7. For route-view template/root edits under `RouterView`, `Transition`, or parent-applied layout classes, read `references/route-view-transition-root.md`.
-8. For visible UI copy changes, headings, helper text, empty states, or dashboard/workspace prose, read `references/ui-copy-boundaries.md`.
-9. Validate loading, error, empty, and repeated-action behavior before closing the task.
-10. Audit direct event-bound async entry points before closing the task: form submit handlers, click handlers, emit handlers, composable methods passed to components, and polling callbacks are all rejection boundaries.
-11. Run the narrowest relevant tests available. If tests cannot be run, state that clearly and call out the highest-risk unverified paths.
-12. After implementation and initial verification, perform a separate review pass. For leader/pipeline-classified non-trivial frontend work, use `requesting-code-review` or `code-reviewer`. For smaller changes, explicitly switch into review mode yourself instead of stopping at "typecheck passed".
-13. Fix review findings that materially affect interaction correctness, state ownership, component boundaries, regressions, or test coverage, then re-run the impacted verification.
-14. When a component mixes keyboard submit and pointer submit paths, inspect the template and handler together: check whether `@keyup.enter`, form submit, and action buttons can converge on the same async function, then verify the handler short-circuits while a request is already in flight.
-15. If a reusable frontend rule gap or repeated miss is found, record it with `improvement-tracker` instead of only mentioning it in the response.
+4. For logic-bearing changes, load `test-driven-development` before writing production code and follow Red-Green-Refactor.
+5. Load only the relevant reference files from `references/` instead of treating every task as the whole frontend rulebook.
+6. Keep the implementation boundary small and explicit. One owner for one workflow is the default.
+7. Before shrinking a large route view, write down what must remain page-owned versus what is safe to move into a child component or composable. Reduce ownership ambiguity first; line-count reduction is only a side effect.
+8. For route-view template/root edits under `RouterView`, `Transition`, or parent-applied layout classes, read `references/route-view-transition-root.md`.
+9. For visible UI copy changes, headings, helper text, empty states, or dashboard/workspace prose, read `references/ui-copy-boundaries.md`.
+10. Validate loading, error, empty, and repeated-action behavior before closing the task.
+11. Audit direct event-bound async entry points before closing the task: form submit handlers, click handlers, emit handlers, composable methods passed to components, and polling callbacks are all rejection boundaries.
+12. Run the narrowest relevant tests available. If tests cannot be run, state that clearly and call out the highest-risk unverified paths.
+13. After implementation and initial verification, perform a separate review pass. For leader/pipeline-classified non-trivial frontend work, use `requesting-code-review` or `code-reviewer`. For smaller changes, explicitly switch into review mode yourself instead of stopping at "typecheck passed".
+14. Fix review findings that materially affect interaction correctness, state ownership, component boundaries, regressions, or test coverage, then re-run the impacted verification.
+15. When a component mixes keyboard submit and pointer submit paths, inspect the template and handler together: check whether `@keyup.enter`, form submit, and action buttons can converge on the same async function, then verify the handler short-circuits while a request is already in flight.
+16. If a reusable frontend rule gap or repeated miss is found, record it with `improvement-tracker` instead of only mentioning it in the response.
+
+## Frontend TDD Boundaries
+
+- TDD is required for frontend state, validation, derived data, permissions, async flows, stores, composables, reducers, route workflow helpers, and user interaction rules.
+- Pure visual styling, copy-only edits, static layout, and token-only polish do not require TDD unless behavior changes are mixed in.
+- Prefer testing the smallest owner of the behavior. A composable/store/helper test is usually better than a route-view test when the route view only wires the behavior.
+- Component tests should exercise real interaction and emitted contracts. Do not use snapshot-only tests as the failing red step for behavior changes.
+- During the refactor step, keep frontend tests from becoming one oversized route or component spec. Split by behavior, use local builders for repeated setup, and remove duplicate tests that provide the same failure signal.
 
 ## Decomposition Routing
 

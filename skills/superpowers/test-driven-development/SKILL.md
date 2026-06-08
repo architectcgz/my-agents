@@ -194,8 +194,37 @@ After green only:
 - Remove duplication
 - Improve names
 - Extract helpers
+- Refactor test code when it becomes harder to read than the behavior it proves
 
 Keep tests green. Don't add behavior.
+
+## Test Suite Growth
+
+TDD grows the test suite on purpose. It should not grow one catch-all file forever.
+
+During REFACTOR, treat tests as maintained code:
+
+- Split tests by behavior or use case when one file starts covering unrelated workflows.
+- Prefer behavior-focused files such as `register-user.spec.ts`, `password-reset.spec.ts`, or `invoice-payment_test.go` over one giant class/module test.
+- Use builders, fixtures, and domain assertions after duplication appears. Keep helpers local until more than one file needs them.
+- Use table tests only for multiple examples of the same rule. Do not hide different behaviors in one table.
+- Delete or merge tests that provide the same failure signal as another test.
+- Keep setup focused on fields and collaborators that matter to the behavior under test.
+- Avoid testing private implementation details just because they are easy to reach.
+
+Frontend TDD:
+
+- Use TDD for state, validation, derived data, permissions, async flows, stores, composables, reducers, and interaction rules.
+- Prefer testing the smallest owner of the behavior: composable, store, reducer, route-workflow helper, or component interaction.
+- Do not use snapshot-only tests as the red step for behavior changes.
+- If a task mixes visual styling and logic, write failing tests for the logic-bearing slice and validate the visual slice separately.
+
+Backend TDD:
+
+- Use TDD for handlers, services/use cases, repositories, jobs, queues, caching behavior, integrations, permissions, idempotency, and persistence rules.
+- Put each test at the boundary that owns the behavior. Do not duplicate the same rule across handler, service, repository, and end-to-end tests unless each level proves a distinct contract.
+- Keep integration fixtures reusable and explicit. Schema setup belongs in test helpers or migrations, not ad hoc per-test boilerplate.
+- Prefer one clear behavior assertion over broad mock-call verification.
 
 ### Repeat
 
