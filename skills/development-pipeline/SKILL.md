@@ -68,9 +68,9 @@ If the work touches code that is already known to be structurally oversized or o
 For non-trivial work, implementation-agent self-check is required but insufficient. The pipeline owns the final gate and must require independent review or an explicit review pass, then fix material findings and re-run impacted verification.
 When the implementation was produced in the current session, do not perform that gate review in the same implementation context.
 For non-trivial work, the default is also the requirement: the gate review must run in a separate subagent or an equivalently independent context. Same-context review may count as self-check only, never as the independent gate.
-If the user explicitly asks to use this pipeline, a staged workflow, or an independent review gate, treat that request as explicit authorization to spawn the minimum necessary review subagent(s) required by this skill.
-Do not stop to ask again for permission to spawn that reviewer. The pipeline request already authorizes the delegation needed to satisfy the review gate.
-If tool policy or user instruction prevents spawning the independent reviewer, stop and state that the review gate is still unmet. Do not archive same-context review as if it satisfied the independent review requirement.
+For non-trivial work under this pipeline, treat the minimum necessary independent review subagent(s) as already authorized by default unless the user explicitly forbids delegation.
+Do not stop to ask again for permission to spawn that reviewer. Non-trivial pipeline gating already authorizes the delegation needed to satisfy the review gate.
+If tool policy or an explicit user restriction prevents spawning the independent reviewer, stop and state that the review gate is still unmet. Do not archive same-context review as if it satisfied the independent review requirement.
 If the repository uses `code-workflow`, map this requirement onto that workflow explicitly: `completion-full` is self-check, then the independent review gate runs, and only after that can `workflow-governance` / final handoff be treated as completion-ready.
 
 ## Review Evidence Location

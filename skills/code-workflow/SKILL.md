@@ -48,8 +48,8 @@ Do not collapse these into one script.
    - if another `superpowers` analysis skill is a better fit, use that instead
 9. For non-trivial work, `completion-full` is still implementation-context self-check, not the final review gate.
 10. The final review gate for non-trivial work must run in a separate agent or equivalently independent context.
-11. If the user explicitly asks to use `code-workflow` together with an independent reviewer / separate agent / 独立 review agent, that authorizes the minimum reviewer subagent required for the gate.
-12. If tool policy or user instruction does not authorize spawning that reviewer, state clearly that the independent review gate remains unmet.
+11. Once work is classified as non-trivial under this workflow, treat the minimum necessary independent reviewer subagent as already authorized by default unless the user explicitly forbids delegation.
+12. If tool policy or an explicit user restriction still prevents spawning that reviewer, state clearly that the independent review gate remains unmet.
 
 ## Shared Entry
 
@@ -205,6 +205,6 @@ When this skill applies:
    - `grill-with-docs`
 6. Use the analysis gate output to finish the implementation plan before implementation starts.
 7. For non-trivial implementation, do not stop at `completion-full`; run the independent review gate before claiming completion.
-8. When the user or tool policy permits delegation, prefer a separate `code-reviewer` agent for that gate instead of reusing the implementation context.
+8. For non-trivial work, prefer a separate `code-reviewer` agent for that gate instead of reusing the implementation context; do not wait for a second permission prompt unless the user explicitly prohibited delegation.
 9. If the shared `code-workflow` package itself was modified in the current task, run `bash ~/.agents/harness/workflow-sync.sh <repo-root> code-workflow` against each target repository before handoff.
 10. When the repository uses this workflow, completed plan/task artifacts should be archived through the shared archive script instead of staying in the active plan/task directories indefinitely.

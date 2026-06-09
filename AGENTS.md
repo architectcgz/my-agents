@@ -90,6 +90,7 @@
 - 若多个 skill 适用，先用流程 / 路由类 skill 判断进入方式，再叠加领域 skill；不得因为“只是小改”“我已经知道怎么做”而跳过明显适用的 skill。
 - 只有在确认没有适用 skill，或现有 skill 无法覆盖当前问题时，才直接按全局规则和项目上下文解决，并在必要时说明缺口。
 - 可长期复用的专题细则应沉淀到对应 skill；不要继续堆回全局 prompt 或项目 `AGENTS.md`。
+- 对被 workflow 或 pipeline 判定为 `非琐碎任务` 的工作，默认视为用户已经授权为了完成独立 review gate 而委派“最小必要”的 reviewer subagent；除非用户明确禁止 delegation，或当前工具策略明确禁止，否则不要因为缺少额外口头授权而跳过独立 review。
 - Vue / `.vue` / Vue Router / Pinia / Vite with Vue：
   - `vue-best-practices`
   - `frontend-engineer`
@@ -142,6 +143,7 @@
 ### 结构性改动流程
 - 对跨多个文件的 service / repository / handler / 页面职责拆分，已有 `docs/plan/impl-plan/*` 方案文档的改动，或会影响模块边界、调用路径、依赖装配、测试组织、review 成本的重排类改动，默认视为结构性改动。
 - 结构性改动不能直接进入实现；必须先确认或补齐方案文档，明确当前阶段，按方案实现最小可审查改动，运行最小充分验证，再切换到独立 review 心智检查 correctness、回归风险、测试缺口和结构债。
+- 对结构性改动或其他 `非琐碎任务`，独立 review 不是可选增强，而是默认完成条件；如果需要 reviewer subagent 来满足这道 gate，默认直接使用，不再把“是否允许派 reviewer”当成单独确认项。
 - 如果实现触达 audit、review、architecture、improvement backlog 中已经记录的结构性技术债，本次必须在 touched surface 内收口该债务；不能把同一位置的已知结构债写成 `residual risk`、`follow-up` 或“后续再拆”后直接交付。
 - 如果发现收口范围会超出当前任务，应在编码前回到方案阶段重新拆任务；最终 review 若发现 touched surface 上的已知结构债仍然存在，应视为 blocker。
 
