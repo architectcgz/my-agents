@@ -138,8 +138,8 @@ def insert_hook(path: Path) -> None:
     start = f"# {START}: pre-commit"
     end = f"# {END}: pre-commit"
     body = f"""{start}
-if [[ -x scripts/check-consistency.sh ]]; then
-  bash scripts/check-consistency.sh
+if [[ -x scripts/check-harness-consistency.sh ]]; then
+  bash scripts/check-harness-consistency.sh
 fi
 if [[ -x scripts/check-skill-sync-reminder.sh ]]; then
   bash scripts/check-skill-sync-reminder.sh --staged

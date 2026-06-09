@@ -45,7 +45,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def write_common_scaffold(repo: Path, profile: str, consistency_script: str) -> None:
-    write(repo / "scripts/check-consistency.sh", consistency_script, executable=True)
+    write(repo / "scripts/check-harness-consistency.sh", consistency_script, executable=True)
     write(repo / "scripts/check-agent-entrypoints.sh", agent_entrypoints_check_script(), executable=True)
     write(repo / "scripts/check-architecture.sh", architecture_guard_script(), executable=True)
     write(repo / "scripts/check-test-workflow.sh", test_workflow_check_script(), executable=True)
@@ -85,7 +85,7 @@ def configure_strict_reference(repo: Path, project_name: str, profile: str) -> t
 
 项目根保持 `CLAUDE.md -> AGENTS.md`，让 Claude / Codex 使用同一份入口规则。
 
-机械化检查：`bash scripts/check-consistency.sh`。
+机械化检查：`bash scripts/check-harness-consistency.sh`。
 架构守卫入口：`bash scripts/check-architecture.sh`。""",
     )
     insert_or_replace(
@@ -104,8 +104,8 @@ def configure_strict_reference(repo: Path, project_name: str, profile: str) -> t
 
 - Write or update the narrowest relevant tests first.
 - After changing tests, run the smallest relevant test command that covers the touched surface.
-- After the test command, run the relevant script check such as `bash scripts/check-test-workflow.sh` or `bash scripts/check-consistency.sh` before claiming completion.
-- 如果当前仓库已经有 `scripts/check-consistency.sh`、git hooks 或 CI guardrail，测试相关脚本检查必须接入这些实际检查链路，不能只停留在提示词里。""",
+- After the test command, run the relevant script check such as `bash scripts/check-test-workflow.sh` or `bash scripts/check-harness-consistency.sh` before claiming completion.
+- 如果当前仓库已经有 `scripts/check-harness-consistency.sh`、git hooks 或 CI guardrail，测试相关脚本检查必须接入这些实际检查链路，不能只停留在提示词里。""",
     )
     insert_or_replace(
         repo / "README.md",
@@ -125,7 +125,7 @@ def configure_strict_reference(repo: Path, project_name: str, profile: str) -> t
 一致性检查：
 
 ```bash
-bash scripts/check-consistency.sh
+bash scripts/check-harness-consistency.sh
 ```
 
 最小架构守卫：
@@ -136,7 +136,7 @@ bash scripts/check-architecture.sh
     )
     hook_docs = """## Harness 检查
 
-- `pre-commit`：运行 `scripts/check-consistency.sh`，其中会继续执行 `scripts/check-architecture.sh` 与 `scripts/check-test-workflow.sh`，检查严格参考 harness 的顶层目录、导航、最小架构守卫和测试工作流约束。
+- `pre-commit`：运行 `scripts/check-harness-consistency.sh`，其中会继续执行 `scripts/check-architecture.sh` 与 `scripts/check-test-workflow.sh`，检查严格参考 harness 的顶层目录、导航、最小架构守卫和测试工作流约束。
 - `pre-commit`：非阻塞运行 `scripts/check-skill-sync-reminder.sh --staged`，提醒把跨项目规则上收全局 skill 或 shared harness。
 - `commit-msg`：运行 `scripts/check-commit-message.sh`，由共享检查器读取 `harness/policies/commit-message.json` 校验标题、正文和激活任务的 `Task:` 绑定。
 - 原有 API 合同同步逻辑继续保留。"""
@@ -170,7 +170,7 @@ def configure_ctf_current(repo: Path, project_name: str, profile: str) -> tuple[
 
 项目根保持 `CLAUDE.md -> AGENTS.md`，让 Claude / Codex 使用同一份入口规则。
 
-机械化检查：`bash scripts/check-consistency.sh`。
+机械化检查：`bash scripts/check-harness-consistency.sh`。
 架构守卫入口：`bash scripts/check-architecture.sh`。
 
 开发过程中，如果某个模块第一次形成稳定复用模式，主动补 `.harness/reuse-index/<source-path>/README.md`；如果模块内部也已经分出稳定层次，再继续补该子路径下的镜像 `README.md`。这是本地提醒，不作为 pre-commit 阻塞项。
@@ -193,8 +193,8 @@ def configure_ctf_current(repo: Path, project_name: str, profile: str) -> tuple[
 
 - Write or update the narrowest relevant tests first.
 - After changing tests, run the smallest relevant test command that covers the touched surface.
-- After the test command, run the relevant script check such as `bash scripts/check-test-workflow.sh` or `bash scripts/check-consistency.sh` before claiming completion.
-- 如果当前仓库已经有 `scripts/check-consistency.sh`、git hooks 或 CI guardrail，测试相关脚本检查必须接入这些实际检查链路，不能只停留在提示词里。""",
+- After the test command, run the relevant script check such as `bash scripts/check-test-workflow.sh` or `bash scripts/check-harness-consistency.sh` before claiming completion.
+- 如果当前仓库已经有 `scripts/check-harness-consistency.sh`、git hooks 或 CI guardrail，测试相关脚本检查必须接入这些实际检查链路，不能只停留在提示词里。""",
     )
     insert_or_replace(
         repo / "README.md",
@@ -216,7 +216,7 @@ def configure_ctf_current(repo: Path, project_name: str, profile: str) -> tuple[
 一致性检查：
 
 ```bash
-bash scripts/check-consistency.sh
+bash scripts/check-harness-consistency.sh
 ```
 
 最小架构守卫：
@@ -227,7 +227,7 @@ bash scripts/check-architecture.sh
     )
     hook_docs = """## Harness 检查
 
-- `pre-commit`：运行 `scripts/check-consistency.sh`，其中会继续执行 `scripts/check-architecture.sh` 与 `scripts/check-test-workflow.sh`，检查 CTF 探索版 harness 的目录、导航、本地私有 reuse 索引归属、最小架构守卫和测试工作流约束。
+- `pre-commit`：运行 `scripts/check-harness-consistency.sh`，其中会继续执行 `scripts/check-architecture.sh` 与 `scripts/check-test-workflow.sh`，检查 CTF 探索版 harness 的目录、导航、本地私有 reuse 索引归属、最小架构守卫和测试工作流约束。
 - `pre-commit`：非阻塞运行 `scripts/check-skill-sync-reminder.sh --staged`，提醒把跨项目规则上收全局 skill 或 shared harness。
 - `commit-msg`：运行 `scripts/check-commit-message.sh`，由共享检查器读取 `harness/policies/commit-message.json` 校验标题、正文和激活任务的 `Task:` 绑定。
 - 原有项目 hook 逻辑继续保留。"""

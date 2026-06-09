@@ -106,9 +106,9 @@ else
   echo "[init-project] skip workflow installation"
 fi
 
-if [[ -x "$repo_root/scripts/check-consistency.sh" ]]; then
-  echo "[init-project] run project consistency check"
-  bash "$repo_root/scripts/check-consistency.sh"
+if [[ -x "$repo_root/scripts/check-harness-consistency.sh" ]]; then
+  echo "[init-project] run project harness consistency check"
+  bash "$repo_root/scripts/check-harness-consistency.sh"
 fi
 
 echo "[init-project] done"

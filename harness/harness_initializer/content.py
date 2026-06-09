@@ -183,7 +183,7 @@ else
     fail_msg "AGENTS must require the smallest relevant test command after test changes"
   fi
 
-  if grep -qiE 'script check after the test command|relevant script check after the test command|check-test-workflow\.sh|check-consistency\.sh' AGENTS.md; then
+  if grep -qiE 'script check after the test command|relevant script check after the test command|check-test-workflow\.sh|check-harness-consistency\.sh' AGENTS.md; then
     pass_msg "AGENTS requires a follow-up script check after tests"
   else
     fail_msg "AGENTS must require a follow-up script check after the test command"
@@ -191,14 +191,14 @@ else
 fi
 
 echo "[T3] test workflow guard is mechanically enforced"
-if [[ -f scripts/check-consistency.sh ]] && grep -q 'check-test-workflow\.sh' scripts/check-consistency.sh; then
-  pass_msg "scripts/check-consistency.sh runs scripts/check-test-workflow.sh"
+if [[ -f scripts/check-harness-consistency.sh ]] && grep -q 'check-test-workflow\.sh' scripts/check-harness-consistency.sh; then
+  pass_msg "scripts/check-harness-consistency.sh runs scripts/check-test-workflow.sh"
 else
-  fail_msg "scripts/check-consistency.sh must run scripts/check-test-workflow.sh"
+  fail_msg "scripts/check-harness-consistency.sh must run scripts/check-test-workflow.sh"
 fi
 
-if [[ -f .githooks/pre-commit ]] && grep -q 'check-consistency\.sh' .githooks/pre-commit; then
-  pass_msg "pre-commit routes through scripts/check-consistency.sh"
+if [[ -f .githooks/pre-commit ]] && grep -q 'check-harness-consistency\.sh' .githooks/pre-commit; then
+  pass_msg "pre-commit routes through scripts/check-harness-consistency.sh"
 elif find .github/workflows -type f 2>/dev/null | xargs -r grep -q 'check-test-workflow\.sh'; then
   pass_msg "CI directly runs scripts/check-test-workflow.sh"
 else

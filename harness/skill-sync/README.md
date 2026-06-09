@@ -8,13 +8,24 @@ Scope:
 - does not mutate repositories
 - does not decide ownership automatically
 
-The shared entrypoint is:
+The shared non-blocking reminder entrypoint is:
 
 ```bash
-python3 ~/.agents/harness/skill-sync/remind_skill_sync.py --cwd <repo-root> --staged
+bash ~/.agents/harness/check-skill-sync-reminder.sh --cwd <repo-root> --staged
 ```
 
-Typical project wrapper:
+The shared blocking archive-state check is:
+
+```bash
+bash ~/.agents/harness/check-feedback-archive-state.sh --cwd <repo-root>
+```
+
+This blocker is for state transition, not deletion:
+
+- absorbed/mechanized feedback must switch to an `archived` / `归档` status
+- project-local or pending-sync feedback may stay active
+
+Typical project reminder wrapper:
 
 ```bash
 #!/usr/bin/env bash
@@ -22,5 +33,5 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cwd="$(cd "$script_dir/.." && pwd)"
-python3 ~/.agents/harness/skill-sync/remind_skill_sync.py --cwd "$cwd" "$@"
+bash ~/.agents/harness/check-skill-sync-reminder.sh --cwd "$cwd" "$@"
 ```

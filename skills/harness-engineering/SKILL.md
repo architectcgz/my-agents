@@ -28,9 +28,9 @@ For brand-new project initialization, `harness-engineering` owns the harness sub
 5. Ensure the repository root keeps `CLAUDE.md -> AGENTS.md`; create the symlink when missing, but do not overwrite an existing non-symlink file silently.
 6. Ensure the generated scaffold includes `scripts/check-agent-entrypoints.sh` and that the repo's main consistency/governance check actually executes it, instead of leaving entrypoint alignment as a one-off manual doctor step.
 7. If the local workspace provides `~/workspace/projects/scripts/check-agent-entrypoints.sh`, run it against the target repo after initialization.
-8. Ensure the generated scaffold includes `scripts/check-test-workflow.sh` and that `scripts/check-consistency.sh`, hooks, or CI actually invoke it instead of leaving test workflow rules as prompt text only.
-9. Ensure the generated scaffold includes a minimal `scripts/check-architecture.sh` guard plus seed policy files, and that `scripts/check-consistency.sh`, hooks, or CI actually invoke it instead of leaving architecture ownership only in prompt text.
-10. Ensure the generated scaffold includes `scripts/check-script-guard.sh` plus `harness/policies/script-guard.json`, and that `scripts/check-consistency.sh` actually invokes the script guard so large harness/operator scripts are forced to split before they drift.
+8. Ensure the generated scaffold includes `scripts/check-test-workflow.sh` and that `scripts/check-harness-consistency.sh`, hooks, or CI actually invoke it instead of leaving test workflow rules as prompt text only.
+9. Ensure the generated scaffold includes a minimal `scripts/check-architecture.sh` guard plus seed policy files, and that `scripts/check-harness-consistency.sh`, hooks, or CI actually invoke it instead of leaving architecture ownership only in prompt text.
+10. Ensure the generated scaffold includes `scripts/check-script-guard.sh` plus `harness/policies/script-guard.json`, and that `scripts/check-harness-consistency.sh` actually invokes the script guard so large harness/operator scripts are forced to split before they drift.
 11. Run the generated harness check and any affected existing hook/script checks.
 12. Report changed files, validation evidence, and any residual gaps.
 13. When the repository should adopt the shared non-trivial task workflow, install the common startup package with `bash ~/.agents/harness/workflow-installer.sh "$PWD" code-workflow`, or prefer the higher-level bootstrap wrapper `bash ~/.agents/harness/init-project.sh "$PWD"` during normal initialization.
@@ -40,13 +40,13 @@ When the repo uses project todos, initialize a non-blocking reminder flow on the
 
 - add `scripts/check-open-todos.sh`
 - wire root `AGENTS.md` to read it at task start
-- surface its output from `scripts/check-consistency.sh`
+- surface its output from `scripts/check-harness-consistency.sh`
 
 When the repo has automated tests or an obvious test surface, initialize a mechanical test-workflow guard:
 
 - add `scripts/check-test-workflow.sh`
 - have it verify `AGENTS.md` documents the narrowest-relevant-test-first workflow and follow-up script checks
-- have `scripts/check-consistency.sh` execute it
+- have `scripts/check-harness-consistency.sh` execute it
 - rely on existing pre-commit or CI entry points to enforce it transitively
 
 When the repo has architecture docs or any structural code surface, initialize a minimal architecture guard:
@@ -54,14 +54,14 @@ When the repo has architecture docs or any structural code surface, initialize a
 - add `scripts/check-architecture.sh`
 - seed `harness/policies/architecture-guard-paths.txt`
 - seed `harness/policies/architecture-guard-commands.txt`
-- have `scripts/check-consistency.sh` execute it
+- have `scripts/check-harness-consistency.sh` execute it
 - treat the command list as the project-local extension point for backend/frontend/module boundary checks
 
 When the repo has harness/operator scripts, initialize a mechanical script-growth guard:
 
 - add `scripts/check-script-guard.sh`
 - seed `harness/policies/script-guard.json`
-- have `scripts/check-consistency.sh` execute it
+- have `scripts/check-harness-consistency.sh` execute it
 - keep the policy focused on harness/operator entrypoints, wrappers, and harness checks instead of unrelated domain build scripts
 
 When the repo uses the local reuse index pattern, wire a non-blocking reminder into root `AGENTS.md`:
@@ -107,7 +107,7 @@ Keep the harness as a map, not a manual. In the current local standard:
 - `harness/checks/`: deterministic guard scripts.
 - `.harness/reuse-index/`: user-local, gitignored reuse index. Keep `index.yaml` as the top-level route map and mirrored `README.md` files as module/module-internal secondary indexes.
 - `feedback/`: mistakes, corrections, workflow lessons, and reusable learning that has not yet been fully absorbed elsewhere.
-- `scripts/check-consistency.sh`: deterministic guard against drift.
+- `scripts/check-harness-consistency.sh`: deterministic base harness guard against drift.
 - `scripts/check-agent-entrypoints.sh`: deterministic guard that requires `CLAUDE.md -> AGENTS.md` and any project-local Claude skill bridge to stay aligned.
 - `scripts/check-architecture.sh`: deterministic minimal architecture guard for docs/architecture routing and project-local architecture commands.
 - `scripts/check-test-workflow.sh`: deterministic guard that checks whether test workflow instructions are documented and actually wired into enforcement paths.
@@ -127,7 +127,7 @@ When strict upstream reference mode is requested, use `concepts/`, `thinking/`, 
 - Treat missing mechanical enforcement as a real harness gap, not just a documentation issue.
 - Treat missing or drifted `CLAUDE.md -> AGENTS.md` as a harness gap; fix it during initialization or fail loudly if an existing file conflicts.
 - If a repo has dirty worktree changes, avoid touching those files unless the task requires it.
-- Feedback records should include a sedimentation status section that names whether the lesson is already absorbed, project-only, awaiting skill sync, mechanized, or obsolete. Once a lesson is fully captured by a global skill, global AGENTS rule, project policy, or mechanical check, remove the long feedback body and keep only an index note or rely on Git history.
+- Feedback records should include a sedimentation status section that names whether the lesson is already absorbed, project-only, awaiting skill sync, mechanized, archived, or obsolete. Once a lesson is fully captured by a global skill, global AGENTS rule, project policy, or mechanical check, switch the feedback file into an archived state so it no longer reads like active guidance.
 - Add or preserve a non-blocking skill-sync reminder when feedback, reuse knowledge, prompts, policies, or templates change. The reminder should force a conscious decision: keep project-only knowledge local, or move cross-project methods and anti-patterns into the relevant global skill.
 - Prefer the shared harness implementation at `~/.agents/harness/skill-sync/remind_skill_sync.py`; project repositories should usually keep only a thin wrapper script and local hook wiring.
 - Reuse-first policies should cover both frontend and backend creation surfaces. Frontend surfaces usually include pages, components, hooks, stores, API wrappers, forms, tables, modals, layouts, and schemas. Backend surfaces usually include services, handlers, repositories, ports, jobs/workers, mappers, read models, runtime composition, schemas, and migrations.

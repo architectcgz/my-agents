@@ -122,7 +122,7 @@ check_file "scripts/check-test-workflow.sh"
 check_file "scripts/check-script-guard.sh"
 check_file "harness/policies/script-guard.json"
 if [[ -f ".githooks/pre-commit" ]]; then
-  check_contains ".githooks/pre-commit" 'scripts/check-consistency\.sh' "pre-commit runs scripts/check-consistency.sh"
+  check_contains ".githooks/pre-commit" 'scripts/check-harness-consistency\.sh' "pre-commit runs scripts/check-harness-consistency.sh"
   check_contains ".githooks/pre-commit" 'scripts/check-skill-sync-reminder\.sh --staged' "pre-commit runs scripts/check-skill-sync-reminder.sh"
 else
   echo "  $(red FAIL) — missing .githooks/pre-commit"
@@ -285,7 +285,7 @@ check_file "scripts/check-test-workflow.sh"
 check_file "scripts/check-script-guard.sh"
 check_file "harness/policies/script-guard.json"
 if [[ -f ".githooks/pre-commit" ]]; then
-  check_contains ".githooks/pre-commit" 'scripts/check-consistency\.sh' "pre-commit runs scripts/check-consistency.sh"
+  check_contains ".githooks/pre-commit" 'scripts/check-harness-consistency\.sh' "pre-commit runs scripts/check-harness-consistency.sh"
   check_contains ".githooks/pre-commit" 'scripts/check-skill-sync-reminder\.sh --staged' "pre-commit runs scripts/check-skill-sync-reminder.sh"
 else
   echo "  $(red FAIL) — missing .githooks/pre-commit"
