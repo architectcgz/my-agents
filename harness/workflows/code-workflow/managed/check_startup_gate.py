@@ -35,6 +35,7 @@ LOW_RISK_SUFFIXES = (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="validate local startup gate state for non-trivial work")
     parser.add_argument("--print-active-slug", action="store_true")
+    parser.add_argument("--print-required-task-slug", action="store_true")
     parser.add_argument("--print-gate-path", action="store_true")
     parser.add_argument("--quiet", action="store_true")
     parser.add_argument("--staged", action="store_true")
@@ -160,6 +161,23 @@ def main() -> int:
                 print(f"- {error}", file=sys.stderr)
             return 1
         print(payload["task_slug"] if args.print_active_slug else gate_path.relative_to(ROOT).as_posix())
+        return 0
+
+    if args.print_required_task_slug:
+        changed = changed_paths(args)
+        gated = sorted(path for path in changed if requires_gate(path))
+        if not gated:
+            return 1
+        if not gates or len(gates) > 1:
+            return 1
+
+        gate_path, payload = gates[0]
+        plan_path_value = payload.get("plan_path")
+        requires_completed_plan = any(path != plan_path_value for path in gated)
+        errors = validate_effective_gate(gate_path, payload, require_completed_plan=requires_completed_plan)
+        if errors:
+            return 1
+        print(payload["task_slug"])
         return 0
 
     changed = changed_paths(args)

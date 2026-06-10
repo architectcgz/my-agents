@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCAFFOLD_VERSION="2026-06-06.6"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANAGED_DIR="$SCRIPT_DIR/managed"
+SCAFFOLD_VERSION="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["version"])' "$SCRIPT_DIR/manifest.json")"
 
 usage() {
   cat <<'EOF' >&2

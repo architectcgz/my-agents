@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOH' >&2
 Usage:
-  bash scripts/run-workflow-stage.sh <stage>
+  bash harness/workflow-plugins/code-workflow/run_workflow_stage.sh <stage>
 
 Stages:
   pre-commit-quick
