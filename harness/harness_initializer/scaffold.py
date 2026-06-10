@@ -149,10 +149,7 @@ fi
         before, rest = text.split(start, 1)
         _, after = rest.split(end, 1)
         text = (before.rstrip() + "\n" + after.lstrip()).rstrip() + "\n"
-    if 'if [[ "$needs_sync" -eq 0 ]]; then' in text:
-        text = text.replace('if [[ "$needs_sync" -eq 0 ]]; then', body + '\n\nif [[ "$needs_sync" -eq 0 ]]; then', 1)
-    else:
-        text = text.rstrip() + "\n\n" + body + "\n"
+    text = text.rstrip() + "\n\n" + body + "\n"
     path.write_text(text, encoding="utf-8")
     path.chmod(path.stat().st_mode | 0o111)
 
