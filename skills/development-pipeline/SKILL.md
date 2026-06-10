@@ -11,6 +11,8 @@ Use this skill as the top-level workflow controller for non-trivial engineering 
 
 This skill is an orchestrator. It does not replace domain implementation skills such as frontend, backend, testing, review, or runtime safety. It coordinates them.
 
+When the repository uses `code-workflow`, that skill owns the mechanical enforcement layer: non-trivial classification binding (isolated workspace / `task-slug` / implementation plan / startup gate), the installable scaffold, and the independent-review gate policy. This skill then owns the fine-grained stage execution contract on top of it, and references `code-workflow` for the gate instead of restating it.
+
 ## Core Rules
 
 1. Do not skip directly from idea to implementation for medium or large tasks. Establish scope, review the spec, review the plan, then implement.
@@ -65,13 +67,17 @@ Non-trivial work includes any API or DTO change, route or permission change, dat
 
 If the work touches code that is already known to be structurally oversized or owner-mixed, classify that debt payoff as part of the non-trivial slice instead of optional cleanup.
 
-For non-trivial work, implementation-agent self-check is required but insufficient. The pipeline owns the final gate and must require independent review or an explicit review pass, then fix material findings and re-run impacted verification.
-When the implementation was produced in the current session, do not perform that gate review in the same implementation context.
-For non-trivial work, the default is also the requirement: the gate review must run in a separate subagent or an equivalently independent context. Same-context review may count as self-check only, never as the independent gate.
-For non-trivial work under this pipeline, treat the minimum necessary independent review subagent(s) as already authorized by default unless the user explicitly forbids delegation.
-Do not stop to ask again for permission to spawn that reviewer. Non-trivial pipeline gating already authorizes the delegation needed to satisfy the review gate.
-If tool policy or an explicit user restriction prevents spawning the independent reviewer, stop and state that the review gate is still unmet. Do not archive same-context review as if it satisfied the independent review requirement.
-If the repository uses `code-workflow`, map this requirement onto that workflow explicitly: `completion-full` is self-check, then the independent review gate runs, and only after that can `workflow-governance` / final handoff be treated as completion-ready.
+For non-trivial work, implementation-agent self-check is necessary but never sufficient: an independent review gate must pass before handoff. The gate policy is defined once in the Independent Review Gate section below, and is owned by `code-workflow` when the repository uses it.
+
+## Independent Review Gate
+
+For non-trivial work, the implementing context's self-check never satisfies completion. The gate review must run in a separate subagent or an equivalently independent context; same-context review counts only as self-check.
+
+- The minimum necessary independent reviewer is authorized by default. Do not pause to ask again for delegation permission unless the user explicitly forbade it.
+- If tool policy or an explicit user restriction blocks spawning the reviewer, stop and state that the gate is unmet. Never archive same-context review as if it met this gate.
+- After the gate passes, fix material findings and re-run impacted verification.
+
+When the repository uses `code-workflow`, this gate is owned there and maps onto its order: `completion-full` is self-check, the independent review gate runs next, and only then can `workflow-governance` / final handoff be treated as completion-ready. See the `code-workflow` skill and its `independent-review-protocol.md` for the mechanical contract.
 
 ## Review Evidence Location
 
@@ -299,8 +305,7 @@ Each completed slice gets two angles of review whenever applicable:
 - domain or validation review: product, API, data, testing, UX, or runtime safety as needed
 - archived review evidence for non-trivial gates, following the Review Evidence Location policy
 
-For non-trivial work, at least the gate review must be performed by a separate subagent or an equivalently independent context. The implementing agent may add self-review notes, but those notes do not satisfy this stage by themselves.
-When the user asked to use this pipeline or equivalent staged workflow, trigger that reviewer automatically instead of reinterpreting the request as "pipeline without delegation."
+For non-trivial work, the gate review here follows the Independent Review Gate section: run it in a separate context, and archive evidence per the Review Evidence Location policy. The implementing agent may add self-review notes, but those notes do not satisfy this stage by themselves.
 
 If review rejects the slice, revise the slice and review it again.
 
@@ -333,8 +338,7 @@ Focus on:
 
 If the change touched a known structural-debt surface and that debt is still present, this stage must fail. Do not downgrade that condition into residual risk or future follow-up.
 
-For non-trivial work, this final gate must cite the independent reviewer context explicitly: subagent id, review worktree if different, or another concrete independent review boundary. If that evidence is missing, the pipeline is not complete.
-If the active tool environment allows subagents and the user asked for this pipeline, missing reviewer dispatch is a pipeline execution error. Fix it by dispatching the reviewer instead of downgrading to same-context review.
+For non-trivial work, this final gate must cite the independent reviewer context explicitly (subagent id, review worktree, or another concrete independent boundary) per the Independent Review Gate section. Missing reviewer evidence means the pipeline is not complete; fix it by dispatching the reviewer, not by downgrading to same-context review.
 
 ### 12) Release notes or handoff
 
