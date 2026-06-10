@@ -47,7 +47,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ "$check_mode" -eq 1 ]]; then
-  exec bash "$HOME/.agents/harness/workflow-sync-check.sh" "$repo_root" "$workflow_name"
+  exec bash "${AGENTS_HOME:-$HOME/.agents}/harness/workflow-sync-check.sh" "$repo_root" "$workflow_name"
 fi
 
-exec bash "$HOME/.agents/harness/workflow-installer.sh" "$repo_root" "$workflow_name" "${extra_args[@]}"
+exec bash "${AGENTS_HOME:-$HOME/.agents}/harness/workflow-installer.sh" "$repo_root" "$workflow_name" ${extra_args[@]+"${extra_args[@]}"}

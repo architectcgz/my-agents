@@ -20,7 +20,7 @@ repo_root="$1"
 workflow_name="$2"
 shift 2
 
-workflow_root="/home/azhi/.agents/harness/workflows/$workflow_name"
+workflow_root="${AGENTS_HOME:-$HOME/.agents}/harness/workflows/$workflow_name"
 workflow_script="$workflow_root/workflow.sh"
 
 if [[ ! -d "$workflow_root" ]]; then
