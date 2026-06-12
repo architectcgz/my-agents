@@ -92,13 +92,25 @@ declare -a slice_order
 
 current_slice=""
 while IFS= read -r line; do
-  if [[ "$line" =~ ^-\ Task\ Slug:\ \`([^\`]+)\` ]]; then
-    current_slice="${BASH_REMATCH[1]}"
-    slice_order+=("$current_slice")
-  elif [[ -n "$current_slice" && "$line" =~ ^-\ Status:\ \`([^\`]+)\` ]]; then
-    slice_status["$current_slice"]="${BASH_REMATCH[1]}"
-  elif [[ -n "$current_slice" && "$line" =~ ^-\ Depends\ On:\ \`([^\`]+)\` ]]; then
-    slice_depends["$current_slice"]="${BASH_REMATCH[1]}"
+  # Extract task slug
+  if [[ "$line" =~ ^-\ Task\ Slug: ]]; then
+    current_slice=$(echo "$line" | sed -n 's/^- Task Slug: `\([^`]*\)`.*$/\1/p')
+    if [[ -n "$current_slice" ]]; then
+      slice_order+=("$current_slice")
+    fi
+  # Extract status
+  elif [[ -n "$current_slice" && "$line" =~ ^-\ Status: ]]; then
+    status=$(echo "$line" | sed -n 's/^- Status: `\([^`]*\)`.*$/\1/p')
+    if [[ -n "$status" ]]; then
+      slice_status["$current_slice"]="$status"
+    fi
+  # Extract depends on with backticks
+  elif [[ -n "$current_slice" && "$line" =~ ^-\ Depends\ On:\ \` ]]; then
+    deps=$(echo "$line" | sed -n 's/^- Depends On: `\([^`]*\)`.*$/\1/p')
+    if [[ -n "$deps" ]]; then
+      slice_depends["$current_slice"]="$deps"
+    fi
+  # Extract depends on without backticks (无)
   elif [[ -n "$current_slice" && "$line" =~ ^-\ Depends\ On:\ 无 ]]; then
     slice_depends["$current_slice"]="无"
   fi
@@ -137,9 +149,9 @@ for slice in "${slice_order[@]}"; do
   gate_status="$(get_gate_status "$slice")"
 
   case "$status" in
-    completed) ((completed++)) ;;
-    in-progress) ((in_progress++)) ;;
-    not-started) ((not_started++)) ;;
+    completed) completed=$((completed + 1)) ;;
+    in-progress) in_progress=$((in_progress + 1)) ;;
+    not-started) not_started=$((not_started + 1)) ;;
   esac
 
   if [[ "$quiet" -eq 0 ]]; then
