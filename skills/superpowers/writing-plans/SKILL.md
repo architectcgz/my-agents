@@ -19,7 +19,7 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 Resolve the plan directory in this order:
 
-1. **Default (exploratory plans)**: `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`
+1. **Default (exploratory plans)**: `docs/plan/exploratory/YYYY-MM-DD-<feature-name>.md`
    - Use this for quick drafts, technical exploration, prototyping, and temporary investigations
    - Does not require project to declare this location
    - Short lifecycle, can be deleted after completion
@@ -29,18 +29,18 @@ Resolve the plan directory in this order:
    - The task is structural, cross-module, or requires formal review and task gate binding
    - The plan will be tracked through code-workflow with a task slug and startup gate
 
-3. **Fallback for projects with existing `docs/plan/` but no explicit formal marker**: 
-   - If the project has a `docs/plan/` directory and `docs/plan/README.md` that clearly distinguishes formal vs exploratory plans, follow that structure
-   - Otherwise, default to `docs/superpowers/plans/` for safety
+3. **Fallback for projects without explicit structure**: 
+   - If the project has neither `docs/plan/exploratory/` nor a formal plan marker, fall back to `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md` for backward compatibility
+   - Otherwise, default to `docs/plan/exploratory/`
 
 **Decision criteria:**
 
 Ask yourself: "Is this a formal, structural change that will go through code-workflow with task gates and formal review?"
-- **Yes** → Use project's formal plan location (if defined)
-- **No** → Use `docs/superpowers/plans/`
-- **Unsure** → Use `docs/superpowers/plans/` and mention that it can be promoted to formal plan if needed
+- **Yes** → Use project's formal plan location (typically `docs/plan/impl-plan/`)
+- **No** → Use `docs/plan/exploratory/`
+- **Unsure** → Use `docs/plan/exploratory/` and mention that it can be promoted to formal plan if needed
 
-Always report the actual saved path. When using `docs/superpowers/plans/`, briefly note: "This is an exploratory plan. If it evolves into a formal implementation, it should be promoted to the project's formal plan directory."
+Always report the actual saved path. When using `docs/plan/exploratory/`, briefly note: "This is an exploratory plan. If it evolves into a formal implementation, it should be promoted to the project's formal plan directory."
 
 ## Scope Check
 
