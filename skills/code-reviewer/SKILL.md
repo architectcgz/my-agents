@@ -43,14 +43,13 @@ Review for risk reduction, not for style theater.
 4. For frontend UI diffs that add or change visible copy, read `references/frontend-ui-copy-review.md`.
 5. For frontend architecture reviews, read `frontend/architecture-review.md`.
 6. Check whether the diff grows already oversized files, components, services, or functions in a way that increases ownership ambiguity, hides state flow, or makes tests weaker than the behavior.
-7. If the diff touches a known oversized or owner-mixed surface at all, explicitly decide whether the change closes that debt. If not, block the review instead of recording it only as follow-up debt.
-8. For frontend diffs, explicitly check route views, SFCs, composables, stores, forms, dialogs, async handlers, and visible workflow ownership.
-9. For backend diffs, explicitly check handlers, services, repositories, transactions, background work, config, integrations, and DTO or API contracts.
-10. Ask "how would a senior maintainer implement this after reading the surrounding code?" Compare against the submitted diff for ownership, simplicity, error handling, contracts, tests, and future extension cost.
-11. Write findings in priority order with impact, fix direction, and whether the finding blocks completion.
-12. For material findings, state the expected re-review or re-validation evidence.
-13. Keep subjective preferences out of blocker comments unless they hide a real maintenance or correctness cost.
-14. For independent reviews that gate non-trivial work, archive the review result using the Review Archive policy below.
+7. If the diff touches a known oversized or owner-mixed surface at all, apply Guardrail 13: explicitly decide whether the change closes that debt, and block the review if it does not.
+8. For frontend or backend diffs, load `references/technical-risk-checks.md` for the surface-specific scrutiny points (frontend: route views, SFCs, composables, stores, async handlers, lifecycle cleanup; backend: handlers, services, repositories, transactions, background work, config, integrations, DTO/API contracts).
+9. Ask "how would a senior maintainer implement this after reading the surrounding code?" Compare against the submitted diff for ownership, simplicity, error handling, contracts, tests, and future extension cost.
+10. Write findings in priority order with impact, fix direction, and whether the finding blocks completion.
+11. For material findings, state the expected re-review or re-validation evidence.
+12. Keep subjective preferences out of blocker comments unless they hide a real maintenance or correctness cost.
+13. For independent reviews that gate non-trivial work, archive the review result using the Review Archive policy below.
 
 ## When Used As The code-workflow Gate Reviewer
 
@@ -107,11 +106,9 @@ Review archive files must include:
 - `references/frontend-ui-copy-review.md`
   Read when reviewing frontend UI copy, helper prose, dashboard text, empty states, or page/workspace descriptions.
 - `frontend/architecture-review.md`
-  Read when the review target is frontend architecture, ownership, slice boundaries, state flow, or UI-domain decomposition.
+  Read when the review target is frontend architecture, ownership, slice boundaries, state flow, or UI-domain decomposition. This file is a standalone, paste-ready prompt with its own `P0/P1/P2` scale; when driving the review from this skill, map its levels back to the `Blocker/Major/Minor/Nit` scale below instead of mixing both.
 - `references/review-communication.md`
   Read before writing review feedback so comments stay precise, constructive, and properly prioritized.
-- `references/ctf-current-review-status-checks.md`
-  Read when reviewing CTF repo changes or review documents that may reintroduce recently fixed backend/frontend review debt.
 - `~/.agents/harness/workflows/code-workflow/independent-review-protocol.md`
   Read when the review is acting as the final `code-workflow` gate for a non-trivial task.
 
@@ -124,7 +121,6 @@ Review archive files must include:
 - Gate verdict for non-trivial work: pass, pass with minor issues, or blocked.
 - Material findings list with required fix and re-validation direction.
 - Code quality risks include ownership ambiguity, oversized files, weak decomposition, hidden state flow, insufficient tests for the new shape, and hard-to-review complexity.
-- Do not downgrade unresolved debt in a touched known oversized or owner-mixed surface into a suggestion or residual-risk note; treat it as a blocker until the touched surface is actually converged.
 - Senior implementation assessment: whether the current approach is the simplest maintainable implementation for the requirement, and if not, the concrete lower-risk alternative.
 - Archive path for independent non-trivial review gates, or an explicit reason no archive was created.
 - If no material findings are discovered, say so explicitly and note residual risk, assumptions, or validation gaps.
