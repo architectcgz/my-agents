@@ -1,6 +1,6 @@
-# __EPIC_TITLE__ Epic
+# __TASK_GROUP_TITLE__ Task Group
 
-**Epic Slug:** `__EPIC_SLUG__`
+**Task Group Slug:** `__TASK_GROUP_SLUG__`
 
 **Goal:** TODO
 
@@ -53,7 +53,7 @@ Slice 1 (基础设施)
 
 ## Integration Validation
 
-整个 epic 完成后的集成验证：
+整个 task-group 完成后的集成验证：
 
 - [ ] 集成测试 1:
 - [ ] 集成测试 2:
@@ -63,7 +63,7 @@ Slice 1 (基础设施)
 
 ## Completion Criteria
 
-Epic 视为完成的条件：
+Task Group 视为完成的条件：
 
 - [ ] 所有 slice 的 implementation plan 已归档
 - [ ] 所有 slice 的代码已合并到 main
@@ -82,6 +82,6 @@ Epic 视为完成的条件：
 
 ## Notes
 
-- Epic-level decisions:
+- Task Group-level decisions:
 - Cross-slice coordination:
 - Known risks:

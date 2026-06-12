@@ -83,7 +83,7 @@ After merge / final integration:
 1. Archive task artifacts so the startup gate moves to `ready_to_merge`.
 2. Merge the task branch or otherwise integrate the task head.
 3. Run `bash harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh` from the integration worktree to safely close the dedicated task worktree.
-4. The cleanup step marks the gate `archived`; dedicated task worktrees are removed only when they are clean and already merged.
+4. The cleanup step marks the gate `archived`; dedicated task worktrees are removed only when they are clean and already merged, and the merged `task/<slug>` branch is deleted by default unless you explicitly keep it.
 
 Startup gate status model:
 

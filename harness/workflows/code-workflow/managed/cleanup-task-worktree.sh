@@ -4,13 +4,15 @@ set -euo pipefail
 usage() {
   cat <<'EOH' >&2
 Usage:
-  bash harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh [--task-slug <slug>] [--branch <branch>] [--worktree <path>] [--merged-into <git-ref>] [--delete-branch] [--dry-run]
+  bash harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh [--task-slug <slug>] [--branch <branch>] [--worktree <path>] [--merged-into <git-ref>] [--keep-branch] [--dry-run]
 
 Description:
   Safely close a dedicated task worktree after the task has already been archived
   and merged. By default, the script requires the task startup gate to be in
   ready_to_merge status, the worktree to be clean, and the task HEAD to already
-  be merged into the target ref (default: HEAD).
+  be merged into the target ref (default: HEAD). For dedicated task branches,
+  the cleanup also deletes the merged task branch by default; pass --keep-branch
+  to preserve that branch reference.
 
   When the task was executed directly in the main worktree, this script will not
   remove the current repository root. It only updates the local startup gate to
@@ -25,7 +27,7 @@ task_slug=""
 branch_name=""
 worktree_path=""
 merged_into_ref="HEAD"
-delete_branch=0
+delete_branch=1
 dry_run=0
 
 while [[ $# -gt 0 ]]; do
@@ -50,8 +52,8 @@ while [[ $# -gt 0 ]]; do
       merged_into_ref="$2"
       shift 2
       ;;
-    --delete-branch)
-      delete_branch=1
+    --keep-branch)
+      delete_branch=0
       shift
       ;;
     --dry-run)
@@ -230,7 +232,9 @@ if [[ "$dry_run" -eq 1 ]]; then
     printf '%s\n' "- action: remove dedicated worktree"
   fi
   if [[ "$delete_branch" -eq 1 ]]; then
-    printf '%s\n' "- action: delete branch after cleanup"
+    printf '%s\n' "- action: delete merged task branch after cleanup"
+  else
+    printf '%s\n' "- action: keep branch reference after cleanup"
   fi
   exit 0
 fi
@@ -279,4 +283,6 @@ else
 fi
 if [[ "$delete_branch" -eq 1 ]]; then
   printf '%s\n' "- deleted branch: $branch_name"
+else
+  printf '%s\n' "- kept branch: $branch_name"
 fi

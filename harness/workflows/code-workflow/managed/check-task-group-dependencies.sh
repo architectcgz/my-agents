@@ -5,14 +5,14 @@ set -euo pipefail
 usage() {
   cat <<'EOF' >&2
 Usage:
-  bash scripts/check-epic-dependencies.sh [epic-slug]
-  bash scripts/check-epic-dependencies.sh --list
+  bash scripts/check-group-dependencies.sh [group-slug]
+  bash scripts/check-group-dependencies.sh --list
 
 Description:
-  Check epic slice dependencies and overall progress.
+  Check task group slice dependencies and overall progress.
 
 Options:
-  --list    List all epic index files
+  --list    List all task group index files
   --quiet   Only output on errors
 
 Exit codes:
@@ -27,7 +27,7 @@ SESSION_GATES_DIR="$REPO_ROOT/.harness/session-gates"
 
 list_mode=0
 quiet=0
-epic_slug=""
+group_slug=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -49,12 +49,12 @@ while [[ $# -gt 0 ]]; do
       exit 1
       ;;
     *)
-      if [[ -n "$epic_slug" ]]; then
-        echo "FAIL: epic slug already set to $epic_slug" >&2
+      if [[ -n "$group_slug" ]]; then
+        echo "FAIL: group slug already set to $group_slug" >&2
         usage
         exit 1
       fi
-      epic_slug="$1"
+      group_slug="$1"
       shift
       ;;
   esac
@@ -65,30 +65,30 @@ if [[ "$list_mode" -eq 1 ]]; then
     echo "FAIL: plan directory not found: $PLAN_DIR" >&2
     exit 1
   fi
-  # List both old-style flat EPIC files and new-style subdirs with EPIC.md
-  find "$PLAN_DIR" -maxdepth 1 -type f -name "*-EPIC.md" 2>/dev/null | sort
-  find "$PLAN_DIR" -maxdepth 2 -type f -name "EPIC.md" 2>/dev/null | sort
+  # List both old-style flat GROUP files and new-style subdirs with INDEX.md
+  find "$PLAN_DIR" -maxdepth 1 -type f -name "*-INDEX.md" 2>/dev/null | sort
+  find "$PLAN_DIR" -maxdepth 2 -type f -name "INDEX.md" 2>/dev/null | sort
   exit 0
 fi
 
-if [[ -z "$epic_slug" ]]; then
+if [[ -z "$group_slug" ]]; then
   usage
   exit 1
 fi
 
-# Support both new structure (epic-slug/EPIC.md) and old flat structure (epic-slug-EPIC.md)
-if [[ -f "$PLAN_DIR/${epic_slug}/EPIC.md" ]]; then
-  epic_index="$PLAN_DIR/${epic_slug}/EPIC.md"
-  epic_dir="$PLAN_DIR/${epic_slug}"
-elif [[ -f "$PLAN_DIR/${epic_slug}-EPIC.md" ]]; then
-  epic_index="$PLAN_DIR/${epic_slug}-EPIC.md"
-  epic_dir="$PLAN_DIR"
+# Support both new structure (group-slug/INDEX.md) and old flat structure (group-slug-INDEX.md)
+if [[ -f "$PLAN_DIR/${group_slug}/INDEX.md" ]]; then
+  group_index="$PLAN_DIR/${group_slug}/INDEX.md"
+  group_dir="$PLAN_DIR/${group_slug}"
+elif [[ -f "$PLAN_DIR/${group_slug}-INDEX.md" ]]; then
+  group_index="$PLAN_DIR/${group_slug}-INDEX.md"
+  group_dir="$PLAN_DIR"
 else
-  echo "FAIL: epic index not found: tried $PLAN_DIR/${epic_slug}/EPIC.md and $PLAN_DIR/${epic_slug}-EPIC.md" >&2
+  echo "FAIL: task group index not found: tried $PLAN_DIR/${group_slug}/INDEX.md and $PLAN_DIR/${group_slug}-INDEX.md" >&2
   exit 1
 fi
 
-# Parse epic index and extract slices
+# Parse task group index and extract slices
 # Format: "- Task Slug: `<slug>`"
 # Status line: "- Status: `<status>`"
 # Depends On line: "- Depends On: `<deps>`" or "- Depends On: 无"
@@ -121,10 +121,10 @@ while IFS= read -r line; do
   elif [[ -n "$current_slice" && "$line" =~ ^-\ Depends\ On:\ 无 ]]; then
     slice_depends["$current_slice"]="无"
   fi
-done < "$epic_index"
+done < "$group_index"
 
 if [[ "${#slice_order[@]}" -eq 0 ]]; then
-  echo "FAIL: no slices found in epic index: $epic_index" >&2
+  echo "FAIL: no slices found in task group index: $group_index" >&2
   exit 1
 fi
 
@@ -144,8 +144,8 @@ in_progress=0
 not_started=0
 
 if [[ "$quiet" -eq 0 ]]; then
-  echo "Epic: $epic_slug"
-  echo "Index: $epic_index"
+  echo "Task Group: $group_slug"
+  echo "Index: $group_index"
   echo ""
   echo "Slices:"
 fi
@@ -205,12 +205,12 @@ if [[ "$quiet" -eq 0 ]]; then
 fi
 
 if [[ "$has_errors" -eq 1 ]]; then
-  echo "FAIL: epic dependency violations detected" >&2
+  echo "FAIL: task group dependency violations detected" >&2
   exit 1
 fi
 
 if [[ "$quiet" -eq 0 ]]; then
-  echo "PASS: epic dependencies satisfied"
+  echo "PASS: task group dependencies satisfied"
 fi
 
 exit 0

@@ -167,24 +167,24 @@ read_managed_source() {
 CHECK_TASK_INTAKE="$(with_managed_header shell "$(read_managed_source "check-task-intake.sh")")"
 START_IMPLEMENTATION="$(with_managed_header shell "$(read_managed_source "start-implementation.sh")")"
 CHECK_STARTUP_GATE_SH="$(with_managed_header shell "$(read_managed_source "check-startup-gate.sh")")"
-CHECK_EPIC_DEPENDENCIES="$(with_managed_header shell "$(read_managed_source "check-epic-dependencies.sh")")"
+CHECK_TASK_GROUP_DEPENDENCIES="$(with_managed_header shell "$(read_managed_source "check-task-group-dependencies.sh")")"
 RUN_WORKFLOW_STAGE="$(with_managed_header shell "$(read_managed_source "run-workflow-stage.sh")")"
 ARCHIVE_TASK_ARTIFACTS="$(with_managed_header shell "$(read_managed_source "archive-task-artifacts.sh")")"
 CLEANUP_TASK_WORKTREE="$(with_managed_header shell "$(read_managed_source "cleanup-task-worktree.sh")")"
 CHECK_STARTUP_GATE_PY="$(with_managed_header python "$(read_managed_source "check_startup_gate.py")")"
 IMPLEMENTATION_PLAN_SKELETON="$(with_managed_header markdown "$(read_managed_source "implementation-plan-skeleton.md")")"
-EPIC_INDEX_SKELETON="$(with_managed_header markdown "$(read_managed_source "epic-index-skeleton.md")")"
+TASK_GROUP_INDEX_SKELETON="$(with_managed_header markdown "$(read_managed_source "task-group-index-skeleton.md")")"
 
 write_file "$repo_root/scripts/check-task-intake.sh" "$CHECK_TASK_INTAKE"
 write_file "$repo_root/scripts/start-implementation.sh" "$START_IMPLEMENTATION"
 write_file "$repo_root/scripts/check-startup-gate.sh" "$CHECK_STARTUP_GATE_SH"
-write_file "$repo_root/scripts/check-epic-dependencies.sh" "$CHECK_EPIC_DEPENDENCIES"
+write_file "$repo_root/scripts/check-task-group-dependencies.sh" "$CHECK_TASK_GROUP_DEPENDENCIES"
 write_file "$repo_root/harness/workflow-plugins/code-workflow/run_workflow_stage.sh" "$RUN_WORKFLOW_STAGE"
 write_file "$repo_root/harness/workflow-plugins/code-workflow/archive_task_artifacts.sh" "$ARCHIVE_TASK_ARTIFACTS"
 write_file "$repo_root/harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh" "$CLEANUP_TASK_WORKTREE"
 write_file "$repo_root/harness/checks/check_startup_gate.py" "$CHECK_STARTUP_GATE_PY"
 write_file "$repo_root/harness/templates/implementation-plan-skeleton.md" "$IMPLEMENTATION_PLAN_SKELETON"
-write_file "$repo_root/harness/templates/epic-index-skeleton.md" "$EPIC_INDEX_SKELETON"
+write_file "$repo_root/harness/templates/task-group-index-skeleton.md" "$TASK_GROUP_INDEX_SKELETON"
 append_gitignore_line "/.harness/session-gates/"
 
 if [[ "$check_mode" -eq 1 ]]; then
@@ -212,7 +212,7 @@ else
     "$repo_root/scripts/check-task-intake.sh" \
     "$repo_root/scripts/start-implementation.sh" \
     "$repo_root/scripts/check-startup-gate.sh" \
-    "$repo_root/scripts/check-epic-dependencies.sh" \
+    "$repo_root/scripts/check-task-group-dependencies.sh" \
     "$repo_root/harness/workflow-plugins/code-workflow/run_workflow_stage.sh" \
     "$repo_root/harness/workflow-plugins/code-workflow/archive_task_artifacts.sh" \
     "$repo_root/harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh" \

@@ -11,8 +11,8 @@
 ## Task Metadata
 
 - Task Slug: `__TASK_SLUG__`
-- Parent Epic: `无` <!-- 独立任务写"无"；epic slice 写 parent epic slug -->
-- Slice Index: `-` <!-- 独立任务写"-"；epic slice 写 "1/5"、"2/5" -->
+- Parent Task Group: `无` <!-- 独立任务写"无"；task group slice 写 parent group slug -->
+- Slice Index: `-` <!-- 独立任务写"-"；task group slice 写 "1/5"、"2/5" -->
 - Depends On: `无` <!-- 前置依赖 task slug，多个用逗号分隔；无依赖写"无" -->
 - Started At: `__STARTED_AT__`
 - Worktree: `__WORKTREE_PATH__`
