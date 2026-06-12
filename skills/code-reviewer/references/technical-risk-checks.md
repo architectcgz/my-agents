@@ -17,6 +17,11 @@ Read this file when the review needs hard technical scrutiny.
 - Look for hidden regressions introduced by changing shared utilities, contracts, or data shape
 - Check exception handling boundaries, catch-all blocks, and graceful degradation paths
 - Ask whether failures become actionable errors, silent corruption, or undefined partial success
+- Boundary condition specifics:
+  - Array/slice access: check length before indexing (e.g., `arr[0]` requires `len(arr) > 0`, `arr[len-1]` requires `len > 0`)
+  - Collection queries: check `.find()`, `.filter()[0]`, map lookups, and optional unwrapping for missing-item cases before accessing properties
+  - String operations: verify `.split()` result length matches expected parts before indexing (e.g., `path.split('/')[2]` when path may be shorter)
+  - Pagination: verify `offset + limit` does not exceed collection size or produce invalid ranges
 
 ## Architecture and design
 
@@ -40,6 +45,24 @@ Read this file when the review needs hard technical scrutiny.
 - Look for race conditions, duplicate execution paths, lost updates, or stale reads
 - Verify retry behavior, timeout behavior, and idempotency when operations can run more than once
 - In frontend reviews, treat async handlers, route watchers, tab switches, form submits, polling, dialogs, and store writes as state-safety surfaces. Check stale responses, duplicate actions, unhandled rejections, and lifecycle cleanup.
+- Concurrency control specifics:
+  - Backend: check for optimistic locking (version fields), compare-and-swap, or `WHERE` conditions that prevent lost updates (e.g., inventory decrement should use `WHERE stock >= quantity`, not unconditional `stock = stock - quantity`)
+  - Backend: verify that SELECT-then-UPDATE sequences use transactions with appropriate isolation levels or row locks to prevent race conditions
+  - Frontend: check for in-flight guards on user-triggered actions reachable through multiple UI paths (double-click, rapid navigation, concurrent tabs)
+  - Frontend: verify that concurrent async operations (polling + manual refresh, multiple tabs updating the same store) handle response ordering and do not let stale data overwrite fresh data
+
+## Resource lifecycle and cleanup
+
+- Backend: DB connections, HTTP clients, file handles, goroutines, timers, and streams must be released in defer/finally or explicit cleanup paths
+  - Check whether `resp.Body.Close()` is deferred after `http.Get/Post`
+  - Check whether goroutines have context cancellation or wait group coordination before process exit
+  - Check whether file handles are closed even when read/write returns an error
+  - Check whether background timers or tickers are stopped when their owner context is cancelled
+- Frontend: event listeners, intervals, observers, and store subscriptions must be cleaned up in `onUnmounted` or equivalent lifecycle hooks
+  - Check whether `setInterval`, `setTimeout`, `addEventListener`, `IntersectionObserver`, `ResizeObserver`, `MutationObserver` are cleared or disconnected on component unmount
+  - Check whether Pinia store subscriptions, route watchers, and custom event bus listeners are unsubscribed
+  - Check whether WebSocket connections, SSE streams, or polling loops are closed when the component or view is destroyed
+- Ask whether repeated mount/unmount cycles (e.g., dialogs, tabs, conditional routes) will accumulate leaked resources
 
 ## Security
 

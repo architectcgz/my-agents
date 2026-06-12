@@ -101,6 +101,8 @@ Review archive files must include:
   Read for maintainability, naming, complexity, logging, observability, and hard-coding checks.
 - `references/operational-readiness.md`
   Read when the change touches config, rollout, migrations, retries, timeouts, feature flags, or rollback safety.
+- `references/production-readiness-checks.md`
+  Read when the change affects initialization order, observability, backward compatibility, configuration validation, or user-facing error handling.
 - `references/test-strategy-review.md`
   Read when tests changed, are missing, or look suspiciously shallow.
 - `references/frontend-ui-copy-review.md`
