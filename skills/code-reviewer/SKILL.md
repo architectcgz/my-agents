@@ -37,19 +37,20 @@ Review for risk reduction, not for style theater.
 
 ## Workflow
 
-1. Read the actual diff first, then load only the relevant reference files from `references/`.
-2. Identify the dominant risk area: correctness, architecture, security, test strategy, engineering standards, or review communication.
-3. Check changed code in local context, not line-by-line in isolation.
-4. For frontend UI diffs that add or change visible copy, read `references/frontend-ui-copy-review.md`.
-5. For frontend architecture reviews, read `frontend/architecture-review.md`.
-6. Check whether the diff grows already oversized files, components, services, or functions in a way that increases ownership ambiguity, hides state flow, or makes tests weaker than the behavior.
-7. If the diff touches a known oversized or owner-mixed surface at all, apply Guardrail 13: explicitly decide whether the change closes that debt, and block the review if it does not.
-8. For frontend or backend diffs, load `references/technical-risk-checks.md` for the surface-specific scrutiny points (frontend: route views, SFCs, composables, stores, async handlers, lifecycle cleanup; backend: handlers, services, repositories, transactions, background work, config, integrations, DTO/API contracts).
-9. Ask "how would a senior maintainer implement this after reading the surrounding code?" Compare against the submitted diff for ownership, simplicity, error handling, contracts, tests, and future extension cost.
-10. Write findings in priority order with impact, fix direction, and whether the finding blocks completion.
-11. For material findings, state the expected re-review or re-validation evidence.
-12. Keep subjective preferences out of blocker comments unless they hide a real maintenance or correctness cost.
-13. For independent reviews that gate non-trivial work, archive the review result using the Review Archive policy below.
+1. Read the actual diff first. Before loading references, establish the review context: read module boundaries, existing contracts, recent architecture decisions, test coverage baseline, and any project-specific review requirements (AGENTS.md, CLAUDE.md, docs/architecture/). A checklist without context yields shallow findings.
+2. Load only the relevant reference files from `references/` based on what the diff touches.
+3. Identify the dominant risk area: correctness, architecture, security, test strategy, engineering standards, or review communication.
+4. Check changed code in local context, not line-by-line in isolation.
+5. For frontend UI diffs that add or change visible copy, read `references/frontend-ui-copy-review.md`.
+6. For frontend architecture reviews, read `frontend/architecture-review.md`.
+7. Check whether the diff grows already oversized files, components, services, or functions in a way that increases ownership ambiguity, hides state flow, or makes tests weaker than the behavior.
+8. If the diff touches a known oversized or owner-mixed surface at all, apply Guardrail 13: explicitly decide whether the change closes that debt, and block the review if it does not.
+9. For frontend or backend diffs, load `references/technical-risk-checks.md` for the surface-specific scrutiny points (frontend: route views, SFCs, composables, stores, async handlers, lifecycle cleanup; backend: handlers, services, repositories, transactions, background work, config, integrations, DTO/API contracts).
+10. Ask "how would a senior maintainer implement this after reading the surrounding code?" Compare against the submitted diff for ownership, simplicity, error handling, contracts, tests, and future extension cost.
+11. Write findings in priority order with impact, fix direction, and whether the finding blocks completion.
+12. For material findings, state the expected re-review or re-validation evidence.
+13. Keep subjective preferences out of blocker comments unless they hide a real maintenance or correctness cost.
+14. For independent reviews that gate non-trivial work, archive the review result using the Review Archive policy below.
 
 ## When Used As The code-workflow Gate Reviewer
 
@@ -134,6 +135,8 @@ Review archive files must include:
   Read when the change affects initialization order, observability, backward compatibility, configuration validation, or user-facing error handling.
 - `references/test-strategy-review.md`
   Read when tests changed, are missing, or look suspiciously shallow.
+- `references/security-review-checklist.md`
+  Read when the change affects authentication, authorization, input handling, secrets management, session handling, or any trust boundary. Follows OWASP Top 10 Proactive Controls with detailed checks for injection, XSS, CSRF, encryption, access control, logging, and secure error handling.
 - `references/frontend-ui-copy-review.md`
   Read when reviewing frontend UI copy, helper prose, dashboard text, empty states, or page/workspace descriptions.
 - `frontend/architecture-review.md`

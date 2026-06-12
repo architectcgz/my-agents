@@ -12,6 +12,7 @@ Read this file when judging maintainability, readability, and operational qualit
 - Prefer small, coherent units with clear ownership over sprawling helper chains
 - Flag files whose size now blocks effective review. As a working signal, scrutinize Vue SFCs or route views above roughly 700 lines, backend services or repositories above roughly 800 lines, and functions above roughly 80 lines when the diff adds more behavior to them. These are review triggers, not automatic blockers.
 - When a large file is touched, check whether the diff should extract a component, composable, helper, query object, mapper, or smaller service around a real ownership boundary.
+- For quantitative complexity assessment, consider running static analysis tools (e.g., `gocyclo`, `eslint-plugin-complexity`, SonarQube) to flag functions with cyclomatic complexity >10 or maintainability index <20. Human review should then focus on whether the complexity is justified by the problem domain or can be decomposed.
 
 ## Maintainability
 
@@ -22,6 +23,7 @@ Read this file when judging maintainability, readability, and operational qualit
 - Compare the implementation to the surrounding architecture as a senior maintainer would. Prefer recommendations that improve ownership, explicit contracts, failure handling, testability, and future change cost.
 - When suggesting a more elegant implementation, name the concrete lower-risk shape: move state to the route owner, extract a composable for one async workflow, split a repository port by capability, add a mapper boundary, introduce a small domain object, or remove an unnecessary abstraction.
 - Do not recommend broad rewrites just because the reviewer would write it differently. The alternative must be tied to a specific bug risk, reviewability problem, coupling cost, or testability gap.
+- Check cognitive load: functions that mix multiple abstraction levels (e.g., raw DB queries + high-level business rules + UI formatting in one body), or nest control flow deeper than 3 levels, impose high mental overhead even when cyclomatic complexity is moderate. Flag when reading the function requires holding more than 3 context switches in working memory.
 
 ## Logging and observability
 

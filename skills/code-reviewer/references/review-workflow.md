@@ -26,7 +26,8 @@ Read this file when starting a review or deciding how strong the review should b
 
 - Do not review only the touched lines if the change clearly affects surrounding invariants.
 - Do not expand into unrelated code cleanup unless it directly affects the review risk.
-- If the diff is too large, call that out and focus on the highest-risk surfaces first.
+- If the diff exceeds 400 lines or touches more than 8 files without a clear refactoring or migration boundary, ask whether the change can be split into smaller, logically independent units before proceeding with deep review. Large diffs invite shallow review and increase the risk of missing critical issues.
+- If the diff is too large to split, call that out and focus on the highest-risk surfaces first.
 
 ## Evidence discipline
 
