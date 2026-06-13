@@ -8,6 +8,7 @@ This directory is the project documentation entry point. It points to current so
 2. Use this index to find the relevant current source of truth.
 3. Read the nearest parent index for the target documentation area when it exists.
 4. Verify facts against code, contracts, configuration, tests, or operations records before updating current documentation.
+5. Keep process evidence separate from current facts unless the stable conclusion is promoted into the owning source-of-truth document.
 
 ## Current Source-Of-Truth Map
 

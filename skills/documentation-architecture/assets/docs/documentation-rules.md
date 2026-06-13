@@ -4,6 +4,14 @@
 
 This file defines documentation ownership, placement, pre-edit reading, new path registration, and validation rules for this project.
 
+## Core Principles
+
+- Documentation is durable project memory, not current-task scratch space.
+- Each document should have one primary role: current fact, draft/design, implementation plan, review evidence, operations guide, external reference, agent feedback, or harness asset.
+- Entry-point documents route readers; they do not duplicate long-form rules or owning source-of-truth content.
+- Documentation changes must stay synchronized with code, contracts, scripts, tests, architecture boundaries, and mechanical guardrails.
+- If a stable conclusion replaces an older document, mark the old document as superseded or remove it from active indexes.
+
 ## No Circular References
 
 - This file is the documentation rule source.
@@ -23,6 +31,13 @@ Before creating, moving, deleting, or editing documentation:
 4. Search references to any path being added, moved, renamed, or deleted.
 
 Before writing, classify the change as current fact, draft/design, implementation plan, review evidence, operations guide, external reference, agent feedback, or harness asset. Then identify the owning source of truth, nearest index, stale references, and required mechanical checks.
+
+Answer these before writing:
+
+- What type of document is this?
+- Where is the current source of truth?
+- Is this updating the source of truth, adding navigation, archiving history, or recording process evidence?
+- Does this change require a mechanical check, script, hook, CI rule, or documented manual guardrail?
 
 ## New Path Registration
 
@@ -47,6 +62,8 @@ Validation:
 ```
 
 Do not create a new durable path for current-task scratch state. Use the project scratch or harness location if one exists, then either remove it or promote durable knowledge to the owning source of truth.
+
+If a documentation rule creates a stable guardrail, update the matching script, hook, CI check, or documented manual check in the same change. Do not leave enforceable rules only in prose when the repository already has a guardrail path for that class of rule.
 
 ## Standard Paths
 
@@ -79,6 +96,7 @@ Formal review evidence must identify the exact subject under review:
 - Treat `docs/architecture/` and `docs/contracts/` as current technical facts only after they match code and tests.
 - Treat `docs/spec/` as planning input.
 - Treat `docs/plan/`, `docs/reviews/`, and `docs/reports/` as process history unless promoted into architecture, contracts, or requirements.
+- Process history does not become current fact because it is newest.
 - Keep `docs/README.md` as the index that explains which documents are current and which are historical.
 - If a draft design is adopted, move the stable conclusion into `docs/architecture/` or `docs/contracts/`.
 - If a document is superseded, mark it as superseded or remove it from active indexes.
