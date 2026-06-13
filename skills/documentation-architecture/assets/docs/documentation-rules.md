@@ -64,6 +64,16 @@ Do not create a new durable path for current-task scratch state. Use the project
 - `docs/improvements/`: agent-discovered improvement items and promotion status, not general task backlog.
 - `docs/refs/`: external references, research notes, source material, vendor docs summaries, papers, and copied context that should not be treated as project decisions by itself.
 
+## Review Evidence Rules
+
+Formal review evidence must identify the exact subject under review:
+
+- Use an explicit commit hash, commit range, merge commit, PR, or equivalent immutable artifact.
+- Treat a live worktree diff as draft or precheck input only; do not use it as the final formal review subject unless the reviewed diff is later bound to a commit or commit range.
+- Preserve multiple formal review rounds as separate files with a `round-<n>` suffix, for example `2026-06-13-runtime-node-health-round-1.md` and `2026-06-13-runtime-node-health-round-2.md`.
+- Do not overwrite earlier review rounds with later findings or fixes. A summary or index may link all rounds, but each round remains an immutable process record.
+- If blocker fixes change the reviewed code, record the fix commit or range and run a later review round against that updated subject.
+
 ## Source-Of-Truth Rules
 
 - Treat `docs/architecture/` and `docs/contracts/` as current technical facts only after they match code and tests.

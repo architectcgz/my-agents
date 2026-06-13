@@ -21,7 +21,7 @@ This directory is the project documentation entry point. It points to current so
 ## Process And History
 
 - `docs/plan/`: implementation, migration, rollout, and refactor plans.
-- `docs/reviews/`: review evidence and findings.
+- `docs/reviews/`: review evidence and findings; formal rounds should be bound to commits or equivalent immutable artifacts and kept as separate `round-<n>` files.
 - `docs/reports/`: time-boxed reports, investigation summaries, and status snapshots.
 - `docs/todo/`: actionable backlog, cleanup queues, and unresolved work items.
 - `docs/improvements/`: agent-discovered improvement items and promotion status.
