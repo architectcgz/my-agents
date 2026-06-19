@@ -8,26 +8,30 @@
 
 ## 重要：软链接结构
 
-**关键发现**：`~/.claude/skills` 本身是指向 `~/.agents/skills` 的**父目录级软链接**。
+**关键设计**：`~/.claude/skills` 和 `~/.codex/skills` 都是指向 `~/.agents/skills` 的**父目录级软链接**。
 
 ```bash
+~/.agents/skills/                     # 主体（实体目录）
 ~/.claude/skills -> ~/.agents/skills  # 父目录软链接
-~/.codex/skills/                      # 实体目录
+~/.codex/skills -> ~/.agents/skills   # 父目录软链接
 ```
 
 **创建新 skill 的步骤**：
 
 1. 在主体创建：`mkdir -p ~/.agents/skills/<skill-name>`
-2. **只需为 Codex 创建软链接**：`ln -s ~/.agents/skills/<skill-name> ~/.codex/skills/<skill-name>`
-3. Claude 自动可用（无需任何操作）
+2. **无需任何额外操作** — Claude 和 Codex 自动可用
 
 **容器 skill（如 superpowers）**：
-- 只链接容器本身，不展开子 skill
-- Codex: `~/.codex/skills/superpowers -> ~/.agents/skills/superpowers`
-- Claude: 通过父目录软链接自动访问所有子 skills
+- 只需在 `~/.agents/skills/superpowers/` 创建容器目录
+- 所有子 skills 放在容器内
+- Claude 和 Codex 通过父目录软链接自动访问
+
+**特殊目录**：
+- `~/.codex/skills/.system/` — Codex 系统级 skills（如 skill-creator），保留在实体目录中
+- 项目专属 skills — 放在项目的 `.agents/skills/` 目录中（如 CTF 项目的 `ctf-*` skills）
 
 **工具脚本**：
-- `bash ~/.agents/scripts/setup-skill-links.sh` — 初始化脚本，自动为 Codex 创建所有一级目录的软链接
+- `bash ~/.agents/scripts/setup-skill-links.sh` — 克隆仓库后初始化父目录软链接（已废弃，仅保留用于手动修复）
 
 当前处于迁移期：
 
