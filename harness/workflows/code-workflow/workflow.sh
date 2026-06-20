@@ -171,6 +171,7 @@ CHECK_TASK_GROUP_DEPENDENCIES="$(with_managed_header shell "$(read_managed_sourc
 RUN_WORKFLOW_STAGE="$(with_managed_header shell "$(read_managed_source "run-workflow-stage.sh")")"
 ARCHIVE_TASK_ARTIFACTS="$(with_managed_header shell "$(read_managed_source "archive-task-artifacts.sh")")"
 CLEANUP_TASK_WORKTREE="$(with_managed_header shell "$(read_managed_source "cleanup-task-worktree.sh")")"
+CLEANUP_TASK_WORKTREE_PY="$(with_managed_header python "$(read_managed_source "cleanup_task_worktree.py")")"
 CHECK_STARTUP_GATE_PY="$(with_managed_header python "$(read_managed_source "check_startup_gate.py")")"
 IMPLEMENTATION_PLAN_SKELETON="$(with_managed_header markdown "$(read_managed_source "implementation-plan-skeleton.md")")"
 TASK_GROUP_INDEX_SKELETON="$(with_managed_header markdown "$(read_managed_source "task-group-index-skeleton.md")")"
@@ -182,6 +183,7 @@ write_file "$repo_root/scripts/check-task-group-dependencies.sh" "$CHECK_TASK_GR
 write_file "$repo_root/harness/workflow-plugins/code-workflow/run_workflow_stage.sh" "$RUN_WORKFLOW_STAGE"
 write_file "$repo_root/harness/workflow-plugins/code-workflow/archive_task_artifacts.sh" "$ARCHIVE_TASK_ARTIFACTS"
 write_file "$repo_root/harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh" "$CLEANUP_TASK_WORKTREE"
+write_file "$repo_root/harness/workflow-plugins/code-workflow/cleanup_task_worktree.py" "$CLEANUP_TASK_WORKTREE_PY"
 write_file "$repo_root/harness/checks/check_startup_gate.py" "$CHECK_STARTUP_GATE_PY"
 write_file "$repo_root/harness/templates/implementation-plan-skeleton.md" "$IMPLEMENTATION_PLAN_SKELETON"
 write_file "$repo_root/harness/templates/task-group-index-skeleton.md" "$TASK_GROUP_INDEX_SKELETON"
@@ -216,6 +218,7 @@ else
     "$repo_root/harness/workflow-plugins/code-workflow/run_workflow_stage.sh" \
     "$repo_root/harness/workflow-plugins/code-workflow/archive_task_artifacts.sh" \
     "$repo_root/harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh" \
+    "$repo_root/harness/workflow-plugins/code-workflow/cleanup_task_worktree.py" \
     "$repo_root/harness/checks/check_startup_gate.py"
   rm -f "$repo_root/scripts/archive-task-artifacts.sh"
   mkdir -p "$repo_root/.harness/session-gates"

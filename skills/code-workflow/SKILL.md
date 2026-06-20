@@ -98,6 +98,7 @@ This scaffold provides the generic common pieces:
 - `harness/workflow-plugins/code-workflow/run_workflow_stage.sh`
 - `harness/workflow-plugins/code-workflow/archive_task_artifacts.sh`
 - `harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh`
+- `harness/workflow-plugins/code-workflow/cleanup_task_worktree.py`
 - `harness/checks/check_startup_gate.py`
 - `harness/templates/implementation-plan-skeleton.md`
 - `/.harness/session-gates/` ignore rule

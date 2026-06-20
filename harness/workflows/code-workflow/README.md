@@ -53,6 +53,7 @@ Besides startup-gate and archive assets, the package also owns the shared stage 
 - `harness/workflow-plugins/code-workflow/run_workflow_stage.sh`
 - `harness/workflow-plugins/code-workflow/archive_task_artifacts.sh`
 - `harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh`
+- `harness/workflow-plugins/code-workflow/cleanup_task_worktree.py`
 
 That runner exposes the shared stage names:
 
@@ -82,7 +83,7 @@ After merge / final integration:
 
 1. Archive task artifacts so the startup gate moves to `ready_to_merge`.
 2. Merge the task branch or otherwise integrate the task head.
-3. Run `bash harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh` from the integration worktree to safely close the dedicated task worktree.
+3. Run `bash harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh` from the integration worktree to safely close the dedicated task worktree. The shell entry delegates to the managed Python helper installed beside it.
 4. The cleanup step marks the gate `archived`; dedicated task worktrees are removed only when they are clean and already merged, and the merged `task/<slug>` branch is deleted by default unless you explicitly keep it.
 
 Startup gate status model:

@@ -1,0 +1,6 @@
+{
+  "name": "spec-coding-workflow",
+  "version": "2026-06-20.1",
+  "entrypoint": "workflow.sh",
+  "description": "Shared spec-first workflow package for PRD, UI/design, architecture, TODO, implementation readiness, and launch documentation."
+}
