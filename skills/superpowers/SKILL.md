@@ -1,15 +1,15 @@
 ---
 name: superpowers
-description: Use when starting work - foundational development practices including TDD, verification, planning, code review, debugging, git workflows, and skill creation
+description: Use when explicitly inspecting, maintaining, or explaining the Superpowers skill collection, or when choosing among Superpowers sub-skills
 ---
 
 # Superpowers
 
 Core development practices for effective AI-assisted software development. These skills form the foundation of disciplined, high-quality development workflows.
 
-## 🚀 Getting Started
+## Getting Oriented
 
-**Start here**: Use `using-superpowers` skill first - it teaches you how to discover and invoke all other skills.
+Use this overview only when the Superpowers collection itself is relevant. For ordinary work, match the task directly against specific skill descriptions instead of treating this container as a default entrypoint.
 
 ## 📚 Core Skills
 
@@ -45,14 +45,14 @@ Core development practices for effective AI-assisted software development. These
 - **writing-skills** - Create and test new skills (TDD for documentation)
 - **writing-plans** - Structure implementation plans
 
-## 🎯 Usage
+## Usage
 
-1. **First time**: Invoke `using-superpowers` to understand skill discovery
-2. **Starting work**: Check `brainstorming` before creative/implementation work
-3. **Implementing**: Use `test-driven-development` for all code changes
-4. **Before completion**: Apply `verification-before-completion` always
-5. **Debugging**: Follow `systematic-debugging` for any failures
-6. **Creating skills**: Use `writing-skills` with TDD methodology
+1. **Skill routing questions**: Use `using-superpowers` when the task is about skill discovery or invocation discipline.
+2. **Creative or implementation design**: Consider `brainstorming` when the task actually involves shaping new behavior.
+3. **Feature or bugfix implementation**: Use `test-driven-development` when test-first implementation is required by task or local policy.
+4. **Completion claims**: Apply `verification-before-completion` before claiming changes are complete or passing.
+5. **Failures and bugs**: Follow `systematic-debugging` when investigating unexpected behavior.
+6. **Skill authoring**: Use `writing-skills` when creating, editing, or validating skills unless a user instruction explicitly narrows the process.
 
 ## 📖 Philosophy
 

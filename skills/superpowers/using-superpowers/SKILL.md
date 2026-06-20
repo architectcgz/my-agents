@@ -1,19 +1,17 @@
 ---
 name: using-superpowers
-description: Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions
+description: Use when explicitly asked about skill discovery, skill invocation discipline, or repairing a workflow where applicable skills were skipped
 ---
 
 <SUBAGENT-STOP>
 If you were dispatched as a subagent to execute a specific task, skip this skill.
 </SUBAGENT-STOP>
 
-<EXTREMELY-IMPORTANT>
-If you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.
+<IMPORTANT>
+This skill is not a default startup requirement. Use it only when explicitly invoked or when repairing skill-routing discipline.
 
-IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.
-
-This is not negotiable. This is not optional. You cannot rationalize your way out of this.
-</EXTREMELY-IMPORTANT>
+When this skill is active, if a specific skill applies to the task, invoke that skill before acting.
+</IMPORTANT>
 
 ## Instruction Priority
 
@@ -41,7 +39,7 @@ Skills use Claude Code tool names. Non-CC platforms: see `references/codex-tools
 
 ## The Rule
 
-**Invoke relevant or requested skills BEFORE any response or action.** Even a 1% chance a skill might apply means that you should invoke the skill to check. If an invoked skill turns out to be wrong for the situation, you don't need to use it.
+**When this skill is active, invoke relevant or requested skills before task actions.** Match the user request against available skill descriptions. If an invoked skill turns out to be wrong for the situation, you don't need to use it.
 
 ```dot
 digraph skill_flow {
@@ -79,18 +77,18 @@ These thoughts mean STOP—you're rationalizing:
 
 | Thought | Reality |
 |---------|---------|
-| "This is just a simple question" | Questions are tasks. Check for skills. |
-| "I need more context first" | Skill check comes BEFORE clarifying questions. |
-| "Let me explore the codebase first" | Skills tell you HOW to explore. Check first. |
-| "I can check git/files quickly" | Files lack conversation context. Check for skills. |
-| "Let me gather information first" | Skills tell you HOW to gather information. |
-| "This doesn't need a formal skill" | If a skill exists, use it. |
-| "I remember this skill" | Skills evolve. Read current version. |
-| "This doesn't count as a task" | Action = task. Check for skills. |
-| "The skill is overkill" | Simple things become complex. Use it. |
-| "I'll just do this one thing first" | Check BEFORE doing anything. |
+| "This is just a simple question" | Check whether a specific skill description matches; do not default to this skill. |
+| "I need more context first" | If a relevant skill matches, read it before context gathering. |
+| "Let me explore the codebase first" | Matching skills may define how to explore. |
+| "I can check git/files quickly" | Files lack conversation context. Check for matching skills. |
+| "Let me gather information first" | Matching skills may define what information matters. |
+| "This doesn't need a formal skill" | If a specific skill exists and matches, use it. |
+| "I remember this skill" | Skills evolve. Read the current version. |
+| "This doesn't count as a task" | Action = task. Check for matching skills. |
+| "The skill is overkill" | If it matches, use it; if it does not match, skip it. |
+| "I'll just do this one thing first" | Check matching skills before task actions. |
 | "This feels productive" | Undisciplined action wastes time. Skills prevent this. |
-| "I know what that means" | Knowing the concept ≠ using the skill. Invoke it. |
+| "I know what that means" | Knowing the concept is not the same as reading the current skill. |
 
 ## Skill Priority
 

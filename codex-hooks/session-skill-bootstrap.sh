@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Bootstrap 纪律 skill：跨工具的 Session Discipline 入口，与项目/全局列表无关，始终注入。
+# Bootstrap 纪律 skill：只注入路径和最小纪律摘要，正文按需从磁盘读取。
 skill_path="${CODEX_SKILL_BOOTSTRAP_PATH:-$HOME/.agents/skills/superpowers/using-superpowers/SKILL.md}"
 
 if [[ ! -f "$skill_path" && -f "$HOME/.agents/skills/using-superpowers/SKILL.md" ]]; then
@@ -9,9 +9,9 @@ if [[ ! -f "$skill_path" && -f "$HOME/.agents/skills/using-superpowers/SKILL.md"
 fi
 
 if [[ -f "$skill_path" ]]; then
-  skill_body="$(<"$skill_path")"
+  bootstrap_status="Bootstrap skill path: $skill_path"
 else
-  skill_body="The bootstrap skill was not found at: $skill_path"
+  bootstrap_status="Bootstrap skill missing: $skill_path"
 fi
 
 # 定位“当前项目”：Codex SessionStart hook 通过 stdin JSON 传入 cwd；取不到则回退 $PWD。
@@ -57,13 +57,49 @@ build_skill_index() {
   local lines="" md name desc
   if [[ -d "$root" ]]; then
     while IFS= read -r md; do
-      name="$(awk '/^name:[[:space:]]*/{sub(/^name:[[:space:]]*/,""); print; exit}' "$md")"
+      name="$(read_frontmatter_field name "$md")"
       [[ -z "$name" ]] && continue
-      desc="$(awk '/^description:[[:space:]]*/{sub(/^description:[[:space:]]*/,""); print; exit}' "$md")"
+      desc="$(read_frontmatter_field description "$md")"
       lines+="- ${name}: ${desc} [${md}]"$'\n'
     done < <(find "$root" -name SKILL.md -not -path '*/.system/*' | sort)
   fi
   printf '%s' "$lines"
+}
+
+read_frontmatter_field() {
+  local key="$1"
+  local file="$2"
+  awk -v key="$key" '
+    BEGIN { found = 0; folded = 0; value = "" }
+    NR == 1 && $0 == "---" { in_frontmatter = 1; next }
+    in_frontmatter && $0 == "---" {
+      if (found && folded) print value
+      exit
+    }
+    !in_frontmatter { next }
+    !found && $0 ~ "^" key ":[[:space:]]*" {
+      line = $0
+      sub("^" key ":[[:space:]]*", "", line)
+      if (line == ">" || line == "|") {
+        found = 1
+        folded = 1
+        next
+      }
+      gsub(/^"|"$/, "", line)
+      gsub(/^'\''|'\''$/, "", line)
+      print line
+      exit
+    }
+    found && folded {
+      if ($0 ~ /^[[:space:]]+/) {
+        sub(/^[[:space:]]+/, "", $0)
+        value = value (value == "" ? "" : " ") $0
+        next
+      }
+      print value
+      exit
+    }
+  ' "$file"
 }
 
 # 默认注入“当前项目”的说明性/约束性 skill；不在任何项目内时才回退全局共享 skill 作为发现兜底。
@@ -88,33 +124,23 @@ fi
 
 session_context="$(cat <<EOF
 <codex-skill-bootstrap>
-This Codex thread has just started, resumed, cleared, or compacted. Previously
-loaded skill bodies may no longer be present in context.
+SessionStart discipline reminder: this thread may have just started, resumed,
+cleared, or compacted, so previously loaded skill bodies may be absent.
 
-Before any non-trivial task:
-- Re-run skill matching from the current user request.
-- If a skill is explicitly named or its description matches, read that skill's
-  current SKILL.md from disk before acting.
-- Do not rely on "I already read it earlier" after startup, resume, clear, or
-  compact.
-- Keep loaded context minimal: read only the matching skill and the references
-  it explicitly requires.
+$bootstrap_status
 
-Below is the bootstrap skill that defines the required skill-use discipline.
-
-Skill path: $skill_path
-
-$skill_body
+Rules:
+- Before non-trivial work, re-run skill matching from the current user request.
+- If a skill is named or its description matches, read its current SKILL.md from
+  disk before acting; do not rely on remembered content.
+- Do not invoke superpowers or using-superpowers as a default fallback; use them
+  only when the request matches their descriptions.
+- Keep context minimal: read only the matching skill and required references.
+- User instructions still override skill process rules.
 
 <available-skills scope="$scope_label">
-These are the descriptive/constraining skills for the current scope, indexed
-from disk under $index_root. Match the user request against each description
-below; when one matches, read that skill's SKILL.md (path in brackets) from disk
-before acting — the index is the routing table, the SKILL.md body is read on
-demand. When working inside a project this lists that project's own skills (the
-same set Claude auto-loads via the project's .claude/skills); the global shared
-skills are only listed here as a fallback when the session is not inside any
-project.
+Indexed from disk under $index_root. This is a routing table only; read the
+matched SKILL.md body on demand.
 
 $skill_index_lines
 </available-skills>
