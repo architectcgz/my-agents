@@ -11,7 +11,7 @@ Use this skill for documentation structure. Do not put documentation templates i
 
 1. Inspect the repository first: existing `docs/`, README, AGENTS, scripts, CI, and any stronger project-specific documentation convention.
 2. If the project already has a stronger convention, preserve it and only add missing ownership, indexing, and validation rules.
-3. Initialize or repair the standard docs scaffold from `assets/docs/`.
+3. Initialize or repair the standard docs scaffold from `assets/docs/`. Use Chinese prose by default; keep code identifiers, commands, paths, package names, API/protocol fields, and vendor terms in their original form.
 4. Avoid documentation circular references:
    - `docs/documentation-rules.md` is the rule source.
    - `docs/README.md` is the navigation index.

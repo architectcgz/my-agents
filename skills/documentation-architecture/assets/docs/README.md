@@ -1,35 +1,35 @@
-# Documentation Index
+# 文档索引
 
-This directory is the project documentation entry point. It points to current sources of truth and separates durable facts from process history.
+本目录是项目文档入口，负责指向当前事实源，并区分长期事实和过程历史。
 
-## Reading Order
+## 阅读顺序
 
-1. Read `docs/documentation-rules.md` for documentation ownership, placement, and path registration rules.
-2. Use this index to find the relevant current source of truth.
-3. Read the nearest parent index for the target documentation area when it exists.
-4. Verify facts against code, contracts, configuration, tests, or operations records before updating current documentation.
-5. Keep process evidence separate from current facts unless the stable conclusion is promoted into the owning source-of-truth document.
+1. 先读 `docs/documentation-rules.md`，确认文档归属、放置位置和路径登记规则。
+2. 通过本索引找到相关当前事实源。
+3. 目标文档区域存在父级索引时，继续读取最近父级索引。
+4. 更新当前文档前，用代码、contract、配置、测试或运维记录核对事实。
+5. 过程证据应和当前事实分开；只有稳定结论被提升到事实源文档后，才作为当前事实引用。
 
-## Current Source-Of-Truth Map
+## 当前事实源
 
-- `docs/requirements/`: product requirements, scope, acceptance criteria, and constraints.
-- `docs/contracts/`: API, event, data, and compatibility contracts.
-- `docs/spec/`: implementation-ready feature specifications before planning.
-- `docs/design/`: product and UX design that is not yet current architecture fact.
-- `docs/architecture/`: current system design and long-lived technical constraints.
-- `docs/operations/`: runbooks, deployment notes, maintenance commands, and operational verification.
+- `docs/requirements/`：产品需求、范围、验收标准和约束。
+- `docs/contracts/`：API、event、data 和兼容性 contract。
+- `docs/spec/`：实施计划前的可执行功能规格。
+- `docs/design/`：尚未成为当前架构事实的产品和 UX 设计。
+- `docs/architecture/`：当前系统设计和长期技术约束。
+- `docs/operations/`：runbook、部署说明、维护命令和运维验证。
 
-## Process And History
+## 流程和历史
 
-- `docs/plan/`: implementation, migration, rollout, and refactor plans.
-- `docs/reviews/`: review evidence and findings; formal rounds should be bound to commits or equivalent immutable artifacts and kept as separate `round-<n>` files.
-- `docs/reports/`: time-boxed reports, investigation summaries, and status snapshots.
-- `docs/todo/`: actionable backlog, cleanup queues, and unresolved work items.
-- `docs/improvements/`: agent-discovered improvement items and promotion status.
-- `docs/refs/`: external references and research notes.
+- `docs/plan/`：实施、迁移、发布和重构计划。
+- `docs/reviews/`：review 证据和发现；正式轮次应绑定 commit 或等价不可变 artifact，并以独立 `round-<n>` 文件保存。
+- `docs/reports/`：限时报告、调查总结和状态快照。
+- `docs/todo/`：可执行 backlog、清理队列和未解决工作。
+- `docs/improvements/`：agent 发现的改进项和提升状态。
+- `docs/refs/`：外部参考和研究笔记。
 
-## Stale Document Rules
+## 陈旧文档规则
 
-- A document linked from the current source-of-truth map must either match the code or clearly state that it is draft, superseded, or historical.
-- When a process document becomes a stable decision, move the stable conclusion into requirements, contracts, architecture, or operations.
-- When adding a durable path, register it in `docs/documentation-rules.md` and this index or the nearest parent index.
+- 当前事实源地图中链接的文档，必须匹配代码，或明确标注为草案、已废弃或历史记录。
+- 过程文档形成稳定决策后，把稳定结论移动到 requirements、contracts、architecture 或 operations。
+- 新增长期路径时，在 `docs/documentation-rules.md` 和本索引或最近父级索引登记。

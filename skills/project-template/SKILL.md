@@ -37,7 +37,7 @@ It does not own harness initialization, workflow installation, or documentation 
 5. Use the relevant architecture skills to constrain template design:
    - frontend starter structures should follow the relevant frontend architecture skill
    - backend starter structures should follow the relevant backend architecture skill
-6. Generate or update a project-level `AGENTS.md` in English unless the user explicitly requests another language.
+6. Generate or update a project-level `AGENTS.md` in Chinese by default. Keep code identifiers, commands, paths, package names, API/protocol fields, and vendor terms in their original form. Use another prose language only when the user or a stronger project rule explicitly requires it.
 7. Require the project root to keep `CLAUDE.md -> AGENTS.md` when Claude/Codex auto-discovery is part of the local workflow. Do not maintain two divergent entry files.
 8. Start from `assets/project-agents-template.md`, then remove irrelevant placeholders and specialize the rules to the actual project.
 9. Keep `AGENTS.md` as a repository navigation and routing file. Do not copy global preferences, skill indexes, full documentation taxonomies, or broad personal workflow rules into it.
@@ -113,7 +113,7 @@ If you intentionally choose a centralized template library, keep the template as
 Before final response:
 
 1. Confirm the file is named `AGENTS.md`.
-2. Confirm the content is English.
+2. Confirm the prose language follows the user/project default; for this workspace the default is Chinese unless explicitly overridden.
 3. Confirm section references and numbering are consistent.
 4. Confirm `AGENTS.md` routes documentation work to `docs/documentation-rules.md` and `docs/README.md` when those files exist.
 5. Confirm documentation scaffolding, if requested, was handled by `documentation-architecture` or an existing stronger project convention.
