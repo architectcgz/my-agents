@@ -12,6 +12,7 @@
 ## 当前条目
 
 - `architecture-diagram-generation.md`：根据事实源生成架构图输入包的共享模板。
+- `newcomer-documentation-audit.md`：站在新人接手项目视角审查文档完整性、事实源边界和历史计划归档状态的共享模板。
 
 ## 共享 prompt 写作原则
 
