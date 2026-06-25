@@ -34,6 +34,7 @@ Review for risk reduction, not for style theater.
 11. Review from a senior engineer's implementation perspective: ask whether the same requirement could be implemented with clearer ownership, simpler control flow, stronger contracts, smaller blast radius, and better long-term maintainability.
 12. Do not turn senior judgment into speculative rewrites. Recommend a more elegant implementation only when it reduces real risk, removes meaningful complexity, improves testability, or aligns better with existing project architecture.
 13. If the diff touches a file, component, service, or module that is already tracked as structural debt, oversized ownership, or required decomposition, unresolved debt in that touched surface is a material finding, not residual risk.
+14. Check for dead API surface: methods, wrappers, interface members, repository functions, ports, or compatibility paths with no clear owner and no production call path are review findings even if tests or string guards still reference them.
 
 ## Workflow
 
@@ -47,10 +48,11 @@ Review for risk reduction, not for style theater.
 8. If the diff touches a known oversized or owner-mixed surface at all, apply Guardrail 13: explicitly decide whether the change closes that debt, and block the review if it does not.
 9. For frontend or backend diffs, load `references/technical-risk-checks.md` for the surface-specific scrutiny points (frontend: route views, SFCs, composables, stores, async handlers, lifecycle cleanup; backend: handlers, services, repositories, transactions, background work, config, integrations, DTO/API contracts).
 10. Ask "how would a senior maintainer implement this after reading the surrounding code?" Compare against the submitted diff for ownership, simplicity, error handling, contracts, tests, and future extension cost.
-11. Write findings in priority order with impact, fix direction, and whether the finding blocks completion.
-12. For material findings, state the expected re-review or re-validation evidence.
-13. Keep subjective preferences out of blocker comments unless they hide a real maintenance or correctness cost.
-14. For independent reviews that gate non-trivial work, archive the review result using the Review Archive policy below.
+11. Search for ownership and call-path drift. For changed or newly obsolete methods, use text search to distinguish production calls from tests, stubs, generated guards, and string-based architecture tests. If a method only has test/guard references and no production owner, flag it for removal.
+12. Write findings in priority order with impact, fix direction, and whether the finding blocks completion.
+13. For material findings, state the expected re-review or re-validation evidence.
+14. Keep subjective preferences out of blocker comments unless they hide a real maintenance or correctness cost.
+15. For independent reviews that gate non-trivial work, archive the review result using the Review Archive policy below.
 
 ## When Used As The code-workflow Gate Reviewer
 
@@ -159,6 +161,7 @@ Review archive files must include:
 - Gate verdict for non-trivial work: pass, pass with minor issues, or blocked.
 - Material findings list with required fix and re-validation direction.
 - Code quality risks include ownership ambiguity, oversized files, weak decomposition, hidden state flow, insufficient tests for the new shape, and hard-to-review complexity.
+- Dead code risks include no-owner methods, unused compatibility wrappers, interface members with no production callers, and old fallback paths left behind after a replacement path lands.
 - Senior implementation assessment: whether the current approach is the simplest maintainable implementation for the requirement, and if not, the concrete lower-risk alternative.
 - Archive path for independent non-trivial review gates, or an explicit reason no archive was created.
 - If no material findings are discovered, say so explicitly and note residual risk, assumptions, or validation gaps.
