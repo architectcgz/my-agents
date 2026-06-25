@@ -52,8 +52,11 @@
 
 修改文档后，必须运行项目配置的文档一致性检查脚本验证格式合规性。
 
-- CTF 项目：`python3 scripts/check-docs-consistency.py`
-- 其他项目：查看项目 `docs/文档规范.md` 或 `AGENTS.md` 中的”文档验证”章节
+检查脚本位置通常在：
+- 项目根目录的 `scripts/check-docs-consistency.py` 或类似检查脚本
+- 项目 `docs/文档规范.md` 或 `AGENTS.md` 中的”文档验证”章节会说明具体命令
+
+如果项目没有配置文档检查脚本，应该先建立检查机制，再开始批量修改文档格式。
 
 **禁止行为：**
 
