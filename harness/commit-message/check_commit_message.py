@@ -20,6 +20,7 @@ DEFAULT_MESSAGES = {
     "missing_detail_lines": "[commit-msg] 普通提交不能只有简短标题，必须补充详细正文。",
     "detail_too_short": "[commit-msg] 提交正文信息量不足，请补充更具体的变更说明。",
     "missing_task_binding": "[commit-msg] 当前存在激活中的任务 gate，提交正文必须显式带上 task slug。",
+    "forbidden_co_authored_by": "[commit-msg] 提交信息包含禁止的 Co-Authored-By trailer。\n默认禁止添加 Co-Authored-By，除非：\n  1. 用户明确要求添加，或\n  2. 项目 commit policy 显式允许（在 policy.json 中设置 \"allow_co_authored_by\": true）\n详见 ~/.agents/skills/committing-changes/SKILL.md",
 }
 
 
@@ -118,6 +119,27 @@ def validate_task_binding(body_lines: list[str], policy: dict, active_task_slug:
         )
 
 
+def validate_no_co_authored_by(body_lines: list[str], policy: dict) -> None:
+    """Check for forbidden Co-Authored-By trailers.
+
+    Default: Co-Authored-By is forbidden unless project explicitly allows it.
+    Projects can opt-in by setting "allow_co_authored_by": true in policy.json.
+
+    Rationale: Per ~/.agents/skills/committing-changes/SKILL.md, Co-Authored-By
+    should only be added when:
+    1. User explicitly requests it, OR
+    2. Project commit policy explicitly allows it
+
+    Without either condition, it should be blocked.
+    """
+    if policy.get("allow_co_authored_by", False):
+        return
+
+    for line in body_lines:
+        if line.startswith("Co-Authored-By:") or line.startswith("Co-authored-by:"):
+            fail("forbidden_co_authored_by")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--message-file", required=True)
@@ -144,6 +166,7 @@ def main() -> int:
     validate_subject(subject, policy)
     body_lines = collect_body_lines(lines)
     validate_body(body_lines, policy)
+    validate_no_co_authored_by(body_lines, policy)
     validate_task_binding(body_lines, policy, args.active_task_slug)
     return 0
 
