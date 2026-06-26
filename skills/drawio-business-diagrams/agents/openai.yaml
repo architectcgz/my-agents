@@ -1,0 +1,4 @@
+interface:
+  display_name: "Draw.io Business Diagrams"
+  short_description: "Create reviewable draw.io business maps."
+  default_prompt: "Use $drawio-business-diagrams to create a draw.io business relationship diagram for this plan or architecture document."
