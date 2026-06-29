@@ -27,7 +27,3 @@ developer_instructions = """
 - Why it changed
 - Any incomplete items
 """
-
-[[skills.config]]
-path = "/home/azhi/.agents/skills/code-agent/SKILL.md"
-enabled = true
