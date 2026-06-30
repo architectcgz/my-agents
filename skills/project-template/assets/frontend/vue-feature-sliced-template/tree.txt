@@ -1,35 +1,48 @@
 frontend/
   docs/
     reviews/
+      README.md
     todos/
       debt/
+        README.md
+        _template.md
         archive/
   src/
     __tests__/
+      README.md
     api/
+      README.md
       __tests__/
     entities/
+      README.md
       user/
+        model/
     features/
+      README.md
       auth/
+        model/
       layout/
+        model/
     pages/
+      README.md
       auth/
       dashboard/
       error/
     router/
-      __tests__/
-      guards.ts
+      README.md
       routes/
     runtime/
-      __tests__/
+      README.md
     shared/
+      README.md
       ui/
-        __tests__/
+        README.md
     stores/
+      README.md
       __tests__/
-    test/
     widgets/
+      README.md
+      dashboard/
   index.html
   package.json
   tsconfig.json
