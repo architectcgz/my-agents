@@ -72,6 +72,7 @@ Default every service, repository, handler, job, worker, checker, runner, and ot
 - Return concrete types by default; define interfaces at the consumer side when practical.
 - Avoid Java-style service hierarchies, abstract factories, or one-method interfaces unless the existing codebase already owns that pattern.
 - Prefer explicit domain structs and small functions over reflection-heavy or generic abstractions for ordinary backend paths.
+- When behavior branches repeatedly on the same discriminator, read `references/design-pattern-selection.md` before extending the branch.
 
 ## Go Implementation Guardrails
 
@@ -104,6 +105,7 @@ Default every service, repository, handler, job, worker, checker, runner, and ot
 
 - Read `references/configuration-defaults-and-loading.md` when touching runtime configuration, defaults, env/file/flag loading, timeout/retry/backoff/pool settings, dependency endpoints, or dependency wiring.
 - Read `references/context-lifecycle-and-timeout.md` when touching `context.Value`, timeout/deadline placement, request-scoped metadata, goroutines launched from handlers, long-lived workers, or async side effects.
+- Read `references/design-pattern-selection.md` when Go backend behavior branches by provider, status, event type, mode, command, job kind, lifecycle state, or business rule.
 - Read `references/repository-interface-splitting.md` when a repository interface starts mixing unrelated query, command, profile, auth, report, or transaction methods, or when a tx closure currently receives a wide repo.
 - Read `references/runtime-scheduler-and-bounded-concurrency.md` when touching fan-out goroutines, worker pools, CPU-heavy jobs, runtime scheduler symptoms, `GOMAXPROCS`, `runtime.Gosched`, `runtime.LockOSThread`, or goroutine leak reviews.
 - In `backend-engineer`, read `references/concurrency-context-and-idempotency.md` for async workers, retries, duplicate execution, cancellation, timeout, and scheduled work.

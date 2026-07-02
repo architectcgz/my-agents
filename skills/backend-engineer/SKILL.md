@@ -16,6 +16,11 @@ Language-specific backend skills should extend this skill rather than replace it
 - Treat database schema evolution as an explicit deployment concern, not an incidental runtime effect.
 - For backend behavior changes, load `test-driven-development` before production code and prove the behavior with a failing test first.
 - When a backend branch enforces a non-obvious business rule, state transition, or failure path, keep the comment directly above that branch and explain the trigger, business intent, and side effect instead of paraphrasing the code.
+- When backend behavior keeps branching on the same discriminator, read `references/design-pattern-selection.md` before extending the branch.
+
+## Reference Routing
+
+- Read `references/design-pattern-selection.md` when a backend change adds or reviews branching by type, status, provider, mode, event, command, tenant policy, lifecycle state, or validation rule.
 
 ## Backend TDD Boundaries
 

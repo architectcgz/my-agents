@@ -54,6 +54,7 @@ Act as a frontend engineering agent for frontend implementation, refactor, inter
 27. Avoid broad generic local class names that are likely to collide with global styles. Prefer component- or page-scoped naming unless the project already provides a shared class.
 28. Reusable shell components such as modal, drawer, popover, panel, empty state, card, table, and form wrappers must not ship with visible scaffold or demo prose as runtime defaults. Keep examples in tests, docs, stories, or comments.
 29. When a frontend handler, watcher, computed branch, or async flow enforces a non-obvious business rule or exception path, keep the comment adjacent to that code and describe the user/business trigger plus resulting behavior, not the syntax itself.
+30. When a component, composable, store, or route workflow keeps branching on the same discriminator, read `references/design-pattern-selection.md` before extending the branch.
 
 ## Workflow
 
@@ -198,6 +199,8 @@ Do not only mention durable frontend improvement gaps in the final response.
   Read when a UI event or workflow shows the negative pattern of unclear loading, error, duplicate-action, stale-response, cancellation, or cleanup ownership.
 - `references/component-contracts-and-inputs.md`
   Read when editing props, emits, `v-model`, form state, validation flows, or API-to-UI data normalization.
+- `references/design-pattern-selection.md`
+  Read when frontend behavior branches by mode, status, provider, action type, tab, permission shape, lifecycle step, or workflow state.
 - `references/anti-patterns/component-contract-drift.md`
   Read when a component, composable, or route view shows the negative pattern of unclear ownership for props, emits, draft state, remote mutations, or API-to-UI shaping.
 - `references/state-boundaries.md`

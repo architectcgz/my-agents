@@ -29,6 +29,7 @@ Before implementing:
 - No "flexibility" or "configurability" that wasn't requested.
 - No error handling for impossible scenarios.
 - If you write 200 lines and it could be 50, rewrite it.
+- If you are extending repeated branching around one discriminator, read `references/design-pattern-selection.md` or the relevant language/domain skill reference before adding another branch.
 
 Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
 

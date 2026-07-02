@@ -84,11 +84,14 @@ skills/
 **Separate files for:**
 1. **Heavy reference** (100+ lines) - API docs, comprehensive syntax
 2. **Reusable tools** - Scripts, utilities, templates
+3. **Detailed decision guides and examples** - Pattern selectors, domain variants, anti-pattern catalogs
 
 **Keep inline:**
 - Principles and concepts
-- Code patterns (< 50 lines)
-- Everything else
+- Thin routing instructions that tell agents which reference to load
+- Small code patterns (< 50 lines) only when there is one clear canonical pattern
+
+**Thin index rule:** When a skill covers a broad judgment area with multiple valid choices, keep `SKILL.md` as a thin index: triggers, core rule, and reference routing. Put concrete examples, selector tables, and competing pattern choices under `references/`. Do not let one illustrative example become the whole rule when other patterns may fit.
 
 ## SKILL.md Structure
 
@@ -626,7 +629,9 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 - [ ] Quick reference table
 - [ ] Common mistakes section
 - [ ] No narrative storytelling
-- [ ] Supporting files only for tools or heavy reference
+- [ ] Broad judgment topics use thin `SKILL.md` routing plus detailed `references/`
+- [ ] Examples cover relevant alternatives instead of implying one default pattern
+- [ ] Supporting files only for tools, heavy reference, detailed decision guides, or examples
 
 **Deployment:**
 - [ ] Commit skill to git and push to your fork (if configured)
