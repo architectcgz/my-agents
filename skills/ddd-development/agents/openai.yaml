@@ -1,0 +1,4 @@
+interface:
+  display_name: "DDD Development"
+  short_description: "DDD 边界、事件归属和分层判断"
+  default_prompt: "Use $ddd-development to review and shape a backend feature around domain, application, ports, and event boundaries."
