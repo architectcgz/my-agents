@@ -29,3 +29,10 @@ Read this file when the task changes props, emits, `v-model`, forms, user input,
 - Normalize external data at the boundary closest to the source instead of scattering ad hoc checks through templates.
 - Convert nullable, optional, or enum-like backend values into a shape the UI can reason about consistently.
 - Keep formatting separate from ownership. A display label should not become the actual state source.
+
+## Mock data boundaries
+
+- Keep fixtures and demo records outside route views, workflow composables, stores, and presentational components unless the project already has a colocated story/test fixture convention.
+- Feed mock data through the same DTO, adapter, or view-model contract as live data. The component should not branch on "mock mode" just to render normal content.
+- Do not let mock convenience define production shape. If a mock omits loading, empty, error, permission, or partial-data cases, add explicit fixtures for those states instead of hardcoding template fallbacks.
+- Without mock data, keep the same separation: source/adapters normalize data, workflow owners derive state and actions, UI components render props and emit user intent.

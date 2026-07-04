@@ -85,6 +85,13 @@ Avoid:
 
 If a panel can become plain layout without losing meaning, remove the card treatment.
 
+## Data, Logic, UI Boundaries
+
+- Keep mock data in explicit fixture, mock service, story, or demo-data files. Do not inline mock arrays or mock branches inside page workflow code or presentational components.
+- Mock data must enter through the same interface shape as real data. Switching from mock to live data should not require rewriting templates, interaction handlers, or layout components.
+- Separate page logic from UI even when there is no mock data: workflow state, derived data, filtering, permissions, loading, and error policy belong in a page owner, composable, store, or adapter; presentational components should render props and emit intent.
+- Do not let visual components know whether their data came from fixtures, API responses, local storage, or generated demo content unless that source is part of the user-facing behavior.
+
 ## Async Interaction Code
 
 For app surfaces with networked interactions, stateful workflows, uploads, search, filters, autosave, polling, or streaming, make async behavior explicit in the code instead of relying on `async/await` readability.

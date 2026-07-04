@@ -31,49 +31,51 @@ Act as a frontend engineering agent for frontend implementation, refactor, inter
 4. Treat everything created on mount as something that must be cleaned up on unmount.
 5. Keep state ownership narrow and explicit across component, composable, and store boundaries.
 6. Keep component contracts understandable: one source of truth for props, emits, local draft state, and remote mutations.
-7. Sanitize any HTML rendered from user input with DOMPurify.
-8. Keep clickable elements visibly interactive and keep keyboard focus states visible.
-9. Never hardcode font sizes in `px`; use design-system variables such as `var(--font-size-14)`.
-10. Never hardcode spacing in `px` for margin, padding, or gap; use standard spacing variables such as `var(--space-4)`.
-11. Prefer `color-mix` for transparency and subtle color adjustment so styling remains consistent across themes.
-12. Do not use `any` for DTOs, form payloads, or critical business logic; define explicit interfaces.
-13. Render usernames, slugs, and IDs in their raw business form without decorative prefixes such as `@`.
-14. Prefer simpler interaction models over secondary highlight or focus flows; row-level state and side drawers are usually easier to reason about.
-15. Every modal and drawer must define `max-height` and support internal scrolling.
-16. Any user-triggered async action that can fail during normal operation must be caught at the nearest UI owner. Do not let submit/save/delete/export/download handlers or poll callbacks bubble API failures into Vue global error handling.
-17. The request layer should stay focused on transport concerns such as error normalization, auth/session handling, redirects, and cancellation. The page or composable that owns the workflow decides whether a failure becomes toast, inline feedback, polling stop, or a silent abort.
-18. Any async action reachable from more than one UI event path such as `@submit.prevent`, `@click`, or `@keyup.enter` must own an explicit in-flight guard in the handler. Do not rely on button disabled state alone to prevent duplicate requests.
-19. For route views and page-level workspaces, define ownership boundaries before extracting code. Parent pages should keep route/query synchronization, page-level data loading, cross-section coordination, error policy, and primary business actions. Do not extract code just to reduce line count if that makes state ownership harder to understand.
-20. For table/list row actions, do not hide one or two available actions behind a `More`/`更多` menu. Show them directly in the row action area; use overflow menus only when there are more than two actions or when secondary actions would otherwise crowd the row.
-21. Do not treat typecheck or a few happy-path tests as sufficient closure when the leader or pipeline has classified the work as non-trivial; completion requires a distinct review pass for interaction regressions, state-ownership drift, oversized component debt, contract mismatches, and test gaps.
-22. Report frontend risk signals instead of redefining trivial/non-trivial policy locally: async flow, form, route sync, store, modal or drawer state, cross-component contract, user-visible workflow, extraction, or oversized component/service growth.
-23. Do not let a route-level `.vue` file keep accumulating route state, API calls, derived data, interaction workflows, and large template branches in one place.
-24. When a page owns more than two independent responsibilities, is already around 500 lines, or has a `<script setup>` that reads like a page controller, evaluate extraction before adding another feature flow.
-25. Split composables by one page capability domain, such as `useXxxTabs`, `useXxxDetail`, `useXxxActions`, `useXxxMetrics`, or `useXxxPreview`; do not create a new catch-all utility.
-26. For form controls such as inputs, selects, textareas, search fields, and filters, drive background, border, placeholder, caret, focus ring, and inner highlight through theme tokens or semantic CSS variables, then check both light and dark themes.
-27. Avoid broad generic local class names that are likely to collide with global styles. Prefer component- or page-scoped naming unless the project already provides a shared class.
-28. Reusable shell components such as modal, drawer, popover, panel, empty state, card, table, and form wrappers must not ship with visible scaffold or demo prose as runtime defaults. Keep examples in tests, docs, stories, or comments.
-29. When a frontend handler, watcher, computed branch, or async flow enforces a non-obvious business rule or exception path, keep the comment adjacent to that code and describe the user/business trigger plus resulting behavior, not the syntax itself.
-30. When a component, composable, store, or route workflow keeps branching on the same discriminator, read `references/design-pattern-selection.md` before extending the branch.
+7. Keep mock data, page logic, and UI separated. Mock data belongs in fixtures, mock services, stories, or demo-data adapters; page logic belongs in the route owner, composable, store, or workflow helper; UI components render props and emit intent. This separation still applies when no mock data exists.
+8. Sanitize any HTML rendered from user input with DOMPurify.
+9. Keep clickable elements visibly interactive and keep keyboard focus states visible.
+10. Never hardcode font sizes in `px`; use design-system variables such as `var(--font-size-14)`.
+11. Never hardcode spacing in `px` for margin, padding, or gap; use standard spacing variables such as `var(--space-4)`.
+12. Prefer `color-mix` for transparency and subtle color adjustment so styling remains consistent across themes.
+13. Do not use `any` for DTOs, form payloads, or critical business logic; define explicit interfaces.
+14. Render usernames, slugs, and IDs in their raw business form without decorative prefixes such as `@`.
+15. Prefer simpler interaction models over secondary highlight or focus flows; row-level state and side drawers are usually easier to reason about.
+16. Every modal and drawer must define `max-height` and support internal scrolling.
+17. Any user-triggered async action that can fail during normal operation must be caught at the nearest UI owner. Do not let submit/save/delete/export/download handlers or poll callbacks bubble API failures into Vue global error handling.
+18. The request layer should stay focused on transport concerns such as error normalization, auth/session handling, redirects, and cancellation. The page or composable that owns the workflow decides whether a failure becomes toast, inline feedback, polling stop, or a silent abort.
+19. Any async action reachable from more than one UI event path such as `@submit.prevent`, `@click`, or `@keyup.enter` must own an explicit in-flight guard in the handler. Do not rely on button disabled state alone to prevent duplicate requests.
+20. For route views and page-level workspaces, define ownership boundaries before extracting code. Parent pages should keep route/query synchronization, page-level data loading, cross-section coordination, error policy, and primary business actions. Do not extract code just to reduce line count if that makes state ownership harder to understand.
+21. For table/list row actions, do not hide one or two available actions behind a `More`/`更多` menu. Show them directly in the row action area; use overflow menus only when there are more than two actions or when secondary actions would otherwise crowd the row.
+22. Do not treat typecheck or a few happy-path tests as sufficient closure when the leader or pipeline has classified the work as non-trivial; completion requires a distinct review pass for interaction regressions, state-ownership drift, oversized component debt, contract mismatches, and test gaps.
+23. Report frontend risk signals instead of redefining trivial/non-trivial policy locally: async flow, form, route sync, store, modal or drawer state, cross-component contract, user-visible workflow, extraction, or oversized component/service growth.
+24. Do not let a route-level `.vue` file keep accumulating route state, API calls, derived data, interaction workflows, and large template branches in one place.
+25. When a page owns more than two independent responsibilities, is already around 500 lines, or has a `<script setup>` that reads like a page controller, evaluate extraction before adding another feature flow.
+26. Split composables by one page capability domain, such as `useXxxTabs`, `useXxxDetail`, `useXxxActions`, `useXxxMetrics`, or `useXxxPreview`; do not create a new catch-all utility.
+27. For form controls such as inputs, selects, textareas, search fields, and filters, drive background, border, placeholder, caret, focus ring, and inner highlight through theme tokens or semantic CSS variables, then check both light and dark themes.
+28. Avoid broad generic local class names that are likely to collide with global styles. Prefer component- or page-scoped naming unless the project already provides a shared class.
+29. Reusable shell components such as modal, drawer, popover, panel, empty state, card, table, and form wrappers must not ship with visible scaffold or demo prose as runtime defaults. Keep examples in tests, docs, stories, or comments.
+30. When a frontend handler, watcher, computed branch, or async flow enforces a non-obvious business rule or exception path, keep the comment adjacent to that code and describe the user/business trigger plus resulting behavior, not the syntax itself.
+31. When a component, composable, store, or route workflow keeps branching on the same discriminator, read `references/design-pattern-selection.md` before extending the branch.
 
 ## Workflow
 
 1. Read the route view, component, or composable that actually owns the behavior before editing.
 2. Identify the dominant risk first: async execution, state ownership, component contract drift, lifecycle cleanup, or rendering pressure.
 3. If the task touches styling, inspect the existing shared tokens, CSS variables, and component shells before introducing new local rules.
-4. For logic-bearing changes, load `test-driven-development` before writing production code and follow Red-Green-Refactor.
-5. Load only the relevant reference files from `references/` instead of treating every task as the whole frontend rulebook.
-6. Keep the implementation boundary small and explicit. One owner for one workflow is the default.
-7. Before shrinking a large route view, write down what must remain page-owned versus what is safe to move into a child component or composable. Reduce ownership ambiguity first; line-count reduction is only a side effect.
-8. For route-view template/root edits under `RouterView`, `Transition`, or parent-applied layout classes, read `references/route-view-transition-root.md`.
-9. For visible UI copy changes, headings, helper text, empty states, or dashboard/workspace prose, read `references/ui-copy-boundaries.md`.
-10. Validate loading, error, empty, and repeated-action behavior before closing the task.
-11. Audit direct event-bound async entry points before closing the task: form submit handlers, click handlers, emit handlers, composable methods passed to components, and polling callbacks are all rejection boundaries.
-12. Run the narrowest relevant tests available. If tests cannot be run, state that clearly and call out the highest-risk unverified paths.
-13. After implementation and initial verification, perform a separate review pass. For leader/pipeline-classified non-trivial frontend work, use `requesting-code-review` or `code-reviewer`. For smaller changes, explicitly switch into review mode yourself instead of stopping at "typecheck passed".
-14. Fix review findings that materially affect interaction correctness, state ownership, component boundaries, regressions, or test coverage, then re-run the impacted verification.
-15. When a component mixes keyboard submit and pointer submit paths, inspect the template and handler together: check whether `@keyup.enter`, form submit, and action buttons can converge on the same async function, then verify the handler short-circuits while a request is already in flight.
-16. If a reusable frontend rule gap or repeated miss is found, record it with `improvement-tracker` instead of only mentioning it in the response.
+4. Before adding or moving mock data, decide its boundary separately from page logic and UI. If the same file owns fixtures, workflow, and rendering, split at least the fixture/source boundary first.
+5. For logic-bearing changes, load `test-driven-development` before writing production code and follow Red-Green-Refactor.
+6. Load only the relevant reference files from `references/` instead of treating every task as the whole frontend rulebook.
+7. Keep the implementation boundary small and explicit. One owner for one workflow is the default.
+8. Before shrinking a large route view, write down what must remain page-owned versus what is safe to move into a child component or composable. Reduce ownership ambiguity first; line-count reduction is only a side effect.
+9. For route-view template/root edits under `RouterView`, `Transition`, or parent-applied layout classes, read `references/route-view-transition-root.md`.
+10. For visible UI copy changes, headings, helper text, empty states, or dashboard/workspace prose, read `references/ui-copy-boundaries.md`.
+11. Validate loading, error, empty, and repeated-action behavior before closing the task.
+12. Audit direct event-bound async entry points before closing the task: form submit handlers, click handlers, emit handlers, composable methods passed to components, and polling callbacks are all rejection boundaries.
+13. Run the narrowest relevant tests available. If tests cannot be run, state that clearly and call out the highest-risk unverified paths.
+14. After implementation and initial verification, perform a separate review pass. For leader/pipeline-classified non-trivial frontend work, use `requesting-code-review` or `code-reviewer`. For smaller changes, explicitly switch into review mode yourself instead of stopping at "typecheck passed".
+15. Fix review findings that materially affect interaction correctness, state ownership, component boundaries, regressions, or test coverage, then re-run the impacted verification.
+16. When a component mixes keyboard submit and pointer submit paths, inspect the template and handler together: check whether `@keyup.enter`, form submit, and action buttons can converge on the same async function, then verify the handler short-circuits while a request is already in flight.
+17. If a reusable frontend rule gap or repeated miss is found, record it with `improvement-tracker` instead of only mentioning it in the response.
 
 ## Frontend TDD Boundaries
 
@@ -198,7 +200,7 @@ Do not only mention durable frontend improvement gaps in the final response.
 - `references/anti-patterns/async-action-without-owner.md`
   Read when a UI event or workflow shows the negative pattern of unclear loading, error, duplicate-action, stale-response, cancellation, or cleanup ownership.
 - `references/component-contracts-and-inputs.md`
-  Read when editing props, emits, `v-model`, form state, validation flows, or API-to-UI data normalization.
+  Read when editing props, emits, `v-model`, form state, validation flows, mock data boundaries, or API-to-UI data normalization.
 - `references/design-pattern-selection.md`
   Read when frontend behavior branches by mode, status, provider, action type, tab, permission shape, lifecycle step, or workflow state.
 - `references/anti-patterns/component-contract-drift.md`
