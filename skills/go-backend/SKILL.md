@@ -83,6 +83,7 @@ Default every service, repository, handler, job, worker, checker, runner, and ot
 - Keep database transactions scoped and deterministic; do not mix unrelated side effects into a transaction without a clear ordering reason.
 - Wide provider-owned repository interfaces must be split into smaller capability repositories. Compose the final dependency in the consuming application package, not in `ports` or `contracts`.
 - Use typed structs and existing mappers for API, DTO, persistence, and domain boundaries.
+- For parsers, validators, decoders, protocol handlers, and security-sensitive input hot paths, decode known schemas into typed structs instead of carrying `map[string]any`; keep dynamic maps only for truly open fields or exploratory spikes, then benchmark `B/op` and `allocs/op` before accepting the shape.
 - For mapper migration/refactor, complete the migration to final shape in the same batch; do not leave temporary pass-through wrappers.
 - After introducing generated mapper methods, remove redundant wrappers immediately (for example `mapped := ...; return &mapped`) unless they carry real business semantics.
 - Generated mappers such as `goverter` are the default choice for pure field-copy `model -> dto` conversions. Keep repetitive structural copying out of hand-written code when the mapping is mostly mechanical.
