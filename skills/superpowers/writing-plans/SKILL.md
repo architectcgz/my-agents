@@ -75,6 +75,22 @@ Before defining tasks, map out which files will be created or modified and what 
 
 This structure informs the task decomposition. Each task should produce self-contained changes that make sense independently.
 
+## Acceptance Completeness Gate
+
+Before writing slice steps, turn the repository facts into an explicit acceptance checklist. Do not leave requirements as broad phrases such as "validate config", "handle errors", "add runtime wiring", or "follow security rules".
+
+For each slice:
+
+1. Read the project `AGENTS.md` routing and every architecture, contract, runtime, security, configuration, testing, and review document named by the touched surface.
+2. Extract concrete MUST / MUST NOT rules from those facts.
+3. Expand each rule into observable acceptance bullets that name exact fields, states, errors, limits, commands, or API behavior.
+4. Put those bullets in the slice before implementation steps.
+5. Write tests or verification commands that cover each acceptance bullet, or explicitly mark why a bullet is verified by a later slice.
+
+If a source document says "HTTP server must configure ReadHeaderTimeout, ReadTimeout, WriteTimeout, IdleTimeout, and shutdown timeout", the plan must list all five fields and their bounds. If a config document says "bool uses true/false, size uses explicit units, secrets are redacted", the plan must list strict bool parsing, unit requirement, non-positive/overflow rejection, and redaction checks. Do not rely on reviewers to rediscover these constraints after implementation starts.
+
+Plan reviewers must reject a plan when a touched surface only cites a broad document without expanding its applicable hard rules into per-slice acceptance criteria.
+
 ## Bite-Sized Task Granularity
 
 **Each step is one action (2-5 minutes):**
@@ -121,6 +137,10 @@ Every executable step must be represented by a checkbox. The executor is require
 - Create: `exact/path/to/file.py`
 - Modify: `exact/path/to/existing.py:123-145`
 - Test: `tests/exact/path/to/test.py`
+
+**Acceptance checklist from source docs:**
+- [ ] [Specific observable rule from the relevant architecture/contract/runtime/security docs]
+- [ ] [Specific edge case, limit, error, state transition, or redaction requirement]
 
 - [ ] **Step 1: Write the failing test**
 
@@ -178,6 +198,7 @@ Expected: PASS / visually confirms the requested layout
 
 ## Remember
 - Exact file paths always
+- Complete acceptance checklist derived from source docs, not broad references
 - Complete code in plan (not "add validation")
 - Exact commands with expected output
 - Reference relevant skills with @ syntax

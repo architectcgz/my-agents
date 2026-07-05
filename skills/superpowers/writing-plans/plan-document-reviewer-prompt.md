@@ -21,6 +21,7 @@ Task tool (general-purpose):
     |----------|------------------|
     | Completeness | TODOs, placeholders, incomplete tasks, missing steps |
     | Spec Alignment | Plan covers spec requirements, no major scope creep |
+    | Acceptance Completeness | Each slice expands source-doc hard rules into concrete acceptance bullets, not broad references |
     | Task Decomposition | Tasks have clear boundaries, steps are actionable |
     | Buildability | Could an engineer follow this plan without getting stuck? |
 
@@ -30,8 +31,14 @@ Task tool (general-purpose):
     An implementer building the wrong thing or getting stuck is an issue.
     Minor wording, stylistic preferences, and "nice to have" suggestions are not.
 
+    Reject plans that only say "follow configuration/security/runtime docs",
+    "add validation", "handle errors", or similar broad phrases without listing the
+    exact fields, limits, states, errors, redaction requirements, API behavior, and
+    verification command that make the requirement complete.
+
     Approve unless there are serious gaps — missing requirements from the spec,
-    contradictory steps, placeholder content, or tasks so vague they can't be acted on.
+    missing expanded acceptance criteria from cited source docs, contradictory steps,
+    placeholder content, or tasks so vague they can't be acted on.
 
     ## Output Format
 
