@@ -13,14 +13,11 @@ from .content import (
     architecture_guard_commands_policy,
     architecture_guard_paths_policy,
     architecture_guard_script,
-    claude_settings_hooks,
-    codex_hooks_json,
     commit_message_check_script,
     commit_message_policy_content,
     known_antipatterns_examples,
     known_antipatterns_readme,
     post_tooluse_aar_hook_script,
-    protect_core_files_hook_script,
     script_guard_check_script,
     script_guard_policy_content,
     skill_sync_reminder_script,
@@ -51,9 +48,6 @@ def write_common_scaffold(repo: Path, profile: str, consistency_script: str) -> 
     write(root / "harness/policies/commit-message.json", commit_message_policy_content(profile))
     write_if_missing(root / "harness/policies/script-guard.json", script_guard_policy_content())
 
-    # PreToolUse Hook for protecting core files
-    write(root / "harness/hooks/protect-core-files.sh", protect_core_files_hook_script(), executable=True)
-
     # PostToolUse AAR Hook for after action review
     write(root / "harness/hooks/post-tooluse-aar.sh", post_tooluse_aar_hook_script(), executable=True)
     write_if_missing(root / "harness/hooks/README-AAR.md", aar_hook_readme())
@@ -65,11 +59,6 @@ def write_common_scaffold(repo: Path, profile: str, consistency_script: str) -> 
     # Known Antipatterns directory
     write_if_missing(root / "harness/known-antipatterns/README.md", known_antipatterns_readme())
     write_if_missing(root / "harness/known-antipatterns/EXAMPLES.md", known_antipatterns_examples())
-
-    # Hook configurations (stay at repo root — tool requirement)
-    write_if_missing(repo / ".codex/hooks.json", codex_hooks_json())
-    write_if_missing(repo / ".claude/settings.local.json", claude_settings_hooks())
-
 
 def quick_routing_shell() -> str:
     """生成新项目 AGENTS.md 的标准占位薄壳（Quick Routing + Auto-Triggers）。

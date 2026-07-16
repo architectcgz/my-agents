@@ -18,12 +18,7 @@ from .content_core import (
     commit_message_check_script,
 )
 
-from .content_hooks import (
-    protect_core_files_hook_script,
-    codex_hooks_json,
-    claude_settings_hooks,
-    post_tooluse_aar_hook_script,
-)
+from .content_hooks import post_tooluse_aar_hook_script
 
 from .content_aar import (
     aar_hook_readme,
@@ -54,9 +49,6 @@ __all__ = [
     "architecture_guard_script",
     "commit_message_policy_content",
     "commit_message_check_script",
-    "protect_core_files_hook_script",
-    "codex_hooks_json",
-    "claude_settings_hooks",
     "post_tooluse_aar_hook_script",
     "aar_hook_readme",
     "aar_example",
