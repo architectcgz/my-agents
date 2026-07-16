@@ -19,7 +19,7 @@ For brand-new project initialization, `harness-engineering` owns the harness sub
    - source of truth: architecture, requirements, contracts, plans, reviews
    - feedback loop: improvements, incidents, review findings, prompts
    - enforcement: scripts, hooks, CI, tests, linters
-3. Use the current CTF harness shape by default while preserving the upstream `deusyu/harness-engineering` principles.
+3. Use the current local harness shape by default while preserving the upstream `deusyu/harness-engineering` principles.
 4. Initialize or repair the harness with `~/.agents/harness/harness-initializer.py`, or for the normal harness bootstrap path use `bash ~/.agents/harness/init-project.sh "$PWD"`.
 5. Ensure the repository root keeps `CLAUDE.md -> AGENTS.md`; create the symlink when missing, but do not overwrite an existing non-symlink file silently.
 6. Ensure the generated scaffold includes `scripts/check-agent-entrypoints.sh` and that the repo's main consistency/governance check actually executes it, instead of leaving entrypoint alignment as a one-off manual doctor step.
@@ -88,7 +88,7 @@ bash /home/azhi/.agents/harness/init-project.sh "$PWD" --mode strict-reference
 
 `init-project.sh` is the preferred high-level bootstrap wrapper. It runs `harness-initializer.py`, then installs the requested workflow package by default, then runs the repo-local consistency check when present. The lower-level Python initializer remains the repair/debugging entry for harness-only operations.
 
-The initializer is idempotent. In both modes it also ensures the repo root keeps `CLAUDE.md -> AGENTS.md`, unless an existing conflicting `CLAUDE.md` requires manual resolution. In default CTF-current mode it creates `.arccgz-harness/state/`, `.arccgz-harness/state/reuse-decisions/`, optional local `.arccgz-harness/state/reuse-index/`, `.arccgz-harness/harness/policies/`, `.arccgz-harness/harness/templates/`, `.arccgz-harness/harness/prompts/`, `.arccgz-harness/harness/checks/`, `.arccgz-harness/feedback/`, `.arccgz-harness/scripts/check-architecture.sh`, `.arccgz-harness/scripts/check-test-workflow.sh`, and a consistency check. In strict reference mode it creates `.arccgz-harness/concepts/`, `.arccgz-harness/thinking/`, `.arccgz-harness/practice/`, `.arccgz-harness/feedback/`, `.arccgz-harness/works/`, `.arccgz-harness/prompts/`, `.arccgz-harness/references/`, `.arccgz-harness/scripts/check-architecture.sh`, `.arccgz-harness/scripts/check-test-workflow.sh`, and a consistency check; in that layout, `concepts/` should be treated as a supplement to the root `AGENTS.md`, while the root `AGENTS.md` remains the project description and navigation entrypoint.
+The initializer is idempotent. In both modes it also ensures the repo root keeps `CLAUDE.md -> AGENTS.md`, unless an existing conflicting `CLAUDE.md` requires manual resolution. In default mode it creates `.arccgz-harness/state/`, `.arccgz-harness/state/reuse-decisions/`, optional local `.arccgz-harness/state/reuse-index/`, `.arccgz-harness/harness/policies/`, `.arccgz-harness/harness/templates/`, `.arccgz-harness/harness/prompts/`, `.arccgz-harness/harness/checks/`, `.arccgz-harness/feedback/`, `.arccgz-harness/scripts/check-architecture.sh`, `.arccgz-harness/scripts/check-test-workflow.sh`, and a consistency check. In strict reference mode it creates `.arccgz-harness/concepts/`, `.arccgz-harness/thinking/`, `.arccgz-harness/practice/`, `.arccgz-harness/feedback/`, `.arccgz-harness/works/`, `.arccgz-harness/prompts/`, `.arccgz-harness/references/`, `.arccgz-harness/scripts/check-architecture.sh`, `.arccgz-harness/scripts/check-test-workflow.sh`, and a consistency check; in that layout, `concepts/` should be treated as a supplement to the root `AGENTS.md`, while the root `AGENTS.md` remains the project description and navigation entrypoint.
 
 ## Harness Shape
 
@@ -119,7 +119,7 @@ When strict upstream reference mode is requested, use `concepts/`, `thinking/`, 
 - Do not duplicate long architecture content into harness docs; link to the owning source.
 - Do not overwrite existing user text outside managed marker blocks.
 - When the user says to strictly follow `deusyu/harness-engineering`, create the top-level reference directories even if the repo already has docs elsewhere.
-- During the current exploration phase, treat the CTF harness as the preferred local standard, not a frozen universal law; preserve project-specific adaptation when the target repo has stronger existing conventions.
+- Treat the current local harness shape as an evolving default, not a frozen universal law; preserve project-specific adaptation when the target repo has stronger existing conventions.
 - Treat missing mechanical enforcement as a real harness gap, not just a documentation issue.
 - Treat missing or drifted `CLAUDE.md -> AGENTS.md` as a harness gap; fix it during initialization or fail loudly if an existing file conflicts.
 - If a repo has dirty worktree changes, avoid touching those files unless the task requires it.

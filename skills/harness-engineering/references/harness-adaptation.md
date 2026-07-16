@@ -8,9 +8,9 @@ The reference project `deusyu/harness-engineering` remains an important upstream
 - mechanical enforcement: scripts and hooks check claims that otherwise drift
 - agent readability: directory shape and file names make next actions obvious
 
-Current local default is the CTF harness shape, because the workspace is still exploring the right long-term convention. Use the upstream strict reference shape when the user explicitly asks to follow `deusyu/harness-engineering` structurally.
+The current local default is an evolving harness shape. Use the upstream strict reference shape when the user explicitly asks to follow `deusyu/harness-engineering` structurally.
 
-Current CTF-derived default mapping:
+Current default mapping:
 
 - root `AGENTS.md` -> repository entry map and project-specific overrides
 - `.harness/` -> current-task scratch/state only
