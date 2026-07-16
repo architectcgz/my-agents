@@ -2,7 +2,7 @@
 name: daily-work-journal
 description: >
   Use when the user wants to init a daily work folder / journal, or asks to
-  summarize today's (or a given day's) work from Claude Code session history.
+  summarize today's (or a given day's) work from Claude Code or Codex session history.
   Two commands — `init` creates the date folder plus empty work.md template and
   summary.md; `summary` extracts that day's sessions across all projects under
   ~/.claude/projects and fills summary.md. Triggers include phrases like
@@ -12,7 +12,7 @@ description: >
 
 # Daily Work Journal（每日工作日报）
 
-管理按日期归档的工作日报。两条命令:`init` 建当天目录与文件骨架;`summary` 从 Claude session 历史里还原当天工作并写入 summary。
+管理按日期归档的工作日报。两条命令:`init` 建当天目录与文件骨架;`summary` 从 Claude Code 与 Codex session 历史还原当天工作并写入 summary。
 
 ## 目录与命名约定
 
@@ -68,10 +68,10 @@ description: >
 
 ## 命令二:summary（从 session 总结当天工作）
 
-目标:扫描当天**所有项目**的 Claude session,还原做了什么,写入 `M.D-summary.md`。
+目标:扫描当天**所有项目**的 Claude Code 与 Codex session,还原做了什么,写入 `M.D-summary.md`。
 
 ### 为什么用提取脚本
-session 是 `~/.claude/projects/<编码后的工作区路径>/*.jsonl`,量大、含大量工具噪音,直接 `cat` 会因 GBK/UTF-8 混编在终端显示乱码。用配套脚本可靠解析:按**本地日期**过滤(timestamp 是 UTC,脚本已转本地时区,避免凌晨工作错分到前一天)、跨所有项目目录聚合、剔除工具结果/命令回显/skill 注入,输出干净的 UTF-8 中间文件。
+session 包括 Claude 的 `~/.claude/projects/<编码后的工作区路径>/*.jsonl` 和 Codex 的 `~/.codex/sessions/**/*.jsonl`，量大且含工具噪音。用配套脚本按**本地日期**过滤(timestamp 是 UTC,脚本已转本地时区)、跨项目聚合并剔除工具结果/命令回显/skill 注入。脚本直接以 UTF-8 输出，不创建会话转储或其他中间日志文件。
 
 ### 步骤
 
@@ -79,16 +79,16 @@ session 是 `~/.claude/projects/<编码后的工作区路径>/*.jsonl`,量大、
 
 2. **确保目标目录存在**。若 `base/M-D/` 不存在,先按 `init` 建好(至少建目录和空 summary)。
 
-3. **跑提取脚本**,把当天所有项目的对话导出到临时中间文件:
+3. **跑提取脚本**，直接读取标准输出；不要传 `--out`，也不要创建 `_sessions_dump.txt`：
    ```bash
    python ~/.agents/skills/daily-work-journal/scripts/extract_sessions.py \
-     --date <YYYY-MM-DD> --out "<base>/M-D/_sessions_dump.txt"
+     --date <YYYY-MM-DD>
    ```
    - `--date` 用 ISO 格式(如 `2026-07-13`),不是 `M-D`。
-   - 需要覆盖 projects 根目录时加 `--projects-dir`。
-   - 脚本会打印命中项目数与事件总数。若为 0,说明当天无 session,如实告知用户,不要编造。
+   - 需要覆盖 Claude 或 Codex 的默认目录时，分别加 `--projects-dir` 或 `--codex-sessions-dir`。
+   - 脚本会打印来源、命中项目数与事件总数。若为 0,说明当天无 session,如实告知用户,不要编造。
 
-4. **读中间文件并归纳**。用 Read 读 `_sessions_dump.txt`(UTF-8,不会乱码)。按主题/项目归并成结构化中文总结,而非流水账。建议结构:
+4. **归纳脚本输出**。按来源、主题/项目归并成结构化中文总结,而非流水账。建议结构:
    - **总体成果**(3~5 条):当天最值得说的产出,动词匹配真实完成度。
    - **按项目 / 主题分节**:每个项目/主题一节,写清具体改动、决策、提交/分支/MR、验证到哪一步。
    - **阻塞 / 待协调进展**:对照 `work.md`「阻塞 / 待协调」,写今天有没有推进、是否解除、是否仍卡着(缺依赖/权限/等他人)。
@@ -99,9 +99,7 @@ session 是 `~/.claude/projects/<编码后的工作区路径>/*.jsonl`,量大、
    - 对照「阻塞 / 待协调」,标注每条是否解除。
    - 计划里没有、但 session 里确实做了的事,单独列为计划外产出,不要硬塞进原计划条目。
 
-6. **清理中间文件**:删除 `_sessions_dump.txt`。
-
-7. 报告:总结了几个项目、几条 session、写到哪个文件。
+6. 报告:覆盖了哪些来源、总结了几个项目、几条 session、写到哪个文件。
 
 ### 总结质量要求(与全局规范一致)
 
