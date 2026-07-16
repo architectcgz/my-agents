@@ -27,7 +27,7 @@
 - 调用前端实现、UI/UX 设计、页面原型、视觉 polish 类 subagent 时，必须使用 `gpt-5.5`；不要选择工具说明中模型被固定为 `gpt-5.4` 且不可覆盖的内置角色。若当前工具无法确认或无法满足 `gpt-5.5`，先停止调度并向用户说明限制。
 - 停下来问用户只有一种合法情况：存在真正的歧义，继续工作会产出与用户意图相反的成果。
 - 高风险操作默认先说明影响、风险和回退方式，再等待确认。
-- 每个任务开始时必须主动检查是否存在适用的 skill 或专门 agent 流程；只有用户点名或任务明确命中 description 时才读取对应 skill，不设 `superpowers` / `using-superpowers` 默认兜底。
+- skill 和专门 agent 按需调用：用户点名或任务明确命中 description 时，才读取并使用对应 skill；不设 `superpowers` / `using-superpowers` 默认兜底。
 - 创建 `git worktree` 时，worktree 路径一律放到对应项目目录下；不要放到 `/tmp`、`~/.codex`、`~/.agents` 或其他脱离项目归属的位置。
 - 任何 `git commit` 前必须先走 `committing-changes` skill 核对并组织提交信息（类型 + 中文描述、最小可审阅拆分、默认禁止 `Co-Authored-By`、按仓库 commit policy/hook 叠加），不得跳过；该 skill 是提交约定的唯一事实源。
 - 以下专题文档是本文件的延伸正文；命中对应场景时，必须继续读取对应文档，而不是只看本文件摘要。
