@@ -60,6 +60,7 @@ def configure_strict_reference(repo: Path, project_name: str, profile: str) -> t
 如果仓库存在自动化测试或明显测试面，先写或更新最小相关测试，再进入实现。
 
 - Write or update the narrowest relevant tests first.
+- For behavior/logic changes, write or update the narrowest relevant tests first; simple UI/presentation-only edits do not default to TDD.
 - After changing tests, run the smallest relevant test command that covers the touched surface.
 - After the test command, run the relevant script check such as `bash {HARNESS_ROOT}/scripts/check-test-workflow.sh` or `bash {HARNESS_ROOT}/scripts/check-harness-consistency.sh` before claiming completion.
 - 如果当前仓库已经有 `{HARNESS_ROOT}/scripts/check-harness-consistency.sh`、git hooks 或 CI guardrail，测试相关脚本检查必须接入这些实际检查链路，不能只停留在提示词里。""",
