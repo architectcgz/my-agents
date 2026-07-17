@@ -90,6 +90,16 @@ bash /home/azhi/.agents/harness/init-project.sh "$PWD" --mode strict-reference
 
 The initializer is idempotent. In both modes it also ensures the repo root keeps `CLAUDE.md -> AGENTS.md`, unless an existing conflicting `CLAUDE.md` requires manual resolution. In default mode it creates `.arccgz-harness/state/`, `.arccgz-harness/state/reuse-decisions/`, optional local `.arccgz-harness/state/reuse-index/`, `.arccgz-harness/harness/policies/`, `.arccgz-harness/harness/templates/`, `.arccgz-harness/harness/prompts/`, `.arccgz-harness/harness/checks/`, `.arccgz-harness/feedback/`, `.arccgz-harness/scripts/check-architecture.sh`, `.arccgz-harness/scripts/check-test-workflow.sh`, and a consistency check. In strict reference mode it creates `.arccgz-harness/concepts/`, `.arccgz-harness/thinking/`, `.arccgz-harness/practice/`, `.arccgz-harness/feedback/`, `.arccgz-harness/works/`, `.arccgz-harness/prompts/`, `.arccgz-harness/references/`, `.arccgz-harness/scripts/check-architecture.sh`, `.arccgz-harness/scripts/check-test-workflow.sh`, and a consistency check; in that layout, `concepts/` should be treated as a supplement to the root `AGENTS.md`, while the root `AGENTS.md` remains the project description and navigation entrypoint.
 
+### Existing Agent Instruction Files
+
+Keep the ownership boundary explicit during initialization:
+
+- `~/.agents/AGENTS.md` is global user guidance and is never modified by a project initializer.
+- The repository root `AGENTS.md` is a thin auto-discovery and navigation shell. Preserve existing project text; add or update only clearly marked harness blocks, and report the resulting diff.
+- `.arccgz-harness/AGENTS.md` is the project owner's harness guidance. Do not overwrite it. Create it only when missing and use a write-if-missing policy for any nested harness `AGENTS.md`.
+- Keep durable project-specific rules in `.arccgz-harness/AGENTS.md` or the owning project documentation; do not duplicate the full harness policy into the root entrypoint.
+- `CLAUDE.md` must remain a symlink to the root `AGENTS.md`. If a regular file or a symlink to another target already exists, stop and require explicit manual migration; never replace it silently.
+
 ## Harness Shape
 
 Keep the harness as a map, not a manual. In the current local standard:
