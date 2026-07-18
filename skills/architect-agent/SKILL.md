@@ -1,23 +1,11 @@
 ---
 name: architect-agent
-description: Use when analyzing a codebase before implementation, especially to map module boundaries, call paths, data flow, dependencies, compatibility constraints, complex aggregated queries, over-broad repositories or services, and the smallest safe change surface for a planned task. Also use when manually asked to inspect broad aggregation, over-composed queries, over-broad repositories/services, dashboard/overview endpoints, or candidates for splitting into clearer subdomain ports and queries.
+description: Use when analyzing a codebase or implementation plan before backend changes, especially around module boundaries, call paths, production runtime, external dependencies, workers, queues, outbox delivery, compatibility constraints, complex aggregation, over-broad repositories/services, and the smallest safe change surface.
 ---
 
 # Architect Agent
 
 Analyze the codebase deeply enough to guide implementation without guessing.
-
-## Use When
-
-- The task needs structural understanding before code changes begin
-- You need to map current behavior, dependencies, module boundaries, or risk points
-- The codebase is large enough that implementation without prior analysis would be guesswork
-- The user asks for aggregation inspection, query decomposition, subdomain query splitting, broad dashboard/overview query review, or repository/service responsibility splitting
-
-## Do Not Use
-
-- Straightforward changes where the owning files and behavior are already obvious
-- Pure implementation after architecture-level questions have already been answered
 
 ## Core Guardrails
 
@@ -35,21 +23,14 @@ Analyze the codebase deeply enough to guide implementation without guessing.
 4. Call out risk areas such as hidden coupling, schema assumptions, concurrency, or rollout constraints.
 5. Recommend a minimal implementation approach grounded in the actual codebase.
 
+## Required Gate Routing
+
+- For production runtime, dependency lifecycle, workers, queues, consumers, outbox, health, observability, or implementation-plan review, read `references/production-runtime-gates.md` before giving a verdict or plan.
+- For complex aggregation, broad queries, dashboards/overviews, or responsibility splitting, read `references/aggregation-inspection.md`.
+- For an over-broad repository, service, port, or gateway, read `references/cases/over-broad-repository-port.md` before recommending a split.
+- Do not approve a plan that defers a known blocker or major risk on the touched production surface to later debt merely because existing unit tests pass or a deadline is close.
+
 ## Aggregation And Port Inspection
-
-Use this path when manually asked to inspect complex aggregation, broad queries, dashboard data loaders, overview endpoints, report builders, or repositories/services that combine several use-case responsibilities.
-
-Before concluding, look for:
-
-- one function or method querying multiple business domains
-- query functions with optional filters from unrelated features
-- SQL or ORM joins that mix unrelated aggregates
-- service methods returning mixed DTOs for several UI sections
-- generic names such as `getDashboardData`, `getOverview`, `getSummary`, `getStats`, `getReport`, `queryAll`, or `searchEverything`
-- result objects that contain several independently owned subdomain sections
-- changes where a small feature requires editing a broad aggregated query
-- repository or service interfaces that mix creation, mutation, member management, read models, user lookup, existence checks, uniqueness checks, or policy checks
-- interfaces named around a whole aggregate but used by unrelated command and query flows
 
 When the user asks for a repository-wide aggregation inspection, run this helper from the target repository root:
 
@@ -58,21 +39,6 @@ node /home/azhi/.codex/skills/architect-agent/scripts/inspect-aggregation.mjs
 ```
 
 Then read the matched files directly. Do not recommend a split based only on the helper output.
-
-If the candidate is an over-broad repository, service, port, or gateway, read `references/cases/over-broad-repository-port.md` for the detailed decomposition pattern.
-
-For each confirmed aggregation candidate:
-
-1. Identify the subdomains or use-case responsibilities currently coupled together.
-2. Map each responsibility to its owning table, model, service, route, job, UI consumer, command flow, or query flow.
-3. Explain why the current aggregation is risky or acceptable.
-4. Propose smaller ports or queries with explicit names and result ownership.
-5. Prefer use-case-oriented split names over table-oriented buckets when those are the actual consumers.
-6. Preserve existing external behavior unless the user asked for API changes.
-7. Prefer incremental extraction over broad rewrites.
-8. Call out transaction, consistency, permission, ordering, pagination, caching, and performance risks.
-
-Prefer splitting when subparts differ in lifecycle, command/query direction, permission model, cache strategy, pagination, ordering, consistency needs, UI consumer, transaction boundary, or release cadence.
 
 ## Output Expectations
 
@@ -83,3 +49,4 @@ Prefer splitting when subparts differ in lifecycle, command/query direction, per
 - Proposed approach
 - Risks
 - Unknowns
+- Production runtime gate verdict and missing acceptance evidence, when applicable
