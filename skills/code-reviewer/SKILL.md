@@ -41,18 +41,19 @@ Review for risk reduction, not for style theater.
 1. Read the actual diff first. Before loading references, establish the review context: read module boundaries, existing contracts, recent architecture decisions, test coverage baseline, and any project-specific review requirements (AGENTS.md, CLAUDE.md, docs/architecture/). A checklist without context yields shallow findings.
 2. Load only the relevant reference files from `references/` based on what the diff touches.
 3. Identify the dominant risk area: correctness, architecture, security, test strategy, engineering standards, or review communication.
-4. Check changed code in local context, not line-by-line in isolation.
-5. For frontend UI diffs that add or change visible copy, read `references/frontend-ui-copy-review.md`.
-6. For frontend architecture reviews, read `frontend/architecture-review.md`.
-7. Check whether the diff grows already oversized files, components, services, or functions in a way that increases ownership ambiguity, hides state flow, or makes tests weaker than the behavior.
-8. If the diff touches a known oversized or owner-mixed surface at all, apply Guardrail 13: explicitly decide whether the change closes that debt, and block the review if it does not.
-9. For frontend or backend diffs, load `references/technical-risk-checks.md` for the surface-specific scrutiny points (frontend: route views, SFCs, composables, stores, async handlers, lifecycle cleanup; backend: handlers, services, repositories, transactions, background work, config, integrations, DTO/API contracts).
-10. Ask "how would a senior maintainer implement this after reading the surrounding code?" Compare against the submitted diff for ownership, simplicity, error handling, contracts, tests, and future extension cost.
-11. Search for ownership and call-path drift. For changed or newly obsolete methods, use text search to distinguish production calls from tests, stubs, generated guards, and string-based architecture tests. If a method only has test/guard references and no production owner, flag it for removal.
-12. Write findings in priority order with impact, fix direction, and whether the finding blocks completion.
-13. For material findings, state the expected re-review or re-validation evidence.
-14. Keep subjective preferences out of blocker comments unless they hide a real maintenance or correctness cost.
-15. For independent reviews that gate non-trivial work, archive the review result using the Review Archive policy below.
+4. For implementation-plan, migration-plan, rollout-plan, or refactor-plan reviews, read `references/plan-reviewer.md` and build its delivery-boundary, constraint-activation, artifact-ownership, and gate-evidence matrices before giving a verdict.
+5. Check changed code in local context, not line-by-line in isolation.
+6. For frontend UI diffs that add or change visible copy, read `references/frontend-ui-copy-review.md`.
+7. For frontend architecture reviews, read `frontend/architecture-review.md`.
+8. Check whether the diff grows already oversized files, components, services, or functions in a way that increases ownership ambiguity, hides state flow, or makes tests weaker than the behavior.
+9. If the diff touches a known oversized or owner-mixed surface at all, apply Guardrail 13: explicitly decide whether the change closes that debt, and block the review if it does not.
+10. For frontend or backend diffs, load `references/technical-risk-checks.md` for the surface-specific scrutiny points (frontend: route views, SFCs, composables, stores, async handlers, lifecycle cleanup; backend: handlers, services, repositories, transactions, background work, config, integrations, DTO/API contracts).
+11. Ask "how would a senior maintainer implement this after reading the surrounding code?" Compare against the submitted diff for ownership, simplicity, error handling, contracts, tests, and future extension cost.
+12. Search for ownership and call-path drift. For changed or newly obsolete methods, use text search to distinguish production calls from tests, stubs, generated guards, and string-based architecture tests. If a method only has test/guard references and no production owner, flag it for removal.
+13. Write findings in priority order with impact, fix direction, and whether the finding blocks completion.
+14. For material findings, state the expected re-review or re-validation evidence.
+15. Keep subjective preferences out of blocker comments unless they hide a real maintenance or correctness cost.
+16. For independent reviews that gate non-trivial work, archive the review result using the Review Archive policy below.
 
 ## When Used As The code-workflow Gate Reviewer
 
@@ -125,6 +126,8 @@ Review archive files must include:
 
 ## Reference Map
 
+- `references/plan-reviewer.md`
+  Read for implementation plans, migrations, rollouts, program-sized plans, context-drift risk, constraint activation timing, repeated file/document ownership, preflight gates, and parent/child plan decomposition.
 - `references/review-workflow.md`
   Read for review order, scope control, prioritization, and merge-readiness judgment.
 - `references/technical-risk-checks.md`
