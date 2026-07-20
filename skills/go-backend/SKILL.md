@@ -1,6 +1,6 @@
 ---
 name: go-backend
-description: Use when implementing, refactoring, or reviewing Go backend code, especially context propagation, handlers, services, repositories, jobs, workers, database access, concurrency, idempotency, cache, queues, external integrations, runtime operations, and Go-specific tests.
+description: Use when implementing, refactoring, or reviewing Go backend code, especially context propagation, handlers, services, repositories, jobs, workers, database access, structured logging with log/slog, concurrency, idempotency, cache, queues, external integrations, runtime operations, and Go-specific tests.
 ---
 
 # Go Backend
@@ -74,6 +74,17 @@ Default every service, repository, handler, job, worker, checker, runner, and ot
 - Prefer explicit domain structs and small functions over reflection-heavy or generic abstractions for ordinary backend paths.
 - When behavior branches repeatedly on the same discriminator, read `references/design-pattern-selection.md` before extending the branch.
 
+## Structured Logging (`log/slog`)
+
+- Prefer standard library `log/slog` for new Go backend logging unless the repository already owns another stack.
+- Business code calls `Logger.Info` / `Error` / `*Context` / `Log`. Process roots assemble a `Handler` chain once; do not re-implement policy at every call site.
+- Production uses JSON; local may use text. Keep field semantics stable (`service`, `env`, `operation`, `requestId`, `traceId`, `durationMs`, `errorCode`).
+- Bind static fields with `logger.With(...)`. Put request/task correlation in `context` and attach via a thin context `Handler` (or an explicit boundary child logger)—one approach per process.
+- Never log secrets. Library/ORM/driver log paths that may emit DSN, tokens, or raw driver errors get a **dedicated redaction handler at that library entry**, not as a process-wide key blacklist that erases legitimate business fields (`errorCode`, `contentId`, safe `error` summaries).
+- Prefer explicit logger injection. Production wiring must not fall back to `slog.Default()` unless the project explicitly allows a narrow exception.
+- Logging records outcomes only; it must not own retries, fallbacks, or business control flow.
+- When implementing or reviewing logger construction, redaction boundaries, correlation fields, levels, or slog Handler wrappers, read `references/structured-logging-slog.md`.
+
 ## Go Implementation Guardrails
 
 - Keep package boundaries boring and explicit; do not introduce generic utility packages to hide domain behavior.
@@ -106,6 +117,7 @@ Default every service, repository, handler, job, worker, checker, runner, and ot
 
 - Read `references/configuration-defaults-and-loading.md` when touching runtime configuration, defaults, env/file/flag loading, timeout/retry/backoff/pool settings, dependency endpoints, or dependency wiring.
 - Read `references/context-lifecycle-and-timeout.md` when touching `context.Value`, timeout/deadline placement, request-scoped metadata, goroutines launched from handlers, long-lived workers, or async side effects.
+- Read `references/structured-logging-slog.md` when touching `log/slog`, Handler construction chains, context correlation fields, log levels, field cardinality, secret redaction, ORM/driver logger wiring, or production logger injection.
 - Read `references/design-pattern-selection.md` when Go backend behavior branches by provider, status, event type, mode, command, job kind, lifecycle state, or business rule.
 - Read `references/repository-interface-splitting.md` when a repository interface starts mixing unrelated query, command, profile, auth, report, or transaction methods, or when a tx closure currently receives a wide repo.
 - Read `references/runtime-scheduler-and-bounded-concurrency.md` when touching fan-out goroutines, worker pools, CPU-heavy jobs, runtime scheduler symptoms, `GOMAXPROCS`, `runtime.Gosched`, `runtime.LockOSThread`, or goroutine leak reviews.
@@ -114,4 +126,4 @@ Default every service, repository, handler, job, worker, checker, runner, and ot
 
 ## Source Basis
 
-These rules are distilled from Go official docs, Go blog posts, package documentation, and Go wiki review guidance. Do not browse these sources during normal task execution. Only refresh from the web when the user explicitly asks for updated official references or when a rule appears stale.
+These rules are distilled from Go official docs, Go blog posts (`log/slog` structured logging), package documentation, and Go wiki review guidance. Do not browse these sources during normal task execution. Only refresh from the web when the user explicitly asks for updated official references or when a rule appears stale.
