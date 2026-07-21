@@ -1,6 +1,6 @@
 ---
 name: feynman-note
-description: Use when user asks to create or record notes, says note/记录/记一下, mentions Feynman method, asks for 普通记录 or 费曼记录, or wants technical discussion preserved for review without losing the user's original wording.
+description: Use when the user explicitly asks to turn content into a note, such as “记录成笔记”“记成笔记”“整理成笔记”“写成笔记”, or explicitly requests a “普通记录” or “费曼笔记/费曼记录”. Do not use for standalone “记录一下”“记一下”“保存一下” or “总结一下”.
 ---
 
 # Feynman Note Skill
