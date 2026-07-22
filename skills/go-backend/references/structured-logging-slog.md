@@ -15,7 +15,7 @@ If the current project defines observability contracts (field names, redaction a
 ## Core Rules
 
 - Prefer `log/slog` over introducing new Zap/Zerolog/Logrus dependencies unless the repository already owns another stack.
-- Production default: JSON handler. Local may use text handler; field semantics stay the same.
+- All environments use JSON handler (`slog.NewJSONHandler`). Do not ship a parallel text log format for local/dev; field semantics stay one contract.
 - Message is a short, stable event name (for example `outbox.published`), not a free-form sentence that embeds IDs or durations.
 - Put queryable facts in attributes (`eventId`, `durationMs`, `errorCode`), not in `fmt.Sprintf` messages.
 - Static process fields (`service`, `env`, `version`) bind once with `logger.With(...)` at construction.
@@ -37,7 +37,7 @@ Assemble handlers at the process root (typically `cmd/server`). Runtime code onl
 Recommended shape:
 
 ```text
-outputHandler = slog.NewJSONHandler / NewTextHandler(writer, options)
+outputHandler = slog.NewJSONHandler(writer, options)  // JSON in all environments
 rawHandler    = NewContextLogHandler(outputHandler)   // whitelist requestId/traceId from ctx
 projectLogger = slog.New(rawHandler).With("service", name, "env", env)
 

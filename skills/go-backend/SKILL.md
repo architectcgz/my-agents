@@ -78,8 +78,10 @@ Default every service, repository, handler, job, worker, checker, runner, and ot
 
 - Prefer standard library `log/slog` for new Go backend logging unless the repository already owns another stack.
 - Business code calls `Logger.Info` / `Error` / `*Context` / `Log`. Process roots assemble a `Handler` chain once; do not re-implement policy at every call site.
-- Production uses JSON; local may use text. Keep field semantics stable (`service`, `env`, `operation`, `requestId`, `traceId`, `durationMs`, `errorCode`).
+- Use structured JSON for all environments (local, dev, prod). Do not maintain a separate text log format path. Keep field semantics stable (`service`, `env`, `operation`, `requestId`, `traceId`, `durationMs`, `errorCode`).
+- Message is a short, stable event name (for example `outbox.published`); put IDs, durations, statuses, and other queryable facts in attributes, not in `fmt.Sprintf` messages.
 - Bind static fields with `logger.With(...)`. Put request/task correlation in `context` and attach via a thin context `Handler` (or an explicit boundary child logger)—one approach per process.
+- Keep ERROR reserved for failures that need investigation. Do not default expected client rejects (validation, not-found, auth deny) to ERROR. ERROR and other request-scoped logs must be joinable via `operation` plus `requestId` / `traceId` (Context Handler or explicit attrs).
 - Never log secrets. Library/ORM/driver log paths that may emit DSN, tokens, or raw driver errors get a **dedicated redaction handler at that library entry**, not as a process-wide key blacklist that erases legitimate business fields (`errorCode`, `contentId`, safe `error` summaries).
 - Prefer explicit logger injection. Production wiring must not fall back to `slog.Default()` unless the project explicitly allows a narrow exception.
 - Logging records outcomes only; it must not own retries, fallbacks, or business control flow.
