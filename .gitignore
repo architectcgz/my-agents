@@ -9,3 +9,6 @@ codex/config.toml
 *.swo
 .DS_Store
 Thumbs.db
+
+# Codex 运行时生成的系统 skill 指纹
+/skills/.system/.codex-system-skills.marker
