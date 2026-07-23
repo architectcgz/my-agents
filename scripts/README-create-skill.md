@@ -129,4 +129,4 @@ mkdir ~/.agents/skills/xxx   # 创建真实目录
 ## Related
 
 - `~/.agents/skills/README.md` - Skills 目录说明
-- `~/.agents/skills/feynman-note/` - 实际案例参考
+- `~/.agents/skills/write-notes/` - 实际案例参考

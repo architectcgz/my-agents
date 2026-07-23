@@ -1,5 +1,5 @@
 ---
-name: feynman-note
+name: write-notes
 description: Use when the user explicitly asks to turn content into a note, knowledge or technical note, learning note, vault or Obsidian note, ordinary record, Feynman note, review card, self-test, knowledge-gap note, or closed-book explanation.
 ---
 
