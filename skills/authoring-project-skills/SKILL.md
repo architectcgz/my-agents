@@ -7,9 +7,9 @@ description: >
   wall, when descriptions fail to trigger, when traps keep getting missed, or
   when the skill should self-evolve from captured lessons. Also use when deciding
   whether a skill should stay a single file or become a folder, and how its
-  SKILL.md should route. For the TDD process of testing a skill with subagents,
-  use `writing-skills`; for repo-wide AGENTS.md / hooks harness, use
-  `harness-engineering`.
+  SKILL.md should route. Use `skill-creator` for the general create/update
+  workflow and basic folder validation; for repo-wide AGENTS.md / hooks harness,
+  use `harness-engineering`.
 ---
 
 # Authoring Project Skills
@@ -32,7 +32,7 @@ reference,再按需读。详细规范在 `references/`,不在此内联。
 - 判断一个 skill 该单文件还是文件夹,SKILL.md 该怎么路由。
 
 ## Do Not Use
-- 测试 skill 是否真的生效(subagent 压力/检索测试、RED-GREEN-REFACTOR)→ `writing-skills`。
+- 通用 skill 初始化、frontmatter 与基础目录校验 → `skill-creator`;本 skill 只负责项目级路由结构与演化。
 - 仓库级 harness(AGENTS.md 导航、SessionStart/PreToolUse hook、机械检查、CI 护栏)→ `harness-engineering`。
 - 可复用项目代码模板 / 项目 `AGENTS.md` 脚手架 → `project-template`。
 - 把跨项目通用方法误塞进项目 skill —— 通用的应进对应全局 skill,不在项目层长期复制正文。
@@ -69,4 +69,4 @@ reference,再按需读。详细规范在 `references/`,不在此内联。
 - 每条规则是否带可执行的 ✓Check(命令或可自问的具体问题)?
 - 高代价坑点是否同时出现在任务路径上(SKILL.md Known Gotchas / workflow 完成检查)?
 - Reference Map 引用的文件是否都真实存在、无孤儿?
-- 是否已按 `writing-skills` 做最小检索/触发验证?
+- 是否已按 `skill-creator` 运行基础结构校验,并按变更风险完成最小触发/前向验证?

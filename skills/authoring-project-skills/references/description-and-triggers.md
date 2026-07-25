@@ -1,7 +1,7 @@
 # Description and Triggers
 
 Read this file when writing or fixing a skill's `description`, name, or discoverability.
-For the deeper CSO (Claude Search Optimization) rules, also read `writing-skills`.
+For the general skill metadata and validation workflow, also read `skill-creator`.
 
 ## Description = 触发条件,不是摘要
 

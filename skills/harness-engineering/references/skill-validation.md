@@ -26,6 +26,6 @@ for how to *write* the skill being validated, see `authoring-project-skills`.
 初次写完、改完 SKILL.md 或薄壳后、从上游模板升级后、宣布"完成"前。
 
 ## 边界
-脚本抓不到语义问题(description 是否够准、路由是否合理);那部分靠人，或 `writing-skills` 的
-subagent 检索/压力测试。结构性拦截(Red Flags / Rationalizations / SessionStart hook)见
+脚本抓不到语义问题(description 是否够准、路由是否合理);那部分靠人，必要时按
+`skill-creator` 的 forward-testing 指引做独立验证。结构性拦截(Red Flags / Rationalizations / SessionStart hook)见
 `references/thin-shell-and-hooks.md`。
