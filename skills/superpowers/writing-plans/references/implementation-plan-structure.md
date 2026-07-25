@@ -53,7 +53,7 @@ The parent is a router and status ledger. It owns:
 - included and excluded services or subsystems;
 - dependency graph and blocked preconditions;
 - child-plan paths and current status;
-- commit and review evidence for completed children;
+- handoff and human quality-review evidence for completed children (commit SHAs only if the user already authorized those commits);
 - global rollback constraints and final convergence proof.
 
 The parent does not own:
@@ -91,9 +91,9 @@ Save this content as the package `README.md`.
 
 ## Child plans and dependency order
 
-| Phase | Child plan | Delivery owner | Depends on | Status | Commit | Review |
+| Phase | Child plan | Delivery owner | Depends on | Status | User review | Handoff |
 | --- | --- | --- | --- | --- | --- | --- |
-| P0 | `[path]` | [owner] | - | Ready | - | - |
+| P0 | `[path]` | [owner] | - | Ready | Pending | - |
 
 ## Progressive planning rules
 
@@ -149,7 +149,7 @@ Each child must be executable without rereading every sibling plan.
 
 | Requirement | Evidence | Failure action |
 | --- | --- | --- |
-| Prior child complete | Commit and review path | Stop; do not infer state |
+| Prior child complete | Exit-gate evidence + user quality-review acceptance | Stop; do not infer state |
 
 ## Context packet
 
@@ -180,7 +180,7 @@ Each child must be executable without rereading every sibling plan.
 - [ ] Run it and confirm the expected failure.
 - [ ] Implement the smallest behavior owned by this task.
 - [ ] Run focused verification.
-- [ ] Commit according to repository policy.
+- [ ] Stop for user quality review; do not commit unless the user later explicitly asks.
 
 ## Exit gate
 
@@ -192,9 +192,9 @@ Each child must be executable without rereading every sibling plan.
 
 ## Handoff record
 
-- Commit:
 - Validation:
-- Review:
+- User quality review: Pending | Accepted | Changes requested
+- Commit (only if user explicitly authorized): -
 - Deviations:
 - Remaining allowlist:
 - Next child replan required: Yes | No
@@ -277,7 +277,7 @@ Use these as review prompts, not universal blockers:
 
 - A parent program should usually remain a compact router, often around 150-250 lines.
 - A child plan should usually fit one service or one shared capability, often around 100-250 lines.
-- A child should normally contain one review boundary and one to three focused commits.
+- A child should normally contain one review boundary and one to three user quality-review stops (no plan-scheduled commits).
 - If one child requires unrelated runtime, repository, frontend, deployment, and governance contexts simultaneously, split by owner or delivery state.
 - If late-child details depend on code not yet written, replace them with acceptance-level placeholders and a mandatory refresh gate.
 
@@ -296,7 +296,7 @@ docs/plan/impl-plan/2026-07-19-all-services-database-migration/
 └── 08-strict-convergence-and-final-review.md
 ```
 
-The parent records status and dependencies. Each child records exact files, tests, commits, review evidence, and handoff state.
+The parent records status and dependencies. Each child records exact files, tests, user quality-review evidence, and handoff state. Plans do not schedule git commits.
 
 ## Counterexample: Oversized All-Services ORM Plan
 

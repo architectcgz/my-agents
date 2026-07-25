@@ -12,8 +12,9 @@ Task tool (superpowers:code-reviewer):
 
   WHAT_WAS_IMPLEMENTED: [from implementer's report]
   PLAN_OR_REQUIREMENTS: Task N from [plan-file]
-  BASE_SHA: [commit before task]
-  HEAD_SHA: [current commit]
+  BASE_SHA: [commit or tree before task; may be uncommitted baseline]
+  HEAD_SHA: [current HEAD or working-tree state after task; work may be uncommitted]
+  REVIEW_SCOPE: [paths changed by this task]
   DESCRIPTION: [task summary]
 ```
 

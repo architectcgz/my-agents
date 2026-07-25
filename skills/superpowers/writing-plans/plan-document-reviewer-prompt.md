@@ -32,6 +32,8 @@ Task tool (general-purpose):
     | Artifact Ownership | Repeated file/document/config/plan edits have one owner or a necessary explicit intermediate state |
     | Progressive Elaboration | Pilot-dependent late tasks are refreshed after the pilot instead of freezing stale file-level guesses |
     | Task Decomposition | Tasks have clear boundaries, steps are actionable |
+    | Human Quality Gate | Each reviewable slice ends with a stop for the user to inspect code quality before the next slice |
+    | No Auto-Commit | Plan does not require `git commit` / "Commit this slice" as an execution step; commits stay user-authorized |
     | Buildability | Could an engineer follow this plan without getting stuck? |
 
     ## Calibration
@@ -69,6 +71,11 @@ Task tool (general-purpose):
     requiring exact commit or contract evidence, not as an ordinary checkbox. When a pilot
     can change shared APIs or file layout, require later child plans to be refreshed against
     the actual reviewed base before execution.
+
+    Reject plans that schedule automatic git commits (`Commit this slice`, example
+    `git commit` commands as required steps, or "frequent commits" as an execution duty).
+    Require an explicit user quality-review stop after each independently reviewable
+    slice instead.
 
     Approve unless there are serious gaps — missing requirements from the spec,
     missing expanded acceptance criteria from cited source docs, contradictory steps,

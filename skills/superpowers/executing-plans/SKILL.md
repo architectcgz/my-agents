@@ -31,7 +31,14 @@ For each task:
 5. After all steps in the task pass validation, mark the task as completed
 6. Do not start the next task while completed steps in the current task are still unchecked
 
-Plan checkbox updates are required execution state. They should be committed with the same task slice when practical, or as a small docs-only follow-up before handoff. Never report a task as complete while its implementation-plan checklist still shows `- [ ]` for completed work.
+Plan checkbox updates are required execution state. Keep them in the working tree as execution status; do **not** auto-commit them. Never report a task as complete while its implementation-plan checklist still shows `- [ ]` for completed work.
+
+After each independently reviewable task or child-plan slice:
+1. Run the plan's focused verification.
+2. Present changed files, verification evidence, and risks to the user.
+3. **Stop** and wait for the user to inspect code quality.
+4. Only continue to the next slice after the user accepts or requests fixes.
+5. Do **not** `git commit` unless the user later explicitly asks; then use `@committing-changes` and the repository commit policy.
 
 ### Step 3: Complete Development
 
@@ -65,6 +72,8 @@ After all tasks complete and verified:
 - Reference skills when plan says to
 - Stop when blocked, don't guess
 - Never start implementation on main/master branch without explicit user consent
+- After each reviewable slice, stop for user code-quality review before continuing
+- Never auto-commit; commit only on explicit user request via @committing-changes
 
 ## Integration
 

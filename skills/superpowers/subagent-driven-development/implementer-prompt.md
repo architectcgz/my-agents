@@ -32,9 +32,9 @@ Task tool (general-purpose):
     1. Implement exactly what the task specifies
     2. Write tests (following TDD if task says to)
     3. Verify implementation works
-    4. Commit your work
-    5. Self-review (see below)
-    6. Report back
+    4. Self-review (see below)
+    5. Report back for user quality review
+    6. **Do not `git commit`** unless the user (or controller) later gives an explicit commit request for this work
 
     Work from: [directory]
 
@@ -103,9 +103,10 @@ Task tool (general-purpose):
     - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
     - What you implemented (or what you attempted, if blocked)
     - What you tested and test results
-    - Files changed
+    - Files changed (paths; keep uncommitted unless explicitly told to commit)
     - Self-review findings (if any)
     - Any issues or concerns
+    - Confirmation that you did **not** create a git commit (or the exact reason if the user explicitly required one)
 
     Use DONE_WITH_CONCERNS if you completed the work but have doubts about correctness.
     Use BLOCKED if you cannot complete the task. Use NEEDS_CONTEXT if you need

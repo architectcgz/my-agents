@@ -9,7 +9,7 @@ Execute plan by dispatching fresh subagent per task, with two-stage review after
 
 **Why subagents:** You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
 
-**Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
+**Core principle:** Fresh subagent per task + two-stage review (spec then quality) + user quality-review stop before the next task. Implementers do **not** auto-commit; commits require the user's later explicit request via `@committing-changes`.
 
 ## When to Use
 
@@ -35,7 +35,7 @@ digraph when_to_use {
 - Same session (no context switch)
 - Fresh subagent per task (no context pollution)
 - Two-stage review after each task: spec compliance first, then code quality
-- Faster iteration (no human-in-loop between tasks)
+- Still stops for the user to inspect each task before the next one starts
 
 ## The Process
 
@@ -48,7 +48,7 @@ digraph process {
         "Dispatch implementer subagent (./implementer-prompt.md)" [shape=box];
         "Implementer subagent asks questions?" [shape=diamond];
         "Answer questions, provide context" [shape=box];
-        "Implementer subagent implements, tests, commits, self-reviews" [shape=box];
+        "Implementer subagent implements, tests, self-reviews (no commit)" [shape=box];
         "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" [shape=box];
         "Spec reviewer subagent confirms code matches spec?" [shape=diamond];
         "Implementer subagent fixes spec gaps" [shape=box];
@@ -67,8 +67,8 @@ digraph process {
     "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
     "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
     "Answer questions, provide context" -> "Dispatch implementer subagent (./implementer-prompt.md)";
-    "Implementer subagent asks questions?" -> "Implementer subagent implements, tests, commits, self-reviews" [label="no"];
-    "Implementer subagent implements, tests, commits, self-reviews" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)";
+    "Implementer subagent asks questions?" -> "Implementer subagent implements, tests, self-reviews (no commit)" [label="no"];
+    "Implementer subagent implements, tests, self-reviews (no commit)" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)";
     "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" -> "Spec reviewer subagent confirms code matches spec?";
     "Spec reviewer subagent confirms code matches spec?" -> "Implementer subagent fixes spec gaps" [label="no"];
     "Implementer subagent fixes spec gaps" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" [label="re-review"];
@@ -76,7 +76,12 @@ digraph process {
     "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" -> "Code quality reviewer subagent approves?";
     "Code quality reviewer subagent approves?" -> "Implementer subagent fixes quality issues" [label="no"];
     "Implementer subagent fixes quality issues" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="re-review"];
-    "Code quality reviewer subagent approves?" -> "Mark task complete in TodoWrite" [label="yes"];
+    "Code quality reviewer subagent approves?" -> "Stop for user quality review" [label="yes"];
+    "Stop for user quality review" [shape=box];
+    "User accepts slice?" [shape=diamond];
+    "Stop for user quality review" -> "User accepts slice?";
+    "User accepts slice?" -> "Implementer subagent fixes quality issues" [label="changes requested"];
+    "User accepts slice?" -> "Mark task complete in TodoWrite" [label="yes"];
     "Mark task complete in TodoWrite" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
     "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
@@ -97,6 +102,18 @@ Use these defaults when dispatching subagents:
 If an implementer or reviewer needs a stronger model than the default, re-dispatch explicitly and explain the reason. Do not upgrade silently.
 
 Task size still matters for whether a task should be split, but it does not change the default review model.
+
+## User Quality Review Gate
+
+After implementer work and any automated/spec/code-quality review for a task:
+
+1. Present the task result, changed files, verification evidence, and open concerns.
+2. **Stop.** Do not dispatch the next task implementer.
+3. Wait for the user to accept the slice or request changes.
+4. Do **not** `git commit` unless the user explicitly asks to commit this work.
+5. Only after user acceptance, mark the task complete and proceed.
+
+If the plan still contains legacy "Commit" checkboxes, ignore them as execution duties; treat them as superseded by this gate and `@committing-changes`.
 
 ## Handling Implementer Status
 
@@ -145,7 +162,7 @@ Implementer: "Got it. Implementing now..."
   - Implemented install-hook command
   - Added tests, 5/5 passing
   - Self-review: Found I missed --force flag, added it
-  - Committed
+  - Did not commit (awaiting user)
 
 [Dispatch spec compliance reviewer]
 Spec reviewer: ✅ Spec compliant - all requirements met, nothing extra
@@ -165,7 +182,7 @@ Implementer:
   - Added verify/repair modes
   - 8/8 tests passing
   - Self-review: All good
-  - Committed
+  - Did not commit (awaiting user)
 
 [Dispatch spec compliance reviewer]
 Spec reviewer: ❌ Issues:
