@@ -2,7 +2,7 @@
 
 用途：给任意 agent 使用，让它在执行任务时主动发现可复用问题、风险、规则缺口、用户纠正和学习信号，并把这些信息持久化到合适位置。
 
-正式 skill 已沉淀到 `~/.agents/skills/persisting-useful-findings/`。本文件保留为可复制的 prompt 版本。
+原正式 skill `persisting-useful-findings` 已于 2026-07-25 移入 `~/.agents/skills-disabled/persisting-useful-findings/`（用户要求自行记录记忆）。本文件仅作可复制 prompt 存档，不再作为默认 agent skill 入口。
 
 ## 通用可分享版
 
