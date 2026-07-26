@@ -74,6 +74,15 @@ Default every service, repository, handler, job, worker, checker, runner, and ot
 - Prefer explicit domain structs and small functions over reflection-heavy or generic abstractions for ordinary backend paths.
 - When behavior branches repeatedly on the same discriminator, read `references/design-pattern-selection.md` before extending the branch.
 
+## Documentation Comments
+
+- Give every exported Go function and method a declaration-adjacent doc comment that starts with its identifier name and states the observable purpose or contract.
+- Document non-exported functions and methods when they contain important business rules or non-obvious behavior, especially validation, security, ownership, lifecycle, retry, or error-translation boundaries.
+- Do not use JavaDoc-style `@param`, `@return`, or `@throws` annotations. Go doc comments are concise prose.
+- Explain a parameter in that prose when its role is non-obvious or changes the caller contract. For example, a configuration validator should say that `name` is used to identify the offending setting in errors and that `allowedSchemes` defines the accepted URL protocols.
+- Do not enumerate self-evident parameters merely to restate their types. Prefer documenting constraints, side effects, returned errors, ownership, and preconditions that callers need to honor.
+
+
 ## Structured Logging (`log/slog`)
 
 - Prefer standard library `log/slog` for new Go backend logging unless the repository already owns another stack.
