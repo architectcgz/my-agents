@@ -125,7 +125,7 @@ Each child must be executable without rereading every sibling plan.
 ```markdown
 # [Slice Name] Implementation Plan
 
-> **For agentic workers:** [Required execution and testing skills]
+> **Execution:** Execute inline in the current session. `subagent-driven-development` is globally disabled; do not dispatch subagents as the plan's default workflow.
 
 **Goal:** [One independently testable result]
 

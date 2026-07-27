@@ -37,7 +37,7 @@ Use this overview only when the Superpowers collection itself is relevant. For o
 
 ### Multi-Agent Coordination
 
-- **subagent-driven-development** - Execute plans with independent tasks in current session
+- ~~**subagent-driven-development**~~ - 已禁用（已移到 `~/.agents/skills-disabled/subagent-driven-development/`，见该目录 `DISABLED.md`）
 - **dispatching-parallel-agents** - Coordinate multiple agents for parallel work
 
 ### Meta-Skills
@@ -53,6 +53,7 @@ Use this overview only when the Superpowers collection itself is relevant. For o
 4. **Completion claims**: Apply `verification-before-completion` before claiming changes are complete or passing.
 5. **Failures and bugs**: Follow `systematic-debugging` when investigating unexpected behavior.
 6. **Skill authoring**: `writing-skills` 当前已禁用。通用 skill 创建、更新与校验使用 `skill-creator`（`quick_validate.py` + `references/validation-checklist.md`）；项目级 skill 路由结构使用 `authoring-project-skills`；仓库级机械校验使用 `harness-engineering`。
+7. **Multi-agent plan execution**: `subagent-driven-development` 当前已禁用。不要在实施计划时自动采用该 skill 的多 agent 开发和 review 流程；仅在用户明确要求时，按当前协作能力单独调度。
 
 ## 📖 Philosophy
 

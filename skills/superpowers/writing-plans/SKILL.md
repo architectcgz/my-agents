@@ -166,7 +166,7 @@ Every executable step must be represented by a checkbox. The executor is require
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For agentic workers:** Use `superpowers:subagent-driven-development` or `superpowers:executing-plans` according to the user-selected execution method. Steps use checkbox (`- [ ]`) syntax for tracking. Do not schedule git commits or automatic review loops in this plan; record verification evidence for any review the user requests. Commit only when the user later explicitly asks, via `@committing-changes`.
+> **Execution:** Execute this plan inline in the current session. `subagent-driven-development` is globally disabled; do not dispatch subagents as the plan's default workflow. Steps use checkbox (`- [ ]`) syntax for tracking. Do not schedule git commits in this plan; commit only when the user later explicitly asks, via `@committing-changes`.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -176,6 +176,8 @@ Every executable step must be represented by a checkbox. The executor is require
 
 ---
 ```
+
+Localize the execution block with the rest of the plan. Do not write `@subagent-driven-development` in an implementation plan: it is globally disabled. State that default execution is inline and do not require the user to select a workflow before implementation starts.
 
 ## Behavior Or Logic Task Structure
 
@@ -295,16 +297,10 @@ After writing the complete plan:
 
 ## Execution Handoff
 
-After saving the plan, offer the execution choice without scheduling an automatic review loop:
+After saving the plan, state that it is ready for inline execution. Do not dispatch subagents as part of the implementation workflow:
 
-**"Plan complete and saved to `<actual-plan-path>`. Two execution options:
+**"Plan complete and saved to `<actual-plan-path>`. It will execute inline in this session when you ask to begin. `subagent-driven-development` is globally disabled.
 
-**1. Subagent-Driven** - Dispatch a fresh subagent per task and record verification evidence after each task; run review only when I explicitly request it
+The plan will not auto-commit; commits happen only if you explicitly ask later."**
 
-**2. Inline Execution** - Execute tasks in this session using `executing-plans`, with proportionate evidence checkpoints
-
-**Which approach?**
-
-The plan will not auto-commit or auto-review; commits and reviews happen only when I explicitly request them."**
-
-If Subagent-Driven is chosen, use `superpowers:subagent-driven-development`. If Inline Execution is chosen, use `superpowers:executing-plans`.
+Use `superpowers:executing-plans` when that skill's trigger applies. Keep evidence checkpoints proportionate to task risk; independent and quality review remain user-controlled.
