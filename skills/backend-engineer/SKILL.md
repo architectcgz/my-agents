@@ -14,18 +14,19 @@ Language-specific backend skills should extend this skill rather than replace it
 - Keep ownership explicit across handler, service, repository, worker, and integration boundaries. Do not let convenience helpers blur who validates input, owns retries, owns transactions, or owns persistence-side effects.
 - Prefer one durable owner for each backend concern: schema changes, contract normalization, permission checks, idempotency, and side-effect orchestration should not be silently duplicated across layers.
 - Treat database schema evolution as an explicit deployment concern, not an incidental runtime effect.
-- For backend behavior changes, load `test-driven-development` before production code and prove the behavior with a failing test first.
+- For backend test strategy, test authoring, test refactoring, or verification, load `test-engineer` and follow the project's risk-based testing rules. Do not impose blanket test-first on documentation, mechanical refactors, or behavior already protected by focused tests.
 - When a backend branch enforces a non-obvious business rule, state transition, or failure path, keep the comment directly above that branch and explain the trigger, business intent, and side effect instead of paraphrasing the code.
 - When backend behavior keeps branching on the same discriminator, read `references/design-pattern-selection.md` before extending the branch.
 
 ## Reference Routing
 
 - Read `references/design-pattern-selection.md` when a backend change adds or reviews branching by type, status, provider, mode, event, command, tenant policy, lifecycle state, or validation rule.
+- Use `test-engineer` when deciding test layers, test-first depth, fake / fixture shape, real integration coverage, CI gates, flaky-test policy, or test-suite maintenance.
 
-## Backend TDD Boundaries
+## Backend Testing Boundaries
 
-- TDD is required for handlers, services/use cases, repositories, jobs, queues, caching behavior, integrations, permission checks, idempotency, transactions, and persistence rules.
-- Put the red test at the boundary that owns the behavior. Handler tests should prove request/response contracts, service tests should prove business decisions, repository tests should prove persistence contracts, and job/worker tests should prove retry and side-effect orchestration.
+- Apply risk-based testing instead of universal TDD. New backend contracts and use cases need focused tests; bugfixes, transactions, idempotency, concurrency, workers, migrations, and data-consistency changes should normally start with a failing regression or characterization test. Mechanical refactors may rely on existing green tests.
+- Put each test at the boundary that owns the behavior. Handler tests should prove request/response contracts, service tests should prove business decisions, repository tests should prove persistence contracts, and job/worker tests should prove retry and side-effect orchestration.
 - Do not duplicate the same behavior across handler, service, repository, and end-to-end tests unless each level proves a distinct contract.
 - Keep backend test growth under control during the refactor step: split test files by use case or behavior, extract builders/fixtures after duplication appears, and delete or merge tests with the same failure signal.
 - Use table tests for multiple examples of one rule, not for unrelated behaviors.

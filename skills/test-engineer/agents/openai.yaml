@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test Engineer"
+  short_description: "设计、编写、重构并验证可持续的自动化测试与质量门禁"
+  default_prompt: "Use $test-engineer to design a sustainable test strategy, add the narrowest useful tests, and report verification evidence."
