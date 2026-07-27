@@ -73,6 +73,8 @@ Default every service, repository, handler, job, worker, checker, runner, and ot
 - Return concrete types by default; define interfaces at the consumer side when practical.
 - Avoid Java-style service hierarchies, abstract factories, or one-method interfaces unless the existing codebase already owns that pattern.
 - Prefer explicit domain structs and small functions over reflection-heavy or generic abstractions for ordinary backend paths.
+- Organize package-level declarations by reader-facing ownership instead of mechanically moving every `type` to the top or bottom. Keep exported primary types, interfaces, commands, queries, result contracts, and constructors near the top; keep small unexported SQL scan/result/projection structs and one-owner helper types close to the functions or methods that own them, often below the main flow.
+- Keep receiver methods and related declarations in coherent groups. Avoid arbitrary type/function interleaving, and do not move query-local persistence shapes into catch-all files such as `models.go` merely to normalize declaration order.
 - When behavior branches repeatedly on the same discriminator, read `references/design-pattern-selection.md` before extending the branch.
 
 ## Documentation Comments
@@ -82,7 +84,6 @@ Default every service, repository, handler, job, worker, checker, runner, and ot
 - Do not use JavaDoc-style `@param`, `@return`, or `@throws` annotations. Go doc comments are concise prose.
 - Explain a parameter in that prose when its role is non-obvious or changes the caller contract. For example, a configuration validator should say that `name` is used to identify the offending setting in errors and that `allowedSchemes` defines the accepted URL protocols.
 - Do not enumerate self-evident parameters merely to restate their types. Prefer documenting constraints, side effects, returned errors, ownership, and preconditions that callers need to honor.
-
 
 ## Structured Logging (`log/slog`)
 
