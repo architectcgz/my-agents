@@ -41,6 +41,7 @@ Default every service, repository, handler, job, worker, checker, runner, and ot
 - Inject narrow typed config or policy structs into use cases, clients, workers, and adapters.
 - Do not read environment variables, config files, package-global mutable config, or feature flags from business methods, repositories, or deep client calls.
 - Timeout budgets, retry limits, backoff, queue sizes, pool sizes, dependency endpoints, and runtime limits must be named and validated configuration.
+- When using `github.com/caarlos0/env/v11`, read `references/caarlos0-env.md` for built-in parser, tag, option, and custom-parser behavior; keep its syntax parsing separate from service semantic validation.
 
 ## Database and Transaction Rules
 
@@ -127,6 +128,7 @@ Default every service, repository, handler, job, worker, checker, runner, and ot
 ## References
 
 - Read `references/configuration-defaults-and-loading.md` when touching runtime configuration, defaults, env/file/flag loading, timeout/retry/backoff/pool settings, dependency endpoints, or dependency wiring.
+- Read `references/caarlos0-env.md` when adding or reviewing `github.com/caarlos0/env/v11` structs, tags, `Parse*` options, `OnSet`, `FuncMap`, `time.Duration`, or custom textual configuration syntax.
 - Read `references/context-lifecycle-and-timeout.md` when touching `context.Value`, timeout/deadline placement, request-scoped metadata, goroutines launched from handlers, long-lived workers, or async side effects.
 - Read `references/structured-logging-slog.md` when touching `log/slog`, Handler construction chains, context correlation fields, log levels, field cardinality, secret redaction, ORM/driver logger wiring, or production logger injection.
 - Read `references/design-pattern-selection.md` when Go backend behavior branches by provider, status, event type, mode, command, job kind, lifecycle state, or business rule.
