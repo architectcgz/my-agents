@@ -53,7 +53,7 @@ The parent is a router and status ledger. It owns:
 - included and excluded services or subsystems;
 - dependency graph and blocked preconditions;
 - child-plan paths and current status;
-- handoff and human quality-review evidence for completed children (commit SHAs only if the user already authorized those commits);
+- handoff and user quality-review evidence for completed children (commit SHAs only if the user already authorized those commits);
 - global rollback constraints and final convergence proof.
 
 The parent does not own:
@@ -109,7 +109,7 @@ Save this content as the package `README.md`.
 
 - [ ] Every child plan reached its exit gate.
 - [ ] Final strict checks prove the old default path is gone.
-- [ ] Final independent review has no material findings.
+- [ ] User independent review has no unresolved material findings.
 ```
 
 Keep parent checkboxes limited to program status and final gates. Child execution state belongs in child files.
@@ -149,7 +149,7 @@ Each child must be executable without rereading every sibling plan.
 
 | Requirement | Evidence | Failure action |
 | --- | --- | --- |
-| Prior child complete | Exit-gate evidence + user quality-review acceptance | Stop; do not infer state |
+| Prior child complete | Exit-gate evidence + any required user quality-review acceptance | Stop; do not infer state |
 
 ## Context packet
 
@@ -180,7 +180,7 @@ Each child must be executable without rereading every sibling plan.
 - [ ] Run it and confirm the expected failure.
 - [ ] Implement the smallest behavior owned by this task.
 - [ ] Run focused verification.
-- [ ] Stop for user quality review; do not commit unless the user later explicitly asks.
+- [ ] Record verification evidence for user quality review; do not commit unless the user later explicitly asks.
 
 ## Exit gate
 
@@ -188,7 +188,7 @@ Each child must be executable without rereading every sibling plan.
 | --- | --- | --- |
 | Focused tests | `exact command` | PASS |
 | Negative search | `exact search` | No production matches |
-| Review | `review path` | No material findings |
+| User independent review | `review path` or handoff record | No unresolved material findings |
 
 ## Handoff record
 
@@ -202,7 +202,7 @@ Each child must be executable without rereading every sibling plan.
 ## Replan triggers
 
 - Shared constructor/API differs from the parent assumption.
-- The prior review changes owner or target state.
+- The prior user review changes owner or target state.
 - Listed files moved or split.
 - External contract or baseline commit changed.
 ```
@@ -277,7 +277,7 @@ Use these as review prompts, not universal blockers:
 
 - A parent program should usually remain a compact router, often around 150-250 lines.
 - A child plan should usually fit one service or one shared capability, often around 100-250 lines.
-- A child should normally contain one review boundary and one to three user quality-review stops (no plan-scheduled commits).
+- A child should normally contain one review boundary and one to three evidence checkpoints for user quality review (no plan-scheduled commits).
 - If one child requires unrelated runtime, repository, frontend, deployment, and governance contexts simultaneously, split by owner or delivery state.
 - If late-child details depend on code not yet written, replace them with acceptance-level placeholders and a mandatory refresh gate.
 
@@ -296,7 +296,7 @@ docs/plan/impl-plan/2026-07-19-all-services-database-migration/
 └── 08-strict-convergence-and-final-review.md
 ```
 
-The parent records status and dependencies. Each child records exact files, tests, user quality-review evidence, and handoff state. Plans do not schedule git commits.
+The parent records status and dependencies. Each child records exact files, tests, user quality-review evidence, and handoff state. The user performs independent review and quality review; plans do not schedule agent review loops or git commits.
 
 ## Counterexample: Oversized All-Services ORM Plan
 

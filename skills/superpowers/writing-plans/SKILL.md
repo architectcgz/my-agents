@@ -7,7 +7,7 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 
 ## Overview
 
-Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD where applicable. **Do not put git commit steps in the plan.** After each independently reviewable slice, the plan must stop for the user to inspect code quality before the next slice continues.
+Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD where applicable. **Do not put git commit steps in the plan.** The user owns both independent review and quality review; plans must provide the evidence they need and must not schedule agent-run review loops.
 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
 
@@ -72,7 +72,7 @@ Every formal plan owns one package directory. Use `README.md` as the stable entr
 - multiple independent review or rollback boundaries;
 - a plan large enough that one executor would repeatedly reload unrelated context.
 
-Do not write a program-sized migration as one checkbox document. Create a compact parent program that owns target state, dependencies, status, and final convergence, then create executable child plans that own exact files, acceptance, steps, validation, human quality-review checkpoints, and handoff state. Plans must not schedule automatic git commits.
+Do not write a program-sized migration as one checkbox document. Create a compact parent program that owns target state, dependencies, status, and final convergence, then create executable child plans that own exact files, acceptance, steps, validation, user quality-review checkpoints, and handoff state. Plans must not schedule automatic git commits.
 
 Before finalizing the shape, build the reference's delivery-boundary, artifact-ownership, constraint-activation, and acceptance-ownership maps. Consolidate repeated file/document edits unless an explicit, testable intermediate state requires them. Enable mechanical guards before the first risky adopter, using migration mode plus a shrinking allowlist when strict mode cannot pass immediately.
 
@@ -124,7 +124,7 @@ For each slice:
 
 If a source document says "HTTP server must configure ReadHeaderTimeout, ReadTimeout, WriteTimeout, IdleTimeout, and shutdown timeout", the plan must list all five fields and their bounds. If a config document says "bool uses true/false, size uses explicit units, secrets are redacted", the plan must list strict bool parsing, unit requirement, non-positive/overflow rejection, and redaction checks. Do not rely on reviewers to rediscover these constraints after implementation starts.
 
-Plan reviewers must reject a plan when a touched surface only cites a broad document without expanding its applicable hard rules into per-slice acceptance criteria.
+A plan that only cites a broad document without expanding its applicable hard rules into per-slice acceptance criteria is incomplete; revise it before handing it to the user for independent review.
 
 ## Target-State Completeness Gate
 
@@ -149,13 +149,13 @@ For TDD-required slices:
 - "Run it to make sure it fails" - step
 - "Implement the minimal code to make the test pass" - step
 - "Run the tests and make sure they pass" - step
-- "Stop for user quality review" - step
+- "Record the verification evidence for user quality review" - step
 
 For pure UI / presentation slices:
 - "Inspect the current component and owner styles" - step
 - "Apply the focused UI change" - step
 - "Run type/build/component render or visual/manual check" - step
-- "Stop for user quality review" - step
+- "Record the verification evidence for user quality review" - step
 
 Every executable step must be represented by a checkbox. The executor is required to flip each checkbox from `- [ ]` to `- [x]` immediately after the step's expected result is reached, before continuing to later steps. Plans should make this easy by keeping steps small and objectively verifiable.
 
@@ -166,7 +166,7 @@ Every executable step must be represented by a checkbox. The executor is require
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Do not schedule git commits in this plan; after each reviewable slice, stop for the user to inspect code quality. Commit only when the user later explicitly asks, via @committing-changes.
+> **For agentic workers:** Use `superpowers:subagent-driven-development` or `superpowers:executing-plans` according to the user-selected execution method. Steps use checkbox (`- [ ]`) syntax for tracking. Do not schedule git commits or automatic review loops in this plan; record verification evidence for any review the user requests. Commit only when the user later explicitly asks, via `@committing-changes`.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -216,9 +216,9 @@ def function(input):
 Run: `pytest tests/path/test.py::test_name -v`
 Expected: PASS
 
-- [ ] **Step 5: Stop for user quality review**
+- [ ] **Step 5: Record verification evidence for user quality review**
 
-Do **not** `git commit` in this step. Present the changed files, focused verification evidence, and any open risks, then wait for the user to inspect code quality and explicitly approve continuing (or request fixes). Commit only later if the user separately and explicitly asks to commit.
+Do **not** `git commit` in this step. Record the changed files, focused verification evidence, and any open risks in the handoff. The user decides whether to perform quality review and whether further work should continue; do not dispatch an agent reviewer.
 ````
 
 ## Simple UI Task Structure
@@ -242,9 +242,9 @@ Use this shape only when the task is pure presentation or markup placement and d
 Run: `pnpm typecheck` or targeted component/render/screenshot/manual check
 Expected: PASS / visually confirms the requested layout
 
-- [ ] **Step 4: Stop for user quality review**
+- [ ] **Step 4: Record verification evidence for user quality review**
 
-Do **not** `git commit` in this step. Present the changed files and verification evidence, then wait for the user to inspect code quality and approve continuing.
+Do **not** `git commit` in this step. Record the changed files and verification evidence in the handoff. The user owns any quality review decision; do not dispatch an agent reviewer.
 ```
 
 ## Remember
@@ -253,7 +253,7 @@ Do **not** `git commit` in this step. Present the changed files and verification
 - Complete code in plan (not "add validation")
 - Exact commands with expected output
 - Reference relevant skills with @ syntax
-- DRY, YAGNI, TDD where applicable; no plan-scheduled commits; human quality review after each reviewable slice
+- DRY, YAGNI, TDD where applicable; no plan-scheduled commits; record evidence for user quality review at each reviewable slice
 - Project documentation language always overrides this skill's English examples
 - Parent programs track phase status; child plans own executable checkboxes
 - Guards activate before the work they constrain, not only during final verification
@@ -277,42 +277,34 @@ After writing the complete plan:
    - whether the same file, document, config owner, or active plan is modified by separated tasks without a necessary intermediate state
    - whether pilot-dependent late tasks are refreshed after the pilot instead of freezing stale file-level assumptions
    If any answer is unclear, revise the plan first.
-2. Dispatch a single plan-document-reviewer subagent (see plan-document-reviewer-prompt.md) with precisely crafted review context — never your session history. This keeps the reviewer focused on the plan, not your thought process.
-   - Provide: path to the plan document, path to spec document
-   - Default model: `gpt-5.5` with `medium`
-3. If ❌ Issues Found: fix the issues, re-dispatch reviewer for the whole plan
-4. If ✅ Approved: proceed to execution handoff
+2. Record the architecture-fit result, changed plan paths, and open assumptions in the plan handoff.
+3. Present that evidence to the user for independent review when the user requests it or the plan declares a user review gate. Do not automatically dispatch an agent reviewer.
+4. Apply only the feedback the user provides, then update the same handoff record.
 
-**Review loop guidance:**
-- Same agent that wrote the plan fixes it (preserves context)
-- If loop exceeds 3 iterations, surface to human for guidance
-- Reviewers are advisory — explain disagreements if you believe feedback is incorrect
+**Review ownership:**
+- The user controls whether and how independent review and quality review happen.
+- The plan author performs the architecture-fit evaluation and prepares evidence; it does not substitute for review the user explicitly requests.
+- Do not create an automatic review loop or treat a separate agent as an approval authority.
 
 ## Commit Policy In Plans
 
 - **Never** write plan steps such as `Commit`, `git commit`, or example commit-message commands as required execution checkboxes.
 - Commit is outside the plan's default delivery loop. It is authorized only by the user's explicit request at execution time, and then only through `@committing-changes` plus the target repository commit policy.
 - Plans may still mention existing base commits, dependency commit evidence, or optional handoff fields for *already-made* commits. That is baseline tracking, not an instruction to create new commits.
-- After each independently reviewable slice (task or child plan exit), require a **user quality-review stop**: show diff scope, verification evidence, and wait. Do not start the next slice until the user accepts the current one or asks for fixes.
+- At each independently reviewable slice (task or child plan exit), record the diff scope and verification evidence for the user's quality review. A plan may name a user quality-review gate when the user requires it, but must not create an automatic agent review loop or treat a user review as agent-owned work.
 
 ## Execution Handoff
 
-After saving the plan, offer execution choice:
+After saving the plan, offer the execution choice without scheduling an automatic review loop:
 
-**"Plan complete and saved to `<actual-plan-path>`. Two execution options:**
+**"Plan complete and saved to `<actual-plan-path>`. Two execution options:
 
-**1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task; after each task I stop for your code-quality review before the next task
+**1. Subagent-Driven** - Dispatch a fresh subagent per task and record verification evidence after each task; run review only when I explicitly request it
 
-**2. Inline Execution** - Execute tasks in this session using executing-plans, with a hard stop after each reviewable slice for your inspection
+**2. Inline Execution** - Execute tasks in this session using `executing-plans`, with proportionate evidence checkpoints
 
-**Which approach?"**
+**Which approach?**
 
-Remind the user: execution will **not** auto-commit; commits happen only if they explicitly ask later.
+The plan will not auto-commit or auto-review; commits and reviews happen only when I explicitly request them."**
 
-**If Subagent-Driven chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
-- Fresh subagent per task + stop for user quality review between tasks
-
-**If Inline Execution chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:executing-plans
-- Slice execution with user quality-review checkpoints; no auto-commit
+If Subagent-Driven is chosen, use `superpowers:subagent-driven-development`. If Inline Execution is chosen, use `superpowers:executing-plans`.

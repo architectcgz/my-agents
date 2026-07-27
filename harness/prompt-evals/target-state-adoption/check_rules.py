@@ -40,13 +40,10 @@ REQUIREMENTS = {
         "Target-State Completeness Gate",
         "negative acceptance",
         "old default path no longer exists",
+        "user-selected target state",
+        "positive and negative acceptance checks",
         "Research Before Boundary Questions",
         "research-question brief",
-    ],
-    ROOT / "skills/superpowers/writing-plans/plan-document-reviewer-prompt.md": [
-        "Intent Fidelity",
-        "Structural Convergence",
-        "negative acceptance proving the old default path is removed",
     ],
     ROOT / "skills/development-pipeline/references/review-gates.md": [
         "legacy initialization, driver/provider, runtime owner",
