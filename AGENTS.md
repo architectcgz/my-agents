@@ -33,6 +33,8 @@
 - 高风险操作默认先说明影响、风险和回退方式，再等待确认。
 - skill 和专门 agent 按需调用：用户点名或任务明确命中 description 时，才读取并使用对应 skill；不设 `superpowers` / `using-superpowers` 默认兜底。
 - 创建 `git worktree` 时，worktree 路径一律放到对应项目目录下；不要放到 `/tmp`、`~/.codex`、`~/.agents` 或其他脱离项目归属的位置。
+- Python 脚本在读写文本文件（含 JSON / JSONL / YAML / CSV / Markdown 等）时必须显式传 `encoding='utf-8'`，不得依赖默认编码。此规则适用于所有平台：Windows 默认编码为 gbk（会崩溃），WSL/Linux/macOS 默认为 utf-8（显式传是安全的无操作）。
+- 在 Windows 上通过 Bash 工具运行 `python -c` 内联命令时，stdout/stderr 默认编码为 gbk，输出中文会乱码。必须设 `PYTHONIOENCODING=utf-8` 前置变量，或脚本内执行 `sys.stdout.reconfigure(encoding='utf-8')`；仅 `open()` 传 encoding 无法解决 print 输出的编码问题。
 - 任何 `git commit` 前必须先走 `committing-changes` skill 核对并组织提交信息（类型 + 中文描述、最小可审阅拆分、默认禁止 `Co-Authored-By`、按仓库 commit policy/hook 叠加），不得跳过；该 skill 是提交约定的唯一事实源。
 - 以下专题文档是本文件的延伸正文；命中对应场景时，必须继续读取对应文档，而不是只看本文件摘要。
 
