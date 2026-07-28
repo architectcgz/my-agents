@@ -53,7 +53,7 @@ The parent is a router and status ledger. It owns:
 - included and excluded services or subsystems;
 - dependency graph and blocked preconditions;
 - child-plan paths and current status;
-- handoff and user quality-review evidence for completed children (commit SHAs only if the user already authorized those commits);
+- handoff and human quality-review evidence for completed children (commit SHAs only if the user already authorized those commits);
 - global rollback constraints and final convergence proof.
 
 The parent does not own:
@@ -109,7 +109,7 @@ Save this content as the package `README.md`.
 
 - [ ] Every child plan reached its exit gate.
 - [ ] Final strict checks prove the old default path is gone.
-- [ ] User independent review has no unresolved material findings.
+- [ ] Final independent review has no material findings.
 ```
 
 Keep parent checkboxes limited to program status and final gates. Child execution state belongs in child files.
@@ -118,14 +118,14 @@ Keep parent checkboxes limited to program status and final gates. Child executio
 
 Each child owns one shared capability, one service, one independently testable subsystem, or one explicit governance/review boundary.
 
-Each child must be executable without rereading every sibling plan.
+Each child must be executable without rereading every sibling plan. It should contain only the context, tasks, acceptance, and evidence needed for that delivery boundary.
 
 ### Child Plan Header
 
 ```markdown
 # [Slice Name] Implementation Plan
 
-> **Execution:** Execute inline in the current session. `subagent-driven-development` is globally disabled; do not dispatch subagents as the plan's default workflow.
+> **For agentic workers:** [Required execution and testing skills]
 
 **Goal:** [One independently testable result]
 
@@ -149,7 +149,7 @@ Each child must be executable without rereading every sibling plan.
 
 | Requirement | Evidence | Failure action |
 | --- | --- | --- |
-| Prior child complete | Exit-gate evidence + any required user quality-review acceptance | Stop; do not infer state |
+| Prior child complete | Exit-gate evidence or explicit blocked status | Stop; do not infer state |
 
 ## Context packet
 
@@ -176,11 +176,18 @@ Each child must be executable without rereading every sibling plan.
 
 ### Task 1: [Cohesive change]
 
-- [ ] Write the focused failing test.
-- [ ] Run it and confirm the expected failure.
-- [ ] Implement the smallest behavior owned by this task.
-- [ ] Run focused verification.
-- [ ] Record verification evidence for user quality review; do not commit unless the user later explicitly asks.
+**Intent:** [What changes and why]
+
+**Files:** `exact/path`, `exact/path`
+
+**Approach:** [Concrete implementation path, reuse points, and state/data flow]
+
+**Acceptance:**
+- [Observable behavior, edge case, structural rule, or legacy-removal rule]
+
+**Verification:** `exact command` -> [expected result]
+
+Use numbered substeps only when order, independent risk, or a handoff makes them necessary. Do not create routine checkboxes for every mechanical action.
 
 ## Exit gate
 
@@ -188,12 +195,12 @@ Each child must be executable without rereading every sibling plan.
 | --- | --- | --- |
 | Focused tests | `exact command` | PASS |
 | Negative search | `exact search` | No production matches |
-| User independent review | `review path` or handoff record | No unresolved material findings |
+| Review (when required) | `review path` | No material findings |
 
 ## Handoff record
 
 - Validation:
-- User quality review: Pending | Accepted | Changes requested
+- Review status (when required): Pending | Accepted | Changes requested
 - Commit (only if user explicitly authorized): -
 - Deviations:
 - Remaining allowlist:
@@ -202,7 +209,7 @@ Each child must be executable without rereading every sibling plan.
 ## Replan triggers
 
 - Shared constructor/API differs from the parent assumption.
-- The prior user review changes owner or target state.
+- The prior review changes owner or target state.
 - Listed files moved or split.
 - External contract or baseline commit changed.
 ```
@@ -277,7 +284,7 @@ Use these as review prompts, not universal blockers:
 
 - A parent program should usually remain a compact router, often around 150-250 lines.
 - A child plan should usually fit one service or one shared capability, often around 100-250 lines.
-- A child should normally contain one review boundary and one to three evidence checkpoints for user quality review (no plan-scheduled commits).
+- A child should normally contain one review boundary; add a user quality-review gate only when the boundary or risk requires it (no plan-scheduled commits).
 - If one child requires unrelated runtime, repository, frontend, deployment, and governance contexts simultaneously, split by owner or delivery state.
 - If late-child details depend on code not yet written, replace them with acceptance-level placeholders and a mandatory refresh gate.
 
@@ -296,7 +303,7 @@ docs/plan/impl-plan/2026-07-19-all-services-database-migration/
 └── 08-strict-convergence-and-final-review.md
 ```
 
-The parent records status and dependencies. Each child records exact files, tests, user quality-review evidence, and handoff state. The user performs independent review and quality review; plans do not schedule agent review loops or git commits.
+The parent records status and dependencies. Each child records exact files, acceptance, verification evidence, and handoff state. Plans do not schedule git commits.
 
 ## Counterexample: Oversized All-Services ORM Plan
 
@@ -324,15 +331,11 @@ Do not fix this by deleting timeout, transaction, error, or runtime acceptance r
 
 ## Final Structure Review
 
-Before saving or handing off a formal plan, verify:
+Before saving or handing off a formal plan, confirm that:
 
-- [ ] The artifact is correctly classified as a single plan or parent program.
-- [ ] The formal plan owns one package directory with `README.md` as its stable entry.
-- [ ] Parent and child plans are co-located inside the package rather than grouped only by filename prefix.
-- [ ] Every child has one delivery and review boundary.
-- [ ] Every external dependency has a named gate and exact evidence.
-- [ ] Mechanical constraints activate before the first risky adopter.
-- [ ] Repeated file/document modifications have one owner or an explicit intermediate-state contract.
-- [ ] Pilot-dependent later plans have refresh triggers instead of frozen guesses.
-- [ ] Parent and child checkbox ownership is separate.
-- [ ] Final positive and negative target-state proofs remain complete.
+- the artifact is correctly classified as a single plan or parent program;
+- the formal plan owns one package directory with `README.md` as its stable entry;
+- parent and child plans are co-located inside the package;
+- every child has one delivery boundary and the required evidence;
+- external dependencies, guard timing, repeated artifact ownership, and pilot refresh triggers are explicit where applicable;
+- final positive and negative target-state proofs remain complete.
