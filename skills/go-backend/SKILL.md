@@ -135,6 +135,7 @@ Default every service, repository, handler, job, worker, checker, runner, and ot
 - Read `references/design-pattern-selection.md` when Go backend behavior branches by provider, status, event type, mode, command, job kind, lifecycle state, or business rule.
 - Read `references/repository-interface-splitting.md` when a repository interface starts mixing unrelated query, command, profile, auth, report, or transaction methods, or when a tx closure currently receives a wide repo.
 - Read `references/runtime-scheduler-and-bounded-concurrency.md` when touching fan-out goroutines, worker pools, CPU-heavy jobs, runtime scheduler symptoms, `GOMAXPROCS`, `runtime.Gosched`, `runtime.LockOSThread`, or goroutine leak reviews.
+- Read `references/middleware-decorator-pattern.md` when implementing or reviewing middleware chains, decorator-style wrapper patterns, job/HTTP handler middleware, or any cross-cutting concern wrapped around a handler (logging, timeout, recovery, retry, metrics, transaction).
 - In `backend-engineer`, read `references/concurrency-context-and-idempotency.md` for async workers, retries, duplicate execution, cancellation, timeout, and scheduled work.
 - In `backend-engineer`, read `references/ctf-go-runtime-context-image-contracts.md` when working in the CTF repo on Go context propagation, runtime provisioning, image management, config safety, or review-driven backend debt.
 
