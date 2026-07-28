@@ -81,6 +81,17 @@ For migrations, replacements, standardization, or framework adoption, define:
 
 Migration plans need both positive acceptance (the new path exists) and negative acceptance (the old default path is gone). Do not silently narrow a requested migration to call-site changes.
 
+## Testing Stance
+
+Classify each implementation slice:
+
+- **TDD:** behavior, state, data flow, validation, permissions, async flow, algorithms, API contracts, persistence, or reproducible bugs where a failing test gives meaningful design feedback.
+- **Regression:** service wiring, constructor migration, adapter adoption, or mechanical refactoring of behavior already proven in a shared/pilot slice. Add focused coverage for service-specific risks; do not manufacture a red test by copying an existing matrix.
+- **Presentation:** spacing, color, typography, static copy, markup placement, or visual polish without changing event/state semantics. Use the smallest sufficient component, type, build, visual, or manual verification.
+- **Mixed:** split behavior and presentation when doing so clarifies ownership and verification.
+
+Do not prescribe TDD mechanically when existing tests, fixtures, or the repository's testing strategy make another focused approach more useful.
+
 ## Task Granularity
 
 Each task should describe one cohesive change that can be implemented and verified without unrelated context. A task normally contains:
@@ -90,6 +101,33 @@ Each task should describe one cohesive change that can be implemented and verifi
 - **Approach:** important implementation decisions, reuse points, and data/state flow.
 - **Acceptance:** observable behavior, edge cases, or structural conditions.
 - **Verification:** the narrowest useful command or manual check and expected result.
+
+## Implementation-First Balance Gate
+
+Before writing tasks, build a change map with one row per implementation slice:
+
+| Slice | Production output | Test signal | Stance | Exit state |
+| --- | --- | --- | --- | --- |
+| Example | exact file/function and owner | focused behavior or existing regression | TDD / Regression / Presentation / Mixed | observable runtime or API state |
+
+Use this map to keep the plan centered on working software. “Code-first” describes scope and ownership, not a ban on test-first execution: a TDD slice still writes and runs its failing test before implementation, but the plan must make the production behavior it unlocks explicit.
+
+For every slice:
+
+- Name the exact production files, functions, constructor/composition point, or runtime owner that will change. A task that only adds tests is valid only when it explicitly states that production behavior is intentionally unchanged.
+- Describe the post-task working state before listing verification: which request path, use case, adapter, worker, or contract is now executable.
+- Bind every new test to a concrete acceptance rule. Reuse shared or pilot evidence for unchanged behavior; test only adopter-specific risks in later slices.
+- Require red-test steps only for genuinely new contracts, high-risk behavior, or reproducible bugs. `R3` needs focused tests but does not automatically require a manufactured failure; `R4` should be test-first unless a documented reproduction or existing coverage makes that impractical.
+- Do not use test-file count, checkbox count, or code/test line ratio as a quality target. Review signal overlap and whether each test protects a distinct behavior instead.
+
+Before handing off the plan, run this balance review:
+
+- Every child plan has an explicit production output and exit state.
+- No adopter phase repeats the full test matrix already proven by a shared foundation or pilot.
+- Every “先写失败测试 / 确认先失败” step maps to a new contract, high-risk behavior, or reproducible bug; otherwise rewrite it as focused regression.
+- A phase cannot be marked complete by tests alone unless the phase explicitly has no production behavior and names the existing owner being verified.
+
+## File Structure
 
 Use numbered steps only when order matters, a step has independent risk, or the executor needs a concrete handoff point. Do not create separate steps for routine inspection, writing an obvious test, running the same command twice, or stopping for review. Checkboxes are optional task tracking, not a requirement for every sentence.
 
@@ -102,7 +140,7 @@ Use numbered steps only when order matters, a step has independent risk, or the 
 
 **Architecture:** [The relevant owner, call path, interfaces, and important tradeoffs]
 
-**Testing stance:** Behavior | Presentation | Mixed
+**Testing stance:** TDD | Regression | Presentation | Mixed
 
 ## Files
 
