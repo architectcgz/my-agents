@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Use when creating, updating, or validating a skill (SKILL.md, frontmatter, bundled scripts/references/assets), including running structural checks after skill edits. Covers init, authoring, quick_validate, and the validation checklist.
+description: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations.
 metadata:
   short-description: Create or update a skill
 ---
@@ -228,12 +228,10 @@ Skill creation involves these steps:
 2. Plan reusable skill contents (scripts, references, assets)
 3. Initialize the skill (run init_skill.py)
 4. Edit the skill (implement resources and write SKILL.md)
-5. Validate the skill (run `quick_validate.py` + `references/validation-checklist.md`)
+5. Validate the skill (run quick_validate.py)
 6. Iterate based on real usage and forward-test complex skills.
 
 Follow these steps in order, skipping only if there is a clear reason why they are not applicable.
-
-**Completion rule:** After writing or editing ANY skill, finish Step 5 for that skill before starting another. Do not batch-create skills and defer validation.
 
 ### Skill Naming
 
@@ -349,52 +347,27 @@ If you used `--examples`, delete any placeholder files that are not needed for t
 
 Write the YAML frontmatter with `name` and `description`:
 
-- `name`: The skill name (hyphen-case; must match the folder name)
-- `description`: Primary triggering mechanism. Future agents decide whether to load the skill from this field alone.
-  - Prefer **when to use** over **what the workflow is**. Lead with concrete triggers, symptoms, situations, and user phrasings.
-  - Put all discovery/"when to use" signal here. The body loads only after trigger, so burying triggers only in the body hurts discovery.
-  - **Do not summarize the skill's process or step sequence in `description`.** Workflow summaries become shortcuts: agents may follow the description and skip the body.
-  - Third person. Prefer starting with "Use when...". Keep under 500 characters when possible; hard max 1024.
-  - Good: `Use when working with professional Word documents (.docx) to create, edit, extract text, or handle tracked changes and comments`
-  - Bad: `Use for docx - first load template, then draft sections, then validate formatting` (process summary)
-  - See `references/validation-checklist.md` section 2 for more good/bad examples.
+- `name`: The skill name
+- `description`: This is the primary triggering mechanism for your skill, and helps Codex understand when to use the skill.
+  - Include both what the Skill does and specific triggers/contexts for when to use it.
+  - Include all "when to use" information here - Not in the body. The body is only loaded after triggering, so "When to Use This Skill" sections in the body are not helpful to Codex.
+  - Example description for a `docx` skill: "Comprehensive document creation, editing, and analysis with support for tracked changes, comments, formatting preservation, and text extraction. Use when Codex needs to work with professional documents (.docx files) for: (1) Creating new documents, (2) Modifying or editing content, (3) Working with tracked changes, (4) Adding comments, or any other document tasks"
 
-Do not include any other fields in YAML frontmatter unless a product-specific allowed key is required (`license`, `allowed-tools`, `metadata`, etc. as accepted by `quick_validate.py`).
+Do not include any other fields in YAML frontmatter.
 
 ##### Body
 
-Write instructions for using the skill and its bundled resources. Keep the body lean; push heavy reference material to `references/` and link it with when-to-read guidance.
+Write instructions for using the skill and its bundled resources.
 
 ### Step 5: Validate the Skill
 
-Validation is mandatory before calling a skill ready. It has two layers:
-
-1. **Mechanical** — `scripts/quick_validate.py`
-2. **Structural / quality** — `references/validation-checklist.md` (migrated from disabled `writing-skills`)
-
-#### 5a. Run the script
+Once development of the skill is complete, validate the skill folder to catch basic issues early:
 
 ```bash
 scripts/quick_validate.py <path/to/skill-folder>
 ```
 
-The script checks YAML frontmatter format, required fields, naming rules, and description length/angle-bracket constraints. If validation fails, fix the reported issues and re-run until it exits 0.
-
-#### 5b. Complete the checklist
-
-Read and apply `references/validation-checklist.md`. At minimum verify:
-
-- description is trigger-oriented, third person, and does not narrate workflow
-- name/folder match and follow hyphen-case
-- progressive disclosure: lean `SKILL.md`, references/scripts/assets only when needed
-- no narrative one-off storytelling as the rule; one strong example beats multi-language dilution
-- ownership boundaries: global vs project (`authoring-project-skills`) vs harness (`harness-engineering`)
-- risk-based verification depth (reference-only vs workflow vs discipline skill)
-- if `agents/openai.yaml` exists, it still matches `SKILL.md`
-
-Do not claim the skill is validated without running the script and completing the applicable checklist rows. Do not invent pass results.
-
-**STOP:** Do not start the next skill until this skill clears Step 5.
+The validation script checks YAML frontmatter format, required fields, and naming rules. If validation fails, fix the reported issues and run the command again.
 
 ### Step 6: Iterate
 
