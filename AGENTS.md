@@ -31,7 +31,7 @@
 - 调研后仍存在会改变最终架构、产品语义、风险承受、停机窗口或交付阶段的真实歧义时，先给出有证据的推荐方案、备选方案及影响，再只询问必须由用户决定的边界；用户不了解技术细节时，agent 负责解释并提出推荐，不把裸选项卸载给用户。
 - 停下来问用户只有一种合法情况：存在真正的歧义，继续工作会产出与用户意图相反的成果。
 - 高风险操作默认先说明影响、风险和回退方式，再等待确认。
-- skill 和专门 agent 按需调用：用户点名或任务明确命中 description 时，才读取并使用对应 skill；不设 `superpowers` / `using-superpowers` 默认兜底。
+- skill 和专门 agent 按需调用：用户点名或任务明确命中 description 时，才读取并使用对应 skill。
 - 创建 `git worktree` 时，worktree 路径一律放到对应项目目录下；不要放到 `/tmp`、`~/.codex`、`~/.agents` 或其他脱离项目归属的位置。
 - Python 脚本在读写文本文件（含 JSON / JSONL / YAML / CSV / Markdown 等）时必须显式传 `encoding='utf-8'`，不得依赖默认编码。此规则适用于所有平台：Windows 默认编码为 gbk（会崩溃），WSL/Linux/macOS 默认为 utf-8（显式传是安全的无操作）。
 - 在 Windows 上通过 Bash 工具运行 `python -c` 内联命令时，stdout/stderr 默认编码为 gbk，输出中文会乱码。必须设 `PYTHONIOENCODING=utf-8` 前置变量，或脚本内执行 `sys.stdout.reconfigure(encoding='utf-8')`；仅 `open()` 传 encoding 无法解决 print 输出的编码问题。

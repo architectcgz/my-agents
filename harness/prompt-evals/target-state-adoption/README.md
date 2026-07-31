@@ -16,7 +16,7 @@
 python3 ~/.agents/harness/prompt-evals/target-state-adoption/check_rules.py
 ```
 
-该命令已经接入 `bash ~/.agents/harness/check-agent-home.sh`。
+该命令已经接入 `bash ~/.agents/harness/checks/check-agent-home.sh`。
 
 ## 决策评测
 

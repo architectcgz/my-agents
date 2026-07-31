@@ -21,9 +21,9 @@
 1. 在主体创建：`mkdir -p ~/.agents/skills/<skill-name>`
 2. **无需任何额外操作** — Claude 和 Codex 自动可用
 
-**容器 skill（如 superpowers）**：
-- 只需在 `~/.agents/skills/superpowers/` 创建容器目录
-- 所有子 skills 放在容器内
+**技能目录约定**：
+- 每个共享 skill 直接放在 `~/.agents/skills/<skill-name>/`
+- 每个 skill 目录至少包含一个 `SKILL.md`
 - Claude 和 Codex 通过父目录软链接自动访问
 
 **特殊目录**：

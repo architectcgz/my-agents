@@ -19,8 +19,8 @@ RULE_FILES = [
     AGENT_HOME / "AGENTS.md",
     AGENT_HOME / "docs/agent-rules/collaboration-basics.md",
     AGENT_HOME / "skills/architect-agent/SKILL.md",
-    AGENT_HOME / "skills/superpowers/brainstorming/SKILL.md",
-    AGENT_HOME / "skills/superpowers/writing-plans/SKILL.md",
+    AGENT_HOME / "skills/brainstorming/SKILL.md",
+    AGENT_HOME / "skills/writing-plans/SKILL.md",
 ]
 
 

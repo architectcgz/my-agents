@@ -71,6 +71,6 @@ Explain the evidence, the exact blocking decision, and the smallest question nee
 - Never auto-commit; commit only on explicit user request via `@committing-changes`.
 
 **Related skills:**
-- **superpowers:writing-plans** - Creates the plan this skill executes
-- **superpowers:verification-before-completion** - Required before claiming the work is complete
-- **superpowers:finishing-a-development-branch** - Use only when branch integration or cleanup is requested
+- **writing-plans** - Creates the plan this skill executes
+- **verification-before-completion** - Required before claiming the work is complete
+- **finishing-a-development-branch** - Use only when branch integration or cleanup is requested

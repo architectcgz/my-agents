@@ -20,8 +20,8 @@ This skill is global and cross-project. It defines the mechanical workflow model
 | Shared entry command, installer, sync check, sync, managed files, archive, cleanup | `workflows/shared-scaffold.md` |
 | Independent review gate after `completion-full` | `workflows/independent-review.md` |
 | Real multi-stage task execution | `../development-pipeline/SKILL.md` |
-| Writing implementation plans | `../superpowers/writing-plans/SKILL.md` |
-| Task intake analysis | `../superpowers/brainstorming/SKILL.md` or `../superpowers/systematic-debugging/SKILL.md` |
+| Writing implementation plans | `../writing-plans/SKILL.md` |
+| Task intake analysis | `../brainstorming/SKILL.md` or `../systematic-debugging/SKILL.md` |
 | Challenging assumptions against docs | `../grill-with-docs/SKILL.md` |
 | Installing or checking shared workflow packages | `../workflow-package-manager/SKILL.md` |
 | Repository harness installation or repair | `../harness-engineering/SKILL.md` |

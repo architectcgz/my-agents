@@ -30,13 +30,13 @@ REQUIREMENTS = {
         "Research before escalating ambiguity",
         "research-question brief",
     ],
-    ROOT / "skills/superpowers/brainstorming/SKILL.md": [
+    ROOT / "skills/brainstorming/SKILL.md": [
         "Framework Adoption Depth",
         "old default path that must disappear",
         "official-document/Web research",
         "research-question brief",
     ],
-    ROOT / "skills/superpowers/writing-plans/SKILL.md": [
+    ROOT / "skills/writing-plans/SKILL.md": [
         "Target-State Completeness Gate",
         "negative acceptance",
         "old default path no longer exists",

@@ -27,7 +27,7 @@ Resolve the plan directory in this order:
 
 1. Use `docs/plan/exploratory/YYYY-MM-DD-<feature-name>.md` for drafts, exploration, prototypes, and ordinary implementation plans when the project has no stronger convention.
 2. Use the project-defined formal plan location only when the project declares it, the task is structural or cross-module, and it will be tracked through the project's workflow. Create `YYYY-MM-DD-<feature-name>/README.md` rather than a flat file.
-3. If the project has no explicit plan structure and still uses the historical convention, use `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`.
+3. If the project has no explicit plan structure, use `docs/plan/exploratory/YYYY-MM-DD-<feature-name>.md`.
 
 Always report the actual entry path. If an exploratory plan later becomes a formal implementation, promote it into the project's formal plan package.
 

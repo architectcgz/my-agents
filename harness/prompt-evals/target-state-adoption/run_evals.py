@@ -15,8 +15,8 @@ BASE = Path(__file__).resolve().parent
 RULE_FILES = [
     BASE.parents[2] / "docs/agent-rules/collaboration-basics.md",
     BASE.parents[2] / "skills/architect-agent/SKILL.md",
-    BASE.parents[2] / "skills/superpowers/brainstorming/SKILL.md",
-    BASE.parents[2] / "skills/superpowers/writing-plans/SKILL.md",
+    BASE.parents[2] / "skills/brainstorming/SKILL.md",
+    BASE.parents[2] / "skills/writing-plans/SKILL.md",
 ]
 
 
