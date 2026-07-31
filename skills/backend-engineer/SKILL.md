@@ -21,6 +21,7 @@ Language-specific backend skills should extend this skill rather than replace it
 ## Reference Routing
 
 - Read `references/design-pattern-selection.md` when a backend change adds or reviews branching by type, status, provider, mode, event, command, tenant policy, lifecycle state, or validation rule.
+- Read `references/query-pushdown.md` when implementing or reviewing search, filtering, query builders, DSL-to-database translation, permission predicates, in-memory filtering, pagination correctness, or database-specific query rendering.
 - Use `test-engineer` when deciding test layers, test-first depth, fake / fixture shape, real integration coverage, CI gates, flaky-test policy, or test-suite maintenance.
 
 ## Backend Testing Boundaries
