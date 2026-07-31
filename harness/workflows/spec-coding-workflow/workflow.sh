@@ -151,8 +151,8 @@ ARCHITECTURE_TEMPLATE="$(with_managed_header markdown "$(read_managed_source "AR
 TODO_TEMPLATE="$(with_managed_header markdown "$(read_managed_source "TODO.md")")"
 LAUNCH_TEMPLATE="$(with_managed_header markdown "$(read_managed_source "LAUNCH-READINESS.md")")"
 
-write_file "$repo_root/scripts/start-spec-coding.sh" "$START_SPEC_CODING"
-write_file "$repo_root/scripts/check-spec-coding-docs.sh" "$CHECK_SPEC_CODING_DOCS"
+write_file "$repo_root/scripts/workflows/start-spec-coding.sh" "$START_SPEC_CODING"
+write_file "$repo_root/scripts/checks/check-spec-coding-docs.sh" "$CHECK_SPEC_CODING_DOCS"
 write_file "$repo_root/harness/templates/spec-coding-workflow/PRD.md" "$PRD_TEMPLATE"
 write_file "$repo_root/harness/templates/spec-coding-workflow/DESIGN.md" "$DESIGN_TEMPLATE"
 write_file "$repo_root/harness/templates/spec-coding-workflow/ARCHITECTURE.md" "$ARCHITECTURE_TEMPLATE"
@@ -170,7 +170,7 @@ elif [[ "$dry_run" -eq 1 ]]; then
   echo "DRY RUN: spec-coding-workflow package install checked"
 else
   chmod +x \
-    "$repo_root/scripts/start-spec-coding.sh" \
-    "$repo_root/scripts/check-spec-coding-docs.sh"
+    "$repo_root/scripts/workflows/start-spec-coding.sh" \
+    "$repo_root/scripts/checks/check-spec-coding-docs.sh"
   echo "PASS: spec-coding-workflow package installed in $repo_root"
 fi

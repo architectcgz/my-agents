@@ -13,10 +13,10 @@ def test_trigger_rate_script() -> str:
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cwd="$(cd "$script_dir/../.." && pwd)"
+cwd="$(cd "$script_dir/../../.." && pwd)"
 
 agents_home="${AGENTS_HOME:-$HOME/.agents}"
-python_script="$agents_home/harness/test-trigger-rate.py"
+python_script="$agents_home/harness/tests/test-trigger-rate.py"
 
 if [[ ! -f "$python_script" ]]; then
   echo "[test-trigger-rate] 找不到 Python 脚本: $python_script" >&2
@@ -47,7 +47,7 @@ def test_trigger_rate_readme() -> str:
 
 ```bash
 # 测试当前项目的触发率
-bash scripts/test-trigger-rate.sh
+bash scripts/tests/test-trigger-rate.sh
 
 # 输出示例：
 # ======================================================================
@@ -75,7 +75,7 @@ bash scripts/test-trigger-rate.sh
 
 ```bash
 # 显示每个测试用例的结果
-bash scripts/test-trigger-rate.sh --verbose
+bash scripts/tests/test-trigger-rate.sh --verbose
 ```
 
 ## 工作流程
@@ -113,7 +113,7 @@ description: Use when implementing backend features, APIs, services, database op
 
 ### 2. 添加用户常用表达
 
-在 `~/.agents/harness/test-trigger-rate.py` 的 `TASK_VARIATIONS` 中添加更多表达方式：
+在 `~/.agents/harness/tests/test-trigger-rate.py` 的 `TASK_VARIATIONS` 中添加更多表达方式：
 
 ```python
 "Backend feature": [
@@ -136,7 +136,7 @@ description: Use for backend/后端 feature/功能 implementation including API/
 ```yaml
 # .github/workflows/test.yml
 - name: Test skill trigger rates
-  run: bash scripts/test-trigger-rate.sh
+  run: bash scripts/tests/test-trigger-rate.sh
 ```
 
 ## 定期检查
@@ -157,7 +157,7 @@ description: Use for backend/后端 feature/功能 implementation including API/
 
 ### 添加新任务类型的表达方式
 
-编辑 `~/.agents/harness/test-trigger-rate.py`：
+编辑 `~/.agents/harness/tests/test-trigger-rate.py`：
 
 ```python
 TASK_VARIATIONS = {

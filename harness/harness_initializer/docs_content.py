@@ -60,8 +60,8 @@ Harness Engineering 在本仓库中的含义：人类维护约束、事实源、
 
 ## 本项目落点
 
-- `.arccgz-harness/scripts/check-harness-consistency.sh` 检查 harness 目录、导航和计数声明。
-- `.githooks/pre-commit` 在提交前执行一致性检查。
+- `.arccgz-harness/scripts/checks/check-harness-consistency.sh` 检查 harness 目录、导航和计数声明。
+- `.arccgz-harness/scripts/hooks/check-pre-commit.sh` 按 staged 路径选择快速检查；完整一致性检查保留给 harness 变更、CI 或显式调用。
 - 适合脚本化的规则应优先进入检查脚本，而不是只写进说明。
 """,
         "concepts/03-feedback-loop.md": """# Feedback Loop
@@ -101,7 +101,7 @@ Harness Engineering 在本仓库中的含义：人类维护约束、事实源、
 ## 组件清单
 
 - Guides：`AGENTS.md`、`concepts/`、`prompts/`
-- Sensors：`.arccgz-harness/scripts/check-harness-consistency.sh`、hook、review 记录
+- Sensors：`.arccgz-harness/scripts/checks/check-harness-consistency.sh`、hook、review 记录
 - Memory：`.arccgz-harness/feedback/`、`thinking/`、`references/`
 - Practice：`practice/`
 - Output：`works/`
@@ -156,13 +156,13 @@ Harness 层负责让 agent 找到事实源和反馈，不把所有业务架构�
 
 - 创建 `concepts/ thinking/ practice/ .arccgz-harness/feedback/ works/ prompts/ references/`。
 - 为每个目录创建 `AGENTS.md`。
-- 创建 `.arccgz-harness/scripts/check-harness-consistency.sh`。
-- 接入 `.githooks/pre-commit`。
+- 创建 `.arccgz-harness/scripts/checks/check-harness-consistency.sh` 和 staged 路径分流入口。
+- 将快速分流入口接入 `.githooks/pre-commit`。
 
 ## 验证
 
 ```bash
-bash .arccgz-harness/scripts/check-harness-consistency.sh
+bash .arccgz-harness/scripts/checks/check-harness-consistency.sh
 ```
 """,
         "practice/01-harness-initialization/AGENTS.md": """# practice/01-harness-initialization
@@ -172,7 +172,7 @@ bash .arccgz-harness/scripts/check-harness-consistency.sh
 更新本实验时同步检查：
 
 - 根 `AGENTS.md` 是否指向严格 harness 目录。
-- `.arccgz-harness/scripts/check-harness-consistency.sh` 是否覆盖新增目录。
+- `.arccgz-harness/scripts/checks/check-harness-consistency.sh` 是否覆盖新增目录。
 - `.arccgz-harness/feedback/` 是否记录初始化过程中的偏差。
 """,
         "feedback/AGENTS.md": """# .arccgz-harness/feedback/ — 反馈记录
@@ -197,7 +197,7 @@ bash .arccgz-harness/scripts/check-harness-consistency.sh
 
 ## 解决方案
 
-改为创建参考仓库同构的顶层目录：`concepts/`、`thinking/`、`practice/`、`.arccgz-harness/feedback/`、`works/`、`prompts/`、`references/`，并用 `.arccgz-harness/scripts/check-harness-consistency.sh` 检查这些目录和导航。
+改为创建参考仓库同构的顶层目录：`concepts/`、`thinking/`、`practice/`、`.arccgz-harness/feedback/`、`works/`、`prompts/`、`references/`，并用 `.arccgz-harness/scripts/checks/check-harness-consistency.sh` 检查这些目录和导航。
 
 ## 收获
 
@@ -243,7 +243,7 @@ bash .arccgz-harness/scripts/check-harness-consistency.sh
 
 ## Prompt
 
-请严格参考 `https://github.com/deusyu/harness-engineering` 的仓库结构，为当前项目创建顶层 `concepts/ thinking/ practice/ .arccgz-harness/feedback/ works/ prompts/ references/`，每个目录都有 `AGENTS.md`，并创建 `.arccgz-harness/scripts/check-harness-consistency.sh` 和 hook 接入。不要把 harness 折叠进现有 `docs/` 目录。
+请严格参考 `https://github.com/deusyu/harness-engineering` 的仓库结构，为当前项目创建顶层 `concepts/ thinking/ practice/ .arccgz-harness/feedback/ works/ prompts/ references/`，每个目录都有 `AGENTS.md`，并创建 `.arccgz-harness/scripts/checks/check-harness-consistency.sh` 和 hook 接入。不要把 harness 折叠进现有 `docs/` 目录。
 
 ## 效果评价
 

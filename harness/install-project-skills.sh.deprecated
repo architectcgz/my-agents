@@ -29,8 +29,8 @@ codex_home="${CODEX_HOME:-$HOME/.codex}"
 codex_skills_dir="$codex_home/skills"
 shared_skills_dir="$repo_root/.agents/skills"
 workspace_entrypoint_check="$HOME/workspace/projects/scripts/check-agent-entrypoints.sh"
-shared_skills_check="$HOME/.agents/harness/check-project-shared-skills.sh"
-project_entrypoints_check="$HOME/.agents/harness/check-project-agent-entrypoints.sh"
+shared_skills_check="$HOME/.agents/harness/checks/check-project-shared-skills.sh"
+project_entrypoints_check="$HOME/.agents/harness/checks/check-project-agent-entrypoints.sh"
 
 cd "$repo_root"
 

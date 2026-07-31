@@ -67,8 +67,8 @@ export WORKFLOW_STAGE="$STAGE"
 export WORKFLOW_REPO_ROOT="$ROOT_DIR"
 export WORKFLOW_CHANGED_FILES="$(changed_files)"
 export WORKFLOW_TASK_SLUG="$(
-  if [[ -x "$ROOT_DIR/scripts/check-startup-gate.sh" ]]; then
-    bash "$ROOT_DIR/scripts/check-startup-gate.sh" --print-active-slug 2>/dev/null || true
+  if [[ -x "$ROOT_DIR/scripts/workflows/check-startup-gate.sh" ]]; then
+    bash "$ROOT_DIR/scripts/workflows/check-startup-gate.sh" --print-active-slug 2>/dev/null || true
   fi
 )"
 

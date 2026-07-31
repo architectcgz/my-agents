@@ -67,7 +67,7 @@ Repositories should keep deciding their own plugin sets under:
 
 Task-intake order for non-trivial task slices:
 
-1. Run the relevant `superpowers` analysis pass, normally `superpowers:brainstorming`.
+1. Run the relevant analysis skill, normally `brainstorming`.
 2. Then run `grill-with-docs` to look for gaps in scope, docs, assumptions, and owner boundaries.
 3. Use that output to finish the implementation plan in Chinese by default.
 4. Only then start implementation.

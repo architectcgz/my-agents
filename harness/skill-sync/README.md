@@ -11,13 +11,13 @@ Scope:
 The shared non-blocking reminder entrypoint is:
 
 ```bash
-bash ~/.agents/harness/check-skill-sync-reminder.sh --cwd <repo-root> --staged
+bash ~/.agents/harness/checks/check-skill-sync-reminder.sh --cwd <repo-root> --staged
 ```
 
 The shared blocking archive-state check is:
 
 ```bash
-bash ~/.agents/harness/check-feedback-archive-state.sh --cwd <repo-root>
+bash ~/.agents/harness/checks/check-feedback-archive-state.sh --cwd <repo-root>
 ```
 
 This blocker is for state transition, not deletion:
@@ -33,5 +33,5 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cwd="$(cd "$script_dir/.." && pwd)"
-bash ~/.agents/harness/check-skill-sync-reminder.sh --cwd "$cwd" "$@"
+bash ~/.agents/harness/checks/check-skill-sync-reminder.sh --cwd "$cwd" "$@"
 ```

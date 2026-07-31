@@ -40,8 +40,8 @@ Use this workflow before starting substantial product or app work, especially wh
 
 The package installs these managed files:
 
-- `scripts/start-spec-coding.sh`
-- `scripts/check-spec-coding-docs.sh`
+- `scripts/workflows/start-spec-coding.sh`
+- `scripts/checks/check-spec-coding-docs.sh`
 - `harness/templates/spec-coding-workflow/PRD.md`
 - `harness/templates/spec-coding-workflow/DESIGN.md`
 - `harness/templates/spec-coding-workflow/ARCHITECTURE.md`
@@ -51,13 +51,13 @@ The package installs these managed files:
 Run the repo-local entrypoint:
 
 ```bash
-bash scripts/start-spec-coding.sh <topic-or-slug>
+bash scripts/workflows/start-spec-coding.sh <topic-or-slug>
 ```
 
 Then validate the spec scaffold:
 
 ```bash
-bash scripts/check-spec-coding-docs.sh
+bash scripts/checks/check-spec-coding-docs.sh
 ```
 
 ## Rules

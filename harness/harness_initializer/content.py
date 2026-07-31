@@ -18,6 +18,11 @@ from .content_core import (
     commit_message_check_script,
 )
 
+from .content_pre_commit import (
+    pre_commit_guard_script,
+    project_hooks_check_script,
+)
+
 from .content_hooks import post_tooluse_aar_hook_script
 
 from .content_aar import (
@@ -49,6 +54,8 @@ __all__ = [
     "architecture_guard_script",
     "commit_message_policy_content",
     "commit_message_check_script",
+    "pre_commit_guard_script",
+    "project_hooks_check_script",
     "post_tooluse_aar_hook_script",
     "aar_hook_readme",
     "aar_example",

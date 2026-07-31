@@ -47,9 +47,9 @@ detect_completion_signal() {
 
 # 检查当前是否有激活的 task gate
 check_active_task_gate() {
-  if [[ -x .arccgz-harness/scripts/check-startup-gate.sh ]]; then
+  if [[ -x .arccgz-harness/scripts/workflows/check-startup-gate.sh ]]; then
     local active_slug
-    active_slug="$(bash .arccgz-harness/scripts/check-startup-gate.sh --print-active-slug 2>/dev/null || true)"
+    active_slug="$(bash .arccgz-harness/scripts/workflows/check-startup-gate.sh --print-active-slug 2>/dev/null || true)"
     echo "$active_slug"
   fi
 }

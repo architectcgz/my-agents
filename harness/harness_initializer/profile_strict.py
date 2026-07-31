@@ -8,7 +8,7 @@ from pathlib import Path
 from .consistency_content import check_script
 from .docs_content import strict_docs
 from .profile_common import quick_routing_shell, write_common_scaffold
-from .scaffold import HARNESS_ROOT, ensure_documentation_scaffold, harness_dir, insert_or_replace, write
+from .scaffold import HARNESS_CHECKS, HARNESS_HOOKS, HARNESS_ROOT, ensure_documentation_scaffold, harness_dir, insert_or_replace, write
 
 
 def configure_strict_reference(repo: Path, project_name: str, profile: str) -> tuple[str, str]:
@@ -37,8 +37,8 @@ def configure_strict_reference(repo: Path, project_name: str, profile: str) -> t
 
 项目根保持 `CLAUDE.md -> AGENTS.md`，让 Claude / Codex 使用同一份入口规则。
 
-机械化检查：`bash {HARNESS_ROOT}/scripts/check-harness-consistency.sh`。
-架构守卫入口：`bash {HARNESS_ROOT}/scripts/check-architecture.sh`。""",
+机械化检查：`bash {HARNESS_CHECKS}/check-harness-consistency.sh`。
+架构守卫入口：`bash {HARNESS_CHECKS}/check-architecture.sh`。""",
     )
     insert_or_replace(
         repo / "AGENTS.md",
@@ -50,7 +50,7 @@ def configure_strict_reference(repo: Path, project_name: str, profile: str) -> t
         "todo-reminder",
         f"""## Todo Reminder
 
-开始新任务前，先运行 `bash {HARNESS_ROOT}/scripts/check-open-todos.sh --quiet-if-empty`，先过一遍 `{HARNESS_ROOT}/docs/todo/` 里的未完成事项；如果命中当前主题，首条回复先提醒。已完成但还没归档的 todo 也会在这里提示。""",
+开始新任务前，先运行 `bash {HARNESS_CHECKS}/check-open-todos.sh --quiet-if-empty`，先过一遍 `{HARNESS_ROOT}/docs/todo/` 里的未完成事项；如果命中当前主题，首条回复先提醒。已完成但还没归档的 todo 也会在这里提示。""",
     )
     insert_or_replace(
         repo / "AGENTS.md",
@@ -58,8 +58,8 @@ def configure_strict_reference(repo: Path, project_name: str, profile: str) -> t
         f"""## Test Workflow
 
 - After changing tests, run the smallest relevant test command that covers the touched surface.
-- After the test command, run the relevant script check such as `bash {HARNESS_ROOT}/scripts/check-test-workflow.sh` or `bash {HARNESS_ROOT}/scripts/check-harness-consistency.sh` before claiming completion.
-- 如果当前仓库已经有 `{HARNESS_ROOT}/scripts/check-harness-consistency.sh`、git hooks 或 CI guardrail，测试相关脚本检查必须接入这些实际检查链路，不能只停留在提示词里。""",
+- After the test command, run the relevant script check such as `bash {HARNESS_CHECKS}/check-test-workflow.sh` or `bash {HARNESS_CHECKS}/check-harness-consistency.sh` before claiming completion.
+- 如果当前仓库已经有 `{HARNESS_CHECKS}/check-harness-consistency.sh`、git hooks 或 CI guardrail，测试相关脚本检查必须接入这些实际检查链路，不能只停留在提示词里。""",
     )
     insert_or_replace(
         repo / "README.md",
@@ -79,19 +79,21 @@ def configure_strict_reference(repo: Path, project_name: str, profile: str) -> t
 一致性检查：
 
 ```bash
-bash {HARNESS_ROOT}/scripts/check-harness-consistency.sh
+bash {HARNESS_CHECKS}/check-harness-consistency.sh
 ```
 
 最小架构守卫：
 
 ```bash
-bash {HARNESS_ROOT}/scripts/check-architecture.sh
+bash {HARNESS_CHECKS}/check-architecture.sh
 ```""",
     )
     hook_docs = f"""## Harness 检查
 
-- `pre-commit`：运行 `{HARNESS_ROOT}/scripts/check-harness-consistency.sh`，其中会继续执行 `{HARNESS_ROOT}/scripts/check-architecture.sh` 与 `{HARNESS_ROOT}/scripts/check-test-workflow.sh`，检查严格参考 harness 的顶层目录、导航、最小架构守卫和测试工作流约束。
-- `pre-commit`：非阻塞运行 `{HARNESS_ROOT}/scripts/check-skill-sync-reminder.sh --staged`，提醒把跨项目规则上收全局 skill 或 shared harness。
-- `commit-msg`：运行 `{HARNESS_ROOT}/scripts/check-commit-message.sh`，由共享检查器读取 `{HARNESS_ROOT}/harness/policies/commit-message.json` 校验标题、正文和激活任务的 `Task:` 绑定。
+- `pre-commit`：运行 `{HARNESS_HOOKS}/check-pre-commit.sh`，只对 staged harness 相关路径运行完整一致性检查；普通业务提交走快速路径。
+- 完整一致性检查：显式运行 `{HARNESS_CHECKS}/check-harness-consistency.sh`，用于 CI 或 harness 变更后的完整校验。
+- Hook 生效检查：运行 `{HARNESS_HOOKS}/check-hooks.sh`；如果尚未接入，运行 `bash ~/.agents/harness/install-project-hooks.sh <repo-root>`。
+- skill sync reminder 保持非阻塞，只提醒把跨项目规则上收全局 skill 或 shared harness。
+- `commit-msg`：运行 `{HARNESS_HOOKS}/check-commit-message.sh`，由共享检查器读取 `{HARNESS_ROOT}/harness/policies/commit-message.json` 校验标题、正文和激活任务的 `Task:` 绑定。
 - 原有 API 合同同步逻辑继续保留。"""
     return "Initialized strict-reference harness", hook_docs

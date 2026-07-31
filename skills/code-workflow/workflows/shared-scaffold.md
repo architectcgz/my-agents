@@ -12,7 +12,7 @@ bash ~/workspace/projects/scripts/start-workflow.sh <topic-or-slug>
 
 Behavior:
 
-- If the current repository already has `scripts/start-implementation.sh`, delegate to it.
+- If the current repository already has `scripts/workflows/start-implementation.sh`, delegate to it.
 - If not, initialize the shared workflow scaffold first, then re-run the command.
 
 ## Shared scaffold
@@ -43,9 +43,9 @@ bash ~/.agents/harness/workflow-sync.sh <repo-root> code-workflow
 
 The scaffold provides the generic common pieces:
 
-- `scripts/check-task-intake.sh`
-- `scripts/start-implementation.sh`
-- `scripts/check-startup-gate.sh`
+- `scripts/workflows/check-task-intake.sh`
+- `scripts/workflows/start-implementation.sh`
+- `scripts/workflows/check-startup-gate.sh`
 - `harness/workflow-plugins/code-workflow/run_workflow_stage.sh`
 - `harness/workflow-plugins/code-workflow/archive_task_artifacts.sh`
 - `harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh`

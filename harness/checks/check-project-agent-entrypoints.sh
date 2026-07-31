@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF' >&2
 Usage:
-  bash ~/.agents/harness/check-project-agent-entrypoints.sh [project-root]
+  bash ~/.agents/harness/checks/check-project-agent-entrypoints.sh [project-root]
 
 Checks:
 - <root>/AGENTS.md exists

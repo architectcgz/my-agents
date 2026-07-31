@@ -22,11 +22,11 @@ For brand-new project initialization, `harness-engineering` owns the harness sub
 3. Use the current local harness shape by default while preserving the upstream `deusyu/harness-engineering` principles.
 4. Initialize or repair the harness with `~/.agents/harness/harness-initializer.py`, or for the normal harness bootstrap path use `bash ~/.agents/harness/init-project.sh "$PWD"`.
 5. Ensure the repository root keeps `CLAUDE.md -> AGENTS.md`; create the symlink when missing, but do not overwrite an existing non-symlink file silently.
-6. Ensure the generated scaffold includes `scripts/check-agent-entrypoints.sh` and that the repo's main consistency/governance check actually executes it, instead of leaving entrypoint alignment as a one-off manual doctor step.
+6. Ensure the generated scaffold includes `scripts/checks/check-agent-entrypoints.sh` and that the repo's main consistency/governance check actually executes it, instead of leaving entrypoint alignment as a one-off manual doctor step.
 7. If the local workspace provides `~/workspace/projects/scripts/check-agent-entrypoints.sh`, run it against the target repo after initialization.
-8. Ensure the generated scaffold includes `scripts/check-test-workflow.sh` and that `scripts/check-harness-consistency.sh`, hooks, or CI actually invoke it instead of leaving test workflow rules as prompt text only.
-9. Ensure the generated scaffold includes a minimal `scripts/check-architecture.sh` guard plus seed policy files, and that `scripts/check-harness-consistency.sh`, hooks, or CI actually invoke it instead of leaving architecture ownership only in prompt text.
-10. Ensure the generated scaffold includes `scripts/check-script-guard.sh` plus `harness/policies/script-guard.json`, and that `scripts/check-harness-consistency.sh` actually invokes the script guard so large harness/operator scripts are forced to split before they drift.
+8. Ensure the generated scaffold includes `scripts/checks/check-test-workflow.sh` and that `scripts/checks/check-harness-consistency.sh`, hooks, or CI actually invoke it instead of leaving test workflow rules as prompt text only.
+9. Ensure the generated scaffold includes a minimal `scripts/checks/check-architecture.sh` guard plus seed policy files, and that `scripts/checks/check-harness-consistency.sh`, hooks, or CI actually invoke it instead of leaving architecture ownership only in prompt text.
+10. Ensure the generated scaffold includes `scripts/checks/check-script-guard.sh` plus `harness/policies/script-guard.json`, and that `scripts/checks/check-harness-consistency.sh` actually invokes the script guard so large harness/operator scripts are forced to split before they drift.
 11. Run the generated harness check and any affected existing hook/script checks.
 12. Report changed files, validation evidence, and any residual gaps.
 13. When the repository should adopt the shared non-trivial task workflow, install the common startup package with `bash ~/.agents/harness/workflow-installer.sh "$PWD" code-workflow`, or prefer the higher-level bootstrap wrapper `bash ~/.agents/harness/init-project.sh "$PWD"` during normal initialization.
@@ -34,30 +34,30 @@ For brand-new project initialization, `harness-engineering` owns the harness sub
 
 When the repo uses project todos, initialize a non-blocking reminder flow on the canonical path `docs/todo/`:
 
-- add `scripts/check-open-todos.sh`
+- add `scripts/checks/check-open-todos.sh`
 - wire root `AGENTS.md` to read it at task start
-- surface its output from `scripts/check-harness-consistency.sh`
+- surface its output from `scripts/checks/check-harness-consistency.sh`
 
 When the repo has automated tests or an obvious test surface, initialize a mechanical test-workflow guard:
 
-- add `scripts/check-test-workflow.sh`
+- add `scripts/checks/check-test-workflow.sh`
 - have it verify `AGENTS.md` documents the narrowest-relevant-test-first workflow and follow-up script checks
-- have `scripts/check-harness-consistency.sh` execute it
+- have `scripts/checks/check-harness-consistency.sh` execute it
 - rely on existing pre-commit or CI entry points to enforce it transitively
 
 When the repo has architecture docs or any structural code surface, initialize a minimal architecture guard:
 
-- add `scripts/check-architecture.sh`
+- add `scripts/checks/check-architecture.sh`
 - seed `harness/policies/architecture-guard-paths.txt`
 - seed `harness/policies/architecture-guard-commands.txt`
-- have `scripts/check-harness-consistency.sh` execute it
+- have `scripts/checks/check-harness-consistency.sh` execute it
 - treat the command list as the project-local extension point for backend/frontend/module boundary checks
 
 When the repo has harness/operator scripts, initialize a mechanical script-growth guard:
 
-- add `scripts/check-script-guard.sh`
+- add `scripts/checks/check-script-guard.sh`
 - seed `harness/policies/script-guard.json`
-- have `scripts/check-harness-consistency.sh` execute it
+- have `scripts/checks/check-harness-consistency.sh` execute it
 - keep the policy focused on harness/operator entrypoints, wrappers, and harness checks instead of unrelated domain build scripts
 
 When the repo uses the local reuse index pattern, wire a non-blocking reminder into root `AGENTS.md`:
@@ -88,7 +88,7 @@ bash /home/azhi/.agents/harness/init-project.sh "$PWD" --mode strict-reference
 
 `init-project.sh` is the preferred high-level bootstrap wrapper. It runs `harness-initializer.py`, then installs the requested workflow package by default, then runs the repo-local consistency check when present. The lower-level Python initializer remains the repair/debugging entry for harness-only operations.
 
-The initializer is idempotent. In both modes it also ensures the repo root keeps `CLAUDE.md -> AGENTS.md`, unless an existing conflicting `CLAUDE.md` requires manual resolution. In default mode it creates `.arccgz-harness/state/`, `.arccgz-harness/state/reuse-decisions/`, optional local `.arccgz-harness/state/reuse-index/`, `.arccgz-harness/harness/policies/`, `.arccgz-harness/harness/templates/`, `.arccgz-harness/harness/prompts/`, `.arccgz-harness/harness/checks/`, `.arccgz-harness/feedback/`, `.arccgz-harness/scripts/check-architecture.sh`, `.arccgz-harness/scripts/check-test-workflow.sh`, and a consistency check. In strict reference mode it creates `.arccgz-harness/concepts/`, `.arccgz-harness/thinking/`, `.arccgz-harness/practice/`, `.arccgz-harness/feedback/`, `.arccgz-harness/works/`, `.arccgz-harness/prompts/`, `.arccgz-harness/references/`, `.arccgz-harness/scripts/check-architecture.sh`, `.arccgz-harness/scripts/check-test-workflow.sh`, and a consistency check; in that layout, `concepts/` should be treated as a supplement to the root `AGENTS.md`, while the root `AGENTS.md` remains the project description and navigation entrypoint.
+The initializer is idempotent. In both modes it also ensures the repo root keeps `CLAUDE.md -> AGENTS.md`, unless an existing conflicting `CLAUDE.md` requires manual resolution. In default mode it creates `.arccgz-harness/state/`, `.arccgz-harness/state/reuse-decisions/`, optional local `.arccgz-harness/state/reuse-index/`, `.arccgz-harness/harness/policies/`, `.arccgz-harness/harness/templates/`, `.arccgz-harness/harness/prompts/`, `.arccgz-harness/harness/checks/`, `.arccgz-harness/feedback/`, `.arccgz-harness/scripts/checks/`, `.arccgz-harness/scripts/hooks/`, `.arccgz-harness/scripts/tests/`, `.arccgz-harness/scripts/workflows/`, and a consistency check. In strict reference mode it creates `.arccgz-harness/concepts/`, `.arccgz-harness/thinking/`, `.arccgz-harness/practice/`, `.arccgz-harness/feedback/`, `.arccgz-harness/works/`, `.arccgz-harness/prompts/`, `.arccgz-harness/references/`, the same categorized script directories, and a consistency check; in that layout, `concepts/` should be treated as a supplement to the root `AGENTS.md`, while the root `AGENTS.md` remains the project description and navigation entrypoint.
 
 ### Existing Agent Instruction Files
 
@@ -113,13 +113,13 @@ Keep the harness as a map, not a manual. In the current local standard:
 - `.arccgz-harness/harness/checks/`: deterministic guard scripts.
 - `.arccgz-harness/state/reuse-index/`: user-local, gitignored reuse index. Keep `index.yaml` as the top-level route map and mirrored `README.md` files as module/module-internal secondary indexes.
 - `.arccgz-harness/feedback/`: mistakes, corrections, workflow lessons, and reusable learning that has not yet been fully absorbed elsewhere.
-- `scripts/check-harness-consistency.sh`: deterministic base harness guard against drift.
-- `scripts/check-agent-entrypoints.sh`: deterministic guard that requires `CLAUDE.md -> AGENTS.md` and any project-local Claude skill bridge to stay aligned.
-- `scripts/check-architecture.sh`: deterministic minimal architecture guard for docs/architecture routing and project-local architecture commands.
-- `scripts/check-test-workflow.sh`: deterministic guard that checks whether test workflow instructions are documented and actually wired into enforcement paths.
-- `scripts/check-script-guard.sh`: deterministic guard that limits harness/operator script growth and forces oversized scripts to split.
-- `scripts/check-open-todos.sh`: non-blocking reminder for unchecked backlog items under `docs/todo/`, plus completed files that still need archiving.
-- `scripts/check-skill-sync-reminder.sh`: non-blocking reminder that asks whether project harness changes should stay local or be synchronized into `~/.agents/skills/` or `~/.agents/harness/`.
+- `scripts/checks/check-harness-consistency.sh`: deterministic base harness guard against drift.
+- `scripts/checks/check-agent-entrypoints.sh`: deterministic guard that requires `CLAUDE.md -> AGENTS.md` and any project-local Claude skill bridge to stay aligned.
+- `scripts/checks/check-architecture.sh`: deterministic minimal architecture guard for docs/architecture routing and project-local architecture commands.
+- `scripts/checks/check-test-workflow.sh`: deterministic guard that checks whether test workflow instructions are documented and actually wired into enforcement paths.
+- `scripts/checks/check-script-guard.sh`: deterministic guard that limits harness/operator script growth and forces oversized scripts to split.
+- `scripts/checks/check-open-todos.sh`: non-blocking reminder for unchecked backlog items under `docs/todo/`, plus completed files that still need archiving.
+- `scripts/checks/check-skill-sync-reminder.sh`: non-blocking reminder that asks whether project harness changes should stay local or be synchronized into `~/.agents/skills/` or `~/.agents/harness/`.
 - Shared non-trivial task workflow package: install and verify `~/.agents/harness/workflows/code-workflow/`, but keep its behavior definition in the `code-workflow` skill instead of duplicating it here.
 
 When strict upstream reference mode is requested, use `concepts/`, `thinking/`, `practice/`, `feedback/`, `works/`, `prompts/`, and `references/` as demonstrated by `deusyu/harness-engineering`. In that mode, `concepts/` supplements the root `AGENTS.md` with long-lived concepts and principles rather than replacing the root navigation role.

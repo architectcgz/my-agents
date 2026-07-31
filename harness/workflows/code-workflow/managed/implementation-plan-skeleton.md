@@ -78,7 +78,7 @@
 
 ## Intake Analysis Gate
 
-- 适用的 superpowers analysis pass：
+- 适用的 analysis skill：
 - 为什么该 analysis pass 适用：
 - grill-with-docs 发现：
 - challenge 后的计划调整：

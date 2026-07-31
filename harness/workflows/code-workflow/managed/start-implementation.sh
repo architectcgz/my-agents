@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOH' >&2
 Usage:
-  bash scripts/start-implementation.sh <topic-or-slug> [--title <plan-title>] [--base <git-ref>] [--dry-run]
+  bash scripts/workflows/start-implementation.sh <topic-or-slug> [--title <plan-title>] [--base <git-ref>] [--dry-run]
 EOH
 }
 
@@ -158,7 +158,7 @@ fi
 
 mkdir -p "$WORKTREE_PARENT"
 
-bash "$ROOT/scripts/check-task-intake.sh"
+bash "$ROOT/scripts/workflows/check-task-intake.sh"
 
 git -C "$ROOT" rev-parse --verify --quiet "$base_ref" >/dev/null || {
   echo "FAIL: base ref does not exist: $base_ref" >&2
@@ -215,6 +215,6 @@ printf '%s\n' "- gate: $gate_dir/$gate_file_name"
 printf '\n'
 printf '%s\n' "Next steps:"
 printf '%s\n' "1. cd $worktree_path"
-printf '%s\n' "2. Run the intake analysis gate: relevant superpowers analysis pass first, then grill-with-docs"
-printf '%s\n' "3. Complete the plan in Chinese by default via superpowers:writing-plans using that analysis output"
+printf '%s\n' "2. Run the intake analysis gate: relevant analysis skill first, then grill-with-docs"
+printf '%s\n' "3. Complete the plan in Chinese by default via writing-plans using that analysis output"
 printf '%s\n' "4. Start implementation only after the plan is complete enough for the current slice"

@@ -54,7 +54,7 @@ def resolve_repo_root():
 
 
 def active_slug_from_startup_gate(root):
-    script = root / "scripts/check-startup-gate.sh"
+    script = root / "scripts/workflows/check-startup-gate.sh"
     if not script.is_file() or not script.stat().st_mode & 0o111:
         return ""
     result = subprocess.run(

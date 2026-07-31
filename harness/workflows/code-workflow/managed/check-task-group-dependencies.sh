@@ -5,8 +5,8 @@ set -euo pipefail
 usage() {
   cat <<'EOF' >&2
 Usage:
-  bash scripts/check-group-dependencies.sh [group-slug]
-  bash scripts/check-group-dependencies.sh --list
+  bash scripts/workflows/check-task-group-dependencies.sh [group-slug]
+  bash scripts/workflows/check-task-group-dependencies.sh --list
 
 Description:
   Check task group slice dependencies and overall progress.

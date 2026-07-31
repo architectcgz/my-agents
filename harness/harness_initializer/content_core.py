@@ -10,7 +10,7 @@ def todo_reminder_script() -> str:
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cwd="$(cd "$script_dir/../.." && pwd)"
+cwd="$(cd "$script_dir/../../.." && pwd)"
 python3 ~/.agents/harness/todo/remind_todos.py --cwd "$cwd" "$@"
 """
 
@@ -20,7 +20,7 @@ def todo_governance_check_script() -> str:
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cwd="$(cd "$script_dir/../.." && pwd)"
+cwd="$(cd "$script_dir/../../.." && pwd)"
 python3 ~/.agents/harness/todo/check_todo_governance.py --cwd "$cwd"
 """
 
@@ -30,7 +30,7 @@ def skill_sync_reminder_script() -> str:
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cwd="$(cd "$script_dir/../.." && pwd)"
+cwd="$(cd "$script_dir/../../.." && pwd)"
 python3 ~/.agents/harness/skill-sync/remind_skill_sync.py --cwd "$cwd" "$@"
 """
 
@@ -40,26 +40,22 @@ def agent_entrypoints_check_script() -> str:
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cwd="$(cd "$script_dir/../.." && pwd)"
-exec bash "$HOME/.agents/harness/check-project-agent-entrypoints.sh" "$cwd"
+cwd="$(cd "$script_dir/../../.." && pwd)"
+exec bash "$HOME/.agents/harness/checks/check-project-agent-entrypoints.sh" "$cwd"
 """
 
 
 def script_guard_policy_content() -> str:
     return """{
   "include": [
-    ".arccgz-harness/scripts/check-*.sh",
-    ".arccgz-harness/scripts/check-*.py",
-    ".arccgz-harness/scripts/start-*.sh",
-    ".arccgz-harness/scripts/start-*.py",
-    ".arccgz-harness/scripts/run-*.sh",
-    ".arccgz-harness/scripts/run-*.py",
-    ".arccgz-harness/scripts/install-*.sh",
-    ".arccgz-harness/scripts/install-*.py",
-    ".arccgz-harness/scripts/uninstall-*.sh",
-    ".arccgz-harness/scripts/uninstall-*.py",
-    ".arccgz-harness/scripts/doctor-*.sh",
-    ".arccgz-harness/scripts/doctor-*.py",
+    ".arccgz-harness/scripts/checks/**/*.sh",
+    ".arccgz-harness/scripts/checks/**/*.py",
+    ".arccgz-harness/scripts/hooks/**/*.sh",
+    ".arccgz-harness/scripts/hooks/**/*.py",
+    ".arccgz-harness/scripts/tests/**/*.sh",
+    ".arccgz-harness/scripts/tests/**/*.py",
+    ".arccgz-harness/scripts/workflows/**/*.sh",
+    ".arccgz-harness/scripts/workflows/**/*.py",
     ".arccgz-harness/harness/checks/**/*.sh",
     ".arccgz-harness/harness/checks/**/*.py",
     "tools/*.sh",
@@ -79,7 +75,7 @@ def script_guard_check_script() -> str:
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cwd="$(cd "$script_dir/../.." && pwd)"
+cwd="$(cd "$script_dir/../../.." && pwd)"
 python3 ~/.agents/harness/checks/check_script_guard.py --cwd "$cwd" --policy "$cwd/.arccgz-harness/harness/policies/script-guard.json" "$@"
 """
 
@@ -98,7 +94,7 @@ def architecture_guard_commands_policy() -> str:
 # Examples:
 # go test ./... -run 'Architecture|Boundar'
 # npm run test:architecture
-# bash .arccgz-harness/scripts/check-backend-architecture.sh
+# bash .arccgz-harness/scripts/checks/check-backend-architecture.sh
 """
 
 
@@ -184,16 +180,16 @@ else
 fi
 
 echo "[T3] test workflow guard is mechanically enforced"
-if [[ -f .arccgz-harness/scripts/check-harness-consistency.sh ]] && grep -q 'check-test-workflow\.sh' .arccgz-harness/scripts/check-harness-consistency.sh; then
-  pass_msg ".arccgz-harness/scripts/check-harness-consistency.sh runs .arccgz-harness/scripts/check-test-workflow.sh"
+if [[ -f .arccgz-harness/scripts/checks/check-harness-consistency.sh ]] && grep -q 'check-test-workflow\.sh' .arccgz-harness/scripts/checks/check-harness-consistency.sh; then
+  pass_msg ".arccgz-harness/scripts/checks/check-harness-consistency.sh runs .arccgz-harness/scripts/checks/check-test-workflow.sh"
 else
-  fail_msg ".arccgz-harness/scripts/check-harness-consistency.sh must run .arccgz-harness/scripts/check-test-workflow.sh"
+  fail_msg ".arccgz-harness/scripts/checks/check-harness-consistency.sh must run .arccgz-harness/scripts/checks/check-test-workflow.sh"
 fi
 
-if [[ -f .githooks/pre-commit ]] && grep -q 'check-harness-consistency\.sh' .githooks/pre-commit; then
-  pass_msg "pre-commit routes through .arccgz-harness/scripts/check-harness-consistency.sh"
+if [[ -f .githooks/pre-commit ]] && grep -Eq 'check-pre-commit\.sh|check-harness-consistency\.sh' .githooks/pre-commit; then
+  pass_msg "pre-commit routes through the fast harness guard"
 elif find .github/workflows -type f 2>/dev/null | xargs -r grep -q 'check-test-workflow\.sh'; then
-  pass_msg "CI directly runs .arccgz-harness/scripts/check-test-workflow.sh"
+  pass_msg "CI directly runs .arccgz-harness/scripts/checks/check-test-workflow.sh"
 else
   fail_msg "wire test workflow enforcement into pre-commit or CI"
 fi
@@ -213,7 +209,7 @@ def architecture_guard_script() -> str:
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$script_dir/../.."
+cd "$script_dir/../../.."
 
 fail=0
 ran_command=0
@@ -410,7 +406,7 @@ def commit_message_check_script() -> str:
 set -euo pipefail
 
 if [[ $# -ne 1 ]]; then
-  echo "[commit-msg] 用法: bash .arccgz-harness/scripts/check-commit-message.sh <commit-message-file>" >&2
+  echo "[commit-msg] 用法: bash .arccgz-harness/scripts/hooks/check-commit-message.sh <commit-message-file>" >&2
   exit 1
 fi
 
@@ -437,8 +433,8 @@ if [[ ! -f "$policy_file" ]]; then
 fi
 
 cmd=(python3 "$checker" --message-file "$message_file" --policy-file "$policy_file")
-if [[ -x "$root_dir/.arccgz-harness/scripts/check-startup-gate.sh" ]]; then
-  active_task_slug="$(bash "$root_dir/.arccgz-harness/scripts/check-startup-gate.sh" --print-active-slug 2>/dev/null || true)"
+if [[ -x "$root_dir/.arccgz-harness/scripts/workflows/check-startup-gate.sh" ]]; then
+  active_task_slug="$(bash "$root_dir/.arccgz-harness/scripts/workflows/check-startup-gate.sh" --print-active-slug 2>/dev/null || true)"
   if [[ -n "$active_task_slug" ]]; then
     cmd+=(--active-task-slug "$active_task_slug")
   fi

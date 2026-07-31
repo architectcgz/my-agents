@@ -11,6 +11,7 @@ from .profile_strict import configure_strict_reference
 from .scaffold import (
     add_gitignore_exceptions,
     ensure_claude_symlink,
+    ensure_git_hooks_path,
     insert_commit_msg_hook,
     insert_hook,
     insert_or_replace,
@@ -39,6 +40,7 @@ def main() -> None:
     insert_commit_msg_hook(repo / ".githooks/commit-msg")
     insert_or_replace(repo / ".githooks/README.md", "hook-docs", hook_docs)
     ensure_claude_symlink(repo)
+    ensure_git_hooks_path(repo)
     run_agent_entrypoint_check(repo)
     add_gitignore_exceptions(repo)
     print(f"{message} for {project_name} at {repo}")

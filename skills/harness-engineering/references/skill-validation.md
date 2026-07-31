@@ -18,7 +18,7 @@ for how to *write* the skill being validated, see `authoring-project-skills`.
 
 从 Common Tasks / Quick Routing 生成用户可能的真实说法，测对应 skill 的 `description` 命中率：
 - 单独读一遍 SKILL.md 觉得没问题，跑 test-trigger 才发现一半触发短语命不中。
-- 本机实现:`harness/test-trigger-rate.py`(initializer 生成 `scripts/test-trigger-rate.sh`)。
+- 本机实现：`harness/tests/test-trigger-rate.py`（initializer 生成 `scripts/tests/test-trigger-rate.sh`）。
 - 占位/FILL 行豁免、不计入门禁;只对**项目自有** skill 把关，指向全局 skill 的标准行只报告不 gate。
 - 连字符 skill 名（如 `backend-engineer`）按反引号整体提取，不可按 `-` 拆分。
 

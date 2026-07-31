@@ -18,6 +18,8 @@ from .content import (
     known_antipatterns_examples,
     known_antipatterns_readme,
     post_tooluse_aar_hook_script,
+    pre_commit_guard_script,
+    project_hooks_check_script,
     script_guard_check_script,
     script_guard_policy_content,
     skill_sync_reminder_script,
@@ -27,22 +29,26 @@ from .content import (
     todo_governance_check_script,
     todo_reminder_script,
 )
-from .scaffold import HARNESS_ROOT, harness_dir, write, write_if_missing
+from .scaffold import HARNESS_CHECKS, HARNESS_HOOKS, HARNESS_TESTS, HARNESS_ROOT, harness_dir, write, write_if_missing
 
 
 def write_common_scaffold(repo: Path, profile: str, consistency_script: str) -> None:
     root = harness_dir(repo)
-    write(root / "scripts/check-harness-consistency.sh", consistency_script, executable=True)
-    write(root / "scripts/check-agent-entrypoints.sh", agent_entrypoints_check_script(), executable=True)
-    write(root / "scripts/check-architecture.sh", architecture_guard_script(), executable=True)
-    write(root / "scripts/check-test-workflow.sh", test_workflow_check_script(), executable=True)
-    write(root / "scripts/check-script-guard.sh", script_guard_check_script(), executable=True)
-    write(root / "scripts/check-open-todos.sh", todo_reminder_script(), executable=True)
-    write(root / "scripts/check-todo-governance.sh", todo_governance_check_script(), executable=True)
-    write(root / "scripts/check-skill-sync-reminder.sh", skill_sync_reminder_script(), executable=True)
-    write(root / "scripts/check-commit-message.sh", commit_message_check_script(), executable=True)
-    write(root / "scripts/test-trigger-rate.sh", test_trigger_rate_script(), executable=True)
-    write_if_missing(root / "scripts/README-trigger-rate.md", test_trigger_rate_readme())
+    # `root` already points at `.arccgz-harness`; use child directories here so
+    # re-initialization refreshes the canonical files instead of nesting them.
+    write(root / "scripts/checks/check-harness-consistency.sh", consistency_script, executable=True)
+    write(root / "scripts/hooks/check-pre-commit.sh", pre_commit_guard_script(), executable=True)
+    write(root / "scripts/hooks/check-hooks.sh", project_hooks_check_script(), executable=True)
+    write(root / "scripts/checks/check-agent-entrypoints.sh", agent_entrypoints_check_script(), executable=True)
+    write(root / "scripts/checks/check-architecture.sh", architecture_guard_script(), executable=True)
+    write(root / "scripts/checks/check-test-workflow.sh", test_workflow_check_script(), executable=True)
+    write(root / "scripts/checks/check-script-guard.sh", script_guard_check_script(), executable=True)
+    write(root / "scripts/checks/check-open-todos.sh", todo_reminder_script(), executable=True)
+    write(root / "scripts/checks/check-todo-governance.sh", todo_governance_check_script(), executable=True)
+    write(root / "scripts/checks/check-skill-sync-reminder.sh", skill_sync_reminder_script(), executable=True)
+    write(root / "scripts/hooks/check-commit-message.sh", commit_message_check_script(), executable=True)
+    write(root / "scripts/tests/test-trigger-rate.sh", test_trigger_rate_script(), executable=True)
+    write_if_missing(root / "scripts/tests/README-trigger-rate.md", test_trigger_rate_readme())
     write_if_missing(root / "harness/policies/architecture-guard-paths.txt", architecture_guard_paths_policy())
     write_if_missing(root / "harness/policies/architecture-guard-commands.txt", architecture_guard_commands_policy())
     write(root / "harness/policies/commit-message.json", commit_message_policy_content(profile))
@@ -80,7 +86,7 @@ def quick_routing_shell() -> str:
 | Architecture change | `{HARNESS_ROOT}/docs/architecture/` | `brainstorming` then `writing-plans` |
 | Documentation update | <!-- FILL: 文档规范 --> | Direct edit |
 | Commit changes | — | `committing-changes` |
-| New non-trivial task | `bash {HARNESS_ROOT}/scripts/check-open-todos.sh --quiet-if-empty` | `harness-router` then `writing-plans` |
+| New non-trivial task | `bash {HARNESS_CHECKS}/check-open-todos.sh --quiet-if-empty` | `harness-router` then `writing-plans` |
 | Other | Read this AGENTS.md fully, then ask user | `harness-router` |
 
 ## Auto-Triggers
@@ -89,4 +95,4 @@ def quick_routing_shell() -> str:
 - Context compact / clear → SessionStart hook 重新注入 skill bootstrap（若已配置）。
 - Before any `git commit` → 先走 `committing-changes` skill 组织提交信息（默认禁止 Co-Authored-By）。
 - Task complete (non-trivial) → 跑验证门禁，再做 AAR，若有新模式更新 `{HARNESS_ROOT}/feedback/`。
-- 起步后把 `<!-- FILL -->` 行替换为本项目真实的必读文件与 skill，替换完运行 `bash {HARNESS_ROOT}/scripts/test-trigger-rate.sh` 检查 description 触发率。"""
+- 起步后把 `<!-- FILL -->` 行替换为本项目真实的必读文件与 skill，替换完运行 `bash {HARNESS_TESTS}/test-trigger-rate.sh` 检查 description 触发率。"""

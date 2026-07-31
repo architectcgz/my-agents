@@ -2,7 +2,7 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-script_path="$script_dir/project-template-init.sh"
+script_path="$script_dir/../project-template-init.sh"
 
 tmp_root="$(mktemp -d /tmp/project-template-init-test.XXXXXX)"
 cleanup() {
@@ -32,7 +32,8 @@ bash "$script_path" frontend-vue \
   --git-user-email "example@example.invalid" >"$tmp_root/success.out" 2>"$tmp_root/success.err"
 
 git_root="$(git -C "$dest_success" rev-parse --show-toplevel)"
-if [[ "$git_root" != "$dest_success" ]]; then
+expected_git_root="$(cd "$dest_success" && pwd -W 2>/dev/null || pwd)"
+if [[ "$git_root" != "$expected_git_root" ]]; then
   echo "FAIL: expected template init to create a git repository at $dest_success" >&2
   exit 1
 fi

@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF' >&2
 Usage:
-  bash scripts/check-spec-coding-docs.sh [--dir <docs-dir>]
+  bash scripts/checks/check-spec-coding-docs.sh [--dir <docs-dir>]
 
 Description:
   Verify that the spec-coding workflow docs scaffold exists.

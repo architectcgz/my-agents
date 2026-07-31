@@ -47,7 +47,7 @@ bash ~/.agents/harness/bootstrap-agent-home.sh
 3. 单独跑一次校验
 
 ```bash
-bash ~/.agents/harness/check-agent-home.sh
+bash ~/.agents/harness/checks/check-agent-home.sh
 ```
 
 ## 项目初始化

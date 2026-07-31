@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF' >&2
 Usage:
-  bash scripts/start-spec-coding.sh <topic-or-slug> [--dir <docs-dir>]
+  bash scripts/workflows/start-spec-coding.sh <topic-or-slug> [--dir <docs-dir>]
 
 Description:
   Create the spec-first docs scaffold for PRD, design, architecture, TODO, and launch readiness.

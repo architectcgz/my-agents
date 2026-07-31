@@ -10,6 +10,10 @@ import subprocess
 START = "BEGIN HARNESS ENGINEERING"
 END = "END HARNESS ENGINEERING"
 HARNESS_ROOT = ".arccgz-harness"
+HARNESS_SCRIPTS = f"{HARNESS_ROOT}/scripts"
+HARNESS_CHECKS = f"{HARNESS_SCRIPTS}/checks"
+HARNESS_HOOKS = f"{HARNESS_SCRIPTS}/hooks"
+HARNESS_TESTS = f"{HARNESS_SCRIPTS}/tests"
 WORKSPACE_AGENT_ENTRYPOINT_CHECK = Path.home() / "workspace" / "projects" / "scripts" / "check-agent-entrypoints.sh"
 AGENTS_SKILLS_DIR = Path.home() / ".agents" / "skills"
 CODEX_SKILLS_DIR = Path.home() / ".codex" / "skills"
@@ -120,6 +124,33 @@ def run_agent_entrypoint_check(repo: Path) -> None:
         subprocess.run(["bash", str(WORKSPACE_AGENT_ENTRYPOINT_CHECK), str(repo)], check=True)
 
 
+def ensure_git_hooks_path(repo: Path) -> None:
+    """Activate only the harness-owned hook path; reject an unrelated existing owner."""
+    result = subprocess.run(
+        ["git", "-C", str(repo), "config", "--get", "core.hooksPath"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    configured = result.stdout.strip() if result.returncode == 0 else ""
+    expected = (repo / ".githooks").resolve()
+    if configured:
+        configured_path = Path(configured)
+        if not configured_path.is_absolute():
+            configured_path = repo / configured_path
+        if configured_path.resolve() != expected:
+            raise RuntimeError(
+                f"{repo} already uses core.hooksPath={configured!r}; "
+                f"expected {expected} or manual migration"
+            )
+        return
+
+    subprocess.run(
+        ["git", "-C", str(repo), "config", "--local", "core.hooksPath", ".githooks"],
+        check=True,
+    )
+
+
 def managed_block(kind: str, body: str) -> str:
     return f"<!-- {START}: {kind} -->\n{body.rstrip()}\n<!-- {END}: {kind} -->"
 
@@ -145,11 +176,11 @@ def insert_hook(path: Path) -> None:
     start = f"# {START}: pre-commit"
     end = f"# {END}: pre-commit"
     body = f"""{start}
-if [[ -x {HARNESS_ROOT}/scripts/check-harness-consistency.sh ]]; then
-  bash {HARNESS_ROOT}/scripts/check-harness-consistency.sh
-fi
-if [[ -x {HARNESS_ROOT}/scripts/check-skill-sync-reminder.sh ]]; then
-  bash {HARNESS_ROOT}/scripts/check-skill-sync-reminder.sh --staged
+if [[ -x {HARNESS_HOOKS}/check-pre-commit.sh ]]; then
+  bash {HARNESS_HOOKS}/check-pre-commit.sh
+elif [[ -x {HARNESS_CHECKS}/check-harness-consistency.sh ]]; then
+  # Compatibility fallback for projects initialized before the fast path existed.
+  bash {HARNESS_CHECKS}/check-harness-consistency.sh
 fi
 # {END}: pre-commit"""
     if start in text and end in text:
@@ -169,7 +200,7 @@ def insert_commit_msg_hook(path: Path) -> None:
     body = f"""{start}
 cd "$(git rev-parse --show-toplevel)"
 
-bash {HARNESS_ROOT}/scripts/check-commit-message.sh "$1"
+bash {HARNESS_HOOKS}/check-commit-message.sh "$1"
 # {END}: commit-msg"""
     if start in text and end in text:
         before, rest = text.split(start, 1)

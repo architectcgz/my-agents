@@ -29,7 +29,7 @@ fi
 shared_root="${AGENTS_HOME:-$HOME/.agents}"
 claude_root="${CLAUDE_HOME:-$HOME/.claude}"
 codex_root="${CODEX_HOME:-$HOME/.codex}"
-checker="$shared_root/harness/check-agent-home.sh"
+checker="$shared_root/harness/checks/check-agent-home.sh"
 
 ensure_dir() {
   mkdir -p "$@"

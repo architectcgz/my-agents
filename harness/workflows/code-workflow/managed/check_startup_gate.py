@@ -203,7 +203,7 @@ def main() -> int:
         print("FAIL: startup-gated changes require an effective task gate", file=sys.stderr)
         for path in gated:
             print(f"- {path}", file=sys.stderr)
-        print("Use scripts/start-implementation.sh before continuing.", file=sys.stderr)
+        print("Use scripts/workflows/start-implementation.sh before continuing.", file=sys.stderr)
         return 1
 
     if len(gates) > 1:

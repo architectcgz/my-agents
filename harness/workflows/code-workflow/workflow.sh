@@ -176,10 +176,10 @@ CHECK_STARTUP_GATE_PY="$(with_managed_header python "$(read_managed_source "chec
 IMPLEMENTATION_PLAN_SKELETON="$(with_managed_header markdown "$(read_managed_source "implementation-plan-skeleton.md")")"
 TASK_GROUP_INDEX_SKELETON="$(with_managed_header markdown "$(read_managed_source "task-group-index-skeleton.md")")"
 
-write_file "$repo_root/scripts/check-task-intake.sh" "$CHECK_TASK_INTAKE"
-write_file "$repo_root/scripts/start-implementation.sh" "$START_IMPLEMENTATION"
-write_file "$repo_root/scripts/check-startup-gate.sh" "$CHECK_STARTUP_GATE_SH"
-write_file "$repo_root/scripts/check-task-group-dependencies.sh" "$CHECK_TASK_GROUP_DEPENDENCIES"
+write_file "$repo_root/scripts/workflows/check-task-intake.sh" "$CHECK_TASK_INTAKE"
+write_file "$repo_root/scripts/workflows/start-implementation.sh" "$START_IMPLEMENTATION"
+write_file "$repo_root/scripts/workflows/check-startup-gate.sh" "$CHECK_STARTUP_GATE_SH"
+write_file "$repo_root/scripts/workflows/check-task-group-dependencies.sh" "$CHECK_TASK_GROUP_DEPENDENCIES"
 write_file "$repo_root/harness/workflow-plugins/code-workflow/run_workflow_stage.sh" "$RUN_WORKFLOW_STAGE"
 write_file "$repo_root/harness/workflow-plugins/code-workflow/archive_task_artifacts.sh" "$ARCHIVE_TASK_ARTIFACTS"
 write_file "$repo_root/harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh" "$CLEANUP_TASK_WORKTREE"
@@ -211,10 +211,10 @@ elif [[ "$dry_run" -eq 1 ]]; then
   echo "DRY RUN: code-workflow package install checked"
 else
   chmod +x \
-    "$repo_root/scripts/check-task-intake.sh" \
-    "$repo_root/scripts/start-implementation.sh" \
-    "$repo_root/scripts/check-startup-gate.sh" \
-    "$repo_root/scripts/check-task-group-dependencies.sh" \
+    "$repo_root/scripts/workflows/check-task-intake.sh" \
+    "$repo_root/scripts/workflows/start-implementation.sh" \
+    "$repo_root/scripts/workflows/check-startup-gate.sh" \
+    "$repo_root/scripts/workflows/check-task-group-dependencies.sh" \
     "$repo_root/harness/workflow-plugins/code-workflow/run_workflow_stage.sh" \
     "$repo_root/harness/workflow-plugins/code-workflow/archive_task_artifacts.sh" \
     "$repo_root/harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh" \

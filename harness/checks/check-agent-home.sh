@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF' >&2
 Usage:
-  bash ~/.agents/harness/check-agent-home.sh
+  bash ~/.agents/harness/checks/check-agent-home.sh
 
 Checks:
 - ~/.agents/AGENTS.md exists
