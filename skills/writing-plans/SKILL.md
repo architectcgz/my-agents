@@ -1,6 +1,6 @@
 ---
 name: writing-plans
-description: Use when you have a spec or requirements for a multi-step task, before touching code
+description: Use when you have a spec or requirements for a multi-step task and need a result-driven implementation plan before touching code. Use it to make target state, implementation details, file ownership, acceptance, and verification explicit without turning one cohesive change into a design essay.
 ---
 
 # Writing Plans
@@ -10,6 +10,22 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 Write implementation plans that make the target behavior and implementation path obvious to a skilled engineer who lacks local domain context. Name the files, ownership boundaries, important decisions, acceptance criteria, and useful verification. Keep tasks cohesive and concrete; do not turn every mechanical action or check into a separate plan step. Use tests when behavior warrants them. Never schedule git commits in the plan.
 
 Assume the implementer is technically capable but unfamiliar with this repository and its domain.
+
+## Default Plan Shape
+
+Treat a single-owner plan as an execution artifact, not a design essay. Put the target state before the task list, then make every task answer these questions in order:
+
+1. What is true after this task finishes?
+2. Which functions, types, call paths, and files make that state real?
+3. How will the implementer know the task is complete?
+
+Use this result-first task shape by default:
+
+```text
+Task -> Post-task state -> Implementation details -> Files -> Completion criteria -> Verification
+```
+
+Do not replace implementation details with labels such as “refactor the handler” or “update the service”. Name the symbols, data flow, ownership boundary, side-effect ordering, and important edge cases that determine the result. Keep a separate global file inventory or change map only when it adds information that cannot be read from the task-owned file lists, such as shared files, a parent program, or a migration-wide removal set.
 
 Announce that you are using `writing-plans` to create the plan, in the project's conversation language.
 
@@ -55,19 +71,9 @@ Before freezing scope or asking the user to choose an implementation direction:
 
 Resolve ordinary implementation ambiguity from repository evidence. If a material decision remains open, show the evidence and recommendation, mark the plan pending, and ask one concrete boundary question.
 
-## Testing Stance
-
-Classify each implementation slice:
-
-- **Behavior:** behavior, state, data flow, validation, permissions, async flow, algorithms, API contracts, persistence, or reproducible bug fixes. Include focused tests when the repository supports them.
-- **Presentation:** spacing, color, typography, static copy, markup placement, or visual polish without changing event/state semantics. Use the smallest sufficient component, type, build, visual, or manual verification.
-- **Mixed:** separate behavior and presentation when doing so clarifies ownership and verification.
-
-Do not add fake failing-test steps to presentation-only work. Do not prescribe TDD mechanically when existing tests, fixtures, or the repository's testing strategy make another focused approach more useful.
-
 ## Files And Acceptance
 
-Before defining tasks, map the files to create, modify, or delete and state each file's responsibility. Follow existing boundaries and reuse points; do not invent a new abstraction only to make the plan look modular.
+Before defining tasks, map the files to create, modify, or delete and state each file's responsibility. Use that map to assign each file to one task owner, but normally present files under their owning task instead of repeating them in a second global list. Follow existing boundaries and reuse points; do not invent a new abstraction only to make the plan look modular.
 
 Turn requirements into observable acceptance criteria. For high-risk or contract surfaces, expand applicable MUST/MUST NOT rules into exact fields, states, errors, limits, ownership rules, removal rules, and verification commands. For routine changes, concise acceptance language is enough.
 
@@ -81,36 +87,27 @@ For migrations, replacements, standardization, or framework adoption, define:
 
 Migration plans need both positive acceptance (the new path exists) and negative acceptance (the old default path is gone). Do not silently narrow a requested migration to call-site changes.
 
-## Testing Stance
-
-Classify each implementation slice:
-
-- **TDD:** behavior, state, data flow, validation, permissions, async flow, algorithms, API contracts, persistence, or reproducible bugs where a failing test gives meaningful design feedback.
-- **Regression:** service wiring, constructor migration, adapter adoption, or mechanical refactoring of behavior already proven in a shared/pilot slice. Add focused coverage for service-specific risks; do not manufacture a red test by copying an existing matrix.
-- **Presentation:** spacing, color, typography, static copy, markup placement, or visual polish without changing event/state semantics. Use the smallest sufficient component, type, build, visual, or manual verification.
-- **Mixed:** split behavior and presentation when doing so clarifies ownership and verification.
-
-Do not prescribe TDD mechanically when existing tests, fixtures, or the repository's testing strategy make another focused approach more useful.
-
 ## Task Granularity
 
-Each task should describe one cohesive change that can be implemented and verified without unrelated context. A task normally contains:
+Each task should describe one cohesive change that can be implemented and verified without unrelated context. Use this order so the executor sees the result before the mechanics:
 
-- **Intent:** what changes and why.
+- **Post-task state:** the production behavior, owner, call path, or contract that exists after the task.
+- **Implementation details:** concrete symbols, data/state flow, reuse points, side-effect ordering, and important edge cases.
 - **Files:** exact create/modify/delete paths, with symbols or line areas when known.
-- **Approach:** important implementation decisions, reuse points, and data/state flow.
-- **Acceptance:** observable behavior, edge cases, or structural conditions.
+- **Completion criteria:** observable behavior or structural condition proving the post-task state, including negative/removal rules where relevant.
 - **Verification:** the narrowest useful command or manual check and expected result.
+
+Use **Intent** only when the reason is not obvious from the post-task state. Do not create separate tasks for routine inspection, writing an obvious test, or repeating the same verification command.
 
 ## Implementation-First Balance Gate
 
-Before writing tasks, build a change map with one row per implementation slice:
+Before writing tasks, internally check each implementation slice against this balance:
 
 | Slice | Production output | Test signal | Stance | Exit state |
 | --- | --- | --- | --- | --- |
 | Example | exact file/function and owner | focused behavior or existing regression | TDD / Regression / Presentation / Mixed | observable runtime or API state |
 
-Use this map to keep the plan centered on working software. “Code-first” describes scope and ownership, not a ban on test-first execution: a TDD slice still writes and runs its failing test before implementation, but the plan must make the production behavior it unlocks explicit.
+Use this check to keep the plan centered on working software. Do not add the table to a single-owner plan unless it materially improves coordination. “Code-first” describes scope and ownership, not a ban on test-first execution: a TDD slice still writes and runs its failing test before implementation, but the plan must make the production behavior it unlocks explicit.
 
 For every slice:
 
@@ -131,38 +128,48 @@ Before handing off the plan, run this balance review:
 
 Use numbered steps only when order matters, a step has independent risk, or the executor needs a concrete handoff point. Do not create separate steps for routine inspection, writing an obvious test, running the same command twice, or stopping for review. Checkboxes are optional task tracking, not a requirement for every sentence.
 
+## Testing Stance
+
+Classify each implementation slice by behavior and execution stance:
+
+- **Behavior:** behavior, state, data flow, validation, permissions, async flow, algorithms, API contracts, persistence, or reproducible bug fixes. Use focused tests when the repository supports them.
+- **Presentation:** spacing, color, typography, static copy, markup placement, or visual polish without changing event/state semantics. Use the smallest sufficient component, type, build, visual, or manual verification.
+- **TDD:** use when a new contract, high-risk behavior, or reproducible bug benefits from a failing test first.
+- **Regression:** use for wiring, constructor migration, adapter adoption, or mechanical refactoring already protected by existing behavior tests.
+- **Mixed:** separate behavior and presentation or combine TDD and regression only when that clarifies ownership and verification.
+
+Do not add fake failing-test steps to presentation-only work. Do not prescribe TDD mechanically when existing tests, fixtures, or the repository's testing strategy make focused regression more useful.
+
 ## Compact Plan Template
 
 ```markdown
 # [Feature Name] Implementation Plan
 
-**Goal:** [One sentence describing the target result]
+**Goal state:** [The observable production result after the whole plan]
 
-**Architecture:** [The relevant owner, call path, interfaces, and important tradeoffs]
+**Scope and boundaries:** [What changes, what does not change, and the key invariant]
 
 **Testing stance:** TDD | Regression | Presentation | Mixed
-
-## Files
-
-- Create: `exact/path`
-- Modify: `exact/path`
-- Delete: `exact/path`
 
 ## Tasks
 
 ### Task 1: [Cohesive change]
 
-**Intent:** [What changes and why]
+**Post-task state:** [What is now true or executable after this task]
 
-**Approach:** [Concrete implementation path, reuse points, and state/data flow]
+**Implementation details:** [Concrete symbols, data flow, ownership, side-effect ordering, and edge cases]
 
-**Acceptance:**
+**Files:** `exact/path`, `exact/path`
+
+**Completion criteria:**
 - [Observable behavior or structural rule]
 - [Important edge case or negative-removal rule]
 
-**Verification:**
-- Run: `exact command`
-- Expected: `PASS` or the concrete observable result
+**Verification:** `exact command` -> [PASS or concrete observable result]
+
+## Final verification
+
+`exact command` -> [whole-plan result]
 ```
 
 For formal parent programs, use the parent template in `references/implementation-plan-structure.md`. Do not copy parent invariants into every child unless the child needs that exact rule to implement or verify its work.
@@ -172,8 +179,13 @@ For formal parent programs, use the parent template in `references/implementatio
 Perform one focused self-review after writing the plan:
 
 - Is the artifact correctly shaped as one executable plan or a parent program with child plans?
+- Does the target state appear before the task mechanics?
+- Does every task state what is true after it finishes, rather than only listing actions?
+- Are implementation details concrete enough to identify symbols, data flow, ownership, side-effect ordering, and edge cases?
 - Are target architecture boundaries, shared owners, reuse points, and abstraction landing zones explicit where they matter?
 - Does every task identify concrete files, an implementation approach, acceptance, and verification?
+- Are files shown under their task owner instead of duplicated in a global inventory, unless a shared-file or parent-program map adds real information?
+- Does the plan avoid repeating the same rule in a change map, file list, task, acceptance checklist, and final checklist?
 - Are high-risk constraints expanded into observable criteria instead of broad references?
 - For migrations, do positive and negative acceptance prove both adoption and removal of the old default path?
 - Are repeated file/document/config edits owned by one task unless an intermediate state is genuinely required?
