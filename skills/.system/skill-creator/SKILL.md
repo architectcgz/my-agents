@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations.
+description: Use when creating, updating, or validating a skill, including its SKILL.md, frontmatter, scripts, references, assets, or agent metadata.
 metadata:
   short-description: Create or update a skill
 ---
@@ -228,7 +228,7 @@ Skill creation involves these steps:
 2. Plan reusable skill contents (scripts, references, assets)
 3. Initialize the skill (run init_skill.py)
 4. Edit the skill (implement resources and write SKILL.md)
-5. Validate the skill (run quick_validate.py)
+5. Validate the skill (run quick_validate.py and the validation checklist)
 6. Iterate based on real usage and forward-test complex skills.
 
 Follow these steps in order, skipping only if there is a clear reason why they are not applicable.
@@ -361,13 +361,32 @@ Write instructions for using the skill and its bundled resources.
 
 ### Step 5: Validate the Skill
 
-Once development of the skill is complete, validate the skill folder to catch basic issues early:
+Validation has two layers:
+
+1. **Mechanical:** `scripts/quick_validate.py`
+2. **Quality and structure:** `references/validation-checklist.md`
+
+Both layers are required before declaring a skill ready.
+
+#### 5a. Run the script
 
 ```bash
 scripts/quick_validate.py <path/to/skill-folder>
 ```
 
-The validation script checks YAML frontmatter format, required fields, and naming rules. If validation fails, fix the reported issues and run the command again.
+The validation script checks YAML frontmatter format, required fields, naming rules, and description constraints. If validation fails, fix the reported issues and run the command again.
+
+#### 5b. Complete the quality checklist
+
+Read and apply `references/validation-checklist.md`. At minimum, check the sections that apply to the change:
+
+- frontmatter and skill discovery;
+- structure and progressive disclosure;
+- content quality;
+- boundary and ownership;
+- risk-based verification and forward-testing.
+
+Do not claim a skill is validated until `quick_validate.py` passes and the applicable checklist sections have been reviewed. Do not invent pass results.
 
 ### Step 6: Iterate
 
