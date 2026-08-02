@@ -37,6 +37,7 @@ Review engineering artifacts for risk reduction, not for style theater.
 12. Do not turn senior judgment into speculative rewrites. Recommend a more elegant implementation only when it reduces real risk, removes meaningful complexity, improves testability, or aligns better with existing project architecture.
 13. For code reviews, if the diff touches a file, component, service, or module that is already tracked as structural debt, oversized ownership, or required decomposition, unresolved debt in that touched surface is a material finding, not residual risk.
 14. For code reviews, check for dead API surface: methods, wrappers, interface members, repository functions, ports, or compatibility paths with no clear owner and no production call path are review findings even if tests or string guards still reference them.
+15. Treat a function or method that only forwards arguments to another function and returns its result unchanged as dead API surface by default. Recommend deleting or inlining it unless it adds an observable contract or ownership boundary such as validation, normalization, defaults, error translation, resource lifecycle, authorization or security, metrics or tracing, or an explicit adapter between independently owned interfaces. When extracting shared logic, use a helper with explicit parameters for the real variation and have callers invoke it directly instead of preserving one-line per-call-site wrappers.
 
 ## Workflow
 
