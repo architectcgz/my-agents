@@ -1,6 +1,6 @@
 ---
 name: writing-plans
-description: Use when you have a spec or requirements for a multi-step task and need a result-driven implementation plan before touching code. Use it to make target state, implementation details, file ownership, acceptance, and verification explicit without turning one cohesive change into a design essay.
+description: Use when you have a spec, requirements, bug report, acceptance criteria, or a multi-step task and need a result-driven implementation plan before touching code. Use it to make target state, implementation details, file ownership, acceptance, and verification explicit without turning one cohesive change into a design essay.
 ---
 
 # Writing Plans
@@ -30,6 +30,21 @@ Do not replace implementation details with labels such as “refactor the handle
 Announce that you are using `writing-plans` to create the plan, in the project's conversation language.
 
 Use a dedicated worktree when the repository workflow requires isolation. Do not make worktree setup part of the plan body.
+
+## Requirement Contract
+
+Before choosing the plan shape or defining tasks, normalize the request into a compact contract. Preserve explicit user intent; do not silently invent compatibility, rollout, or delivery commitments.
+
+| Field | Required content |
+| --- | --- |
+| Goal | The target behavior or problem to change, including the requested compatibility boundary. State what must be true after implementation. |
+| Success criteria | Observable outcomes and required checks. For a bug, include reproduction or root-cause evidence, the fixed behavior, regression coverage, and critical adjacent flows that must remain unaffected. Include exact tests, type checks, and build checks when the request names them. |
+| Constraints | Scope limits, interface or behavior preservation, safety requirements, and explicitly excluded work. Treat external writes, destructive operations, and scope expansion as approval gates; do not schedule them implicitly. |
+| Output | The required handoff shape. At minimum, report the plan path, affected or planned files, verification evidence, and remaining risks or open decisions. Distinguish planned verification from commands actually executed. |
+
+If the request is free-form, derive these fields from repository evidence and the user's wording. Do not ask the user to restate information that is already clear. Ask only when a missing boundary would change the target result; otherwise record the assumption in the plan.
+
+For reproducible bugs or regressions, make the evidence chain explicit: reproduce the failure, identify the violated invariant or duplicate side effect, implement the smallest owner-level fix, and verify both the repaired path and the named unaffected paths. If the user requires existing interface behavior to remain unchanged, express that as a negative acceptance rule and test the externally visible contract, not just the internal implementation.
 
 ## Project Style And Language
 
@@ -73,7 +88,7 @@ Resolve ordinary implementation ambiguity from repository evidence. If a materia
 
 ## Files And Acceptance
 
-Before defining tasks, map the files to create, modify, or delete and state each file's responsibility. Use that map to assign each file to one task owner, but normally present files under their owning task instead of repeating them in a second global list. Follow existing boundaries and reuse points; do not invent a new abstraction only to make the plan look modular.
+Before defining tasks, map the files to create, modify, or delete and state each file's responsibility. Use that map to assign each file to one task owner, but normally present files under their owning task instead of repeating them in a second global list. Follow existing boundaries and reuse points; do not invent a new abstraction only to make the plan look modular. Bind each requirement-contract field to the plan: goal to target state, success criteria to acceptance and verification, constraints to scope or approval gates, and output to the handoff report.
 
 Turn requirements into observable acceptance criteria. For high-risk or contract surfaces, expand applicable MUST/MUST NOT rules into exact fields, states, errors, limits, ownership rules, removal rules, and verification commands. For routine changes, concise acceptance language is enough.
 
@@ -149,6 +164,10 @@ Do not add fake failing-test steps to presentation-only work. Do not prescribe T
 
 **Scope and boundaries:** [What changes, what does not change, and the key invariant]
 
+**Success criteria:** [Observable behavior, preserved contracts, and required checks]
+
+**Constraints:** [Scope, compatibility, safety, approval gates, and exclusions]
+
 **Testing stance:** TDD | Regression | Presentation | Mixed
 
 ## Tasks
@@ -178,6 +197,10 @@ For formal parent programs, use the parent template in `references/implementatio
 
 Perform one focused self-review after writing the plan:
 
+- Does the plan state a concrete goal, observable success criteria, explicit constraints, and the required handoff output?
+- For a bug or regression, does the verification chain prove the cause, the fix, and the critical adjacent paths that must remain unaffected?
+- Are explicit test, type-check, and build requirements represented as commands with expected evidence rather than vague claims?
+- Are external writes, destructive actions, and scope expansion represented as approval gates instead of implicit tasks?
 - Is the artifact correctly shaped as one executable plan or a parent program with child plans?
 - Does the target state appear before the task mechanics?
 - Does every task state what is true after it finishes, rather than only listing actions?
@@ -201,4 +224,4 @@ Do not add a routine user-review stop to every task. The executor decides whethe
 
 ## Handoff
 
-After saving the plan, report its actual path and state that it can be executed with `@executing-plans`. Do not force an execution-mode choice or add execution checkpoints to the plan unless the task requires them.
+After saving the plan, report its actual path and state that it can be executed with `@executing-plans`. When the request specifies an output format, preserve it in the handoff: list planned or changed files, verification evidence (clearly marked as planned or executed), and remaining risks or open decisions. Do not claim checks passed unless they were actually run. Do not force an execution-mode choice or add execution checkpoints to the plan unless the task requires them.
