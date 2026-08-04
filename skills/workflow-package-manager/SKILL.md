@@ -52,6 +52,8 @@ bash ~/.agents/harness/workflow-sync.sh <repo-root> code-workflow
 bash ~/.agents/harness/workflow-sync-check.sh <repo-root> code-workflow
 ```
 
+`code-workflow` is a global-runtime package: its installer only prepares repository state, and `workflow-sync.sh` removes its legacy managed copies. Invoke task operations through `~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> <command>`.
+
 ## Boundaries
 
 - `workflow-package-manager`: owns package installation, package sync checking, and harness-level workflow package layout.
@@ -65,7 +67,7 @@ bash ~/.agents/harness/workflow-sync-check.sh <repo-root> code-workflow
 When this skill applies:
 
 1. Confirm which workflow package the repository should adopt.
-2. Install, sync, or check the package through the harness-level commands above, not through ad hoc file copying.
+2. Install, sync, or check the package through the harness-level commands above, not through ad hoc file copying. For `code-workflow`, do not create a project-level wrapper or copied implementation.
 3. When the shared workflow package itself changes, finish by running `bash ~/.agents/harness/workflow-sync.sh <repo-root> <workflow-name>` for each target repository touched by the current task; do not assume automatic propagation.
 4. Keep repository-facing references pointed at the harness-level commands.
 5. If a workflow package needs semantic changes, update its owning workflow skill rather than hiding semantics inside the installer.

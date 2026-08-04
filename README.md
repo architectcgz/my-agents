@@ -58,7 +58,7 @@ bash ~/.agents/harness/checks/check-agent-home.sh
 bash ~/.agents/harness/init-project.sh "$PWD"
 ```
 
-如果项目已经有 harness，只需要安装共享 workflow：
+如果项目已经有 harness，只需要启用共享 workflow：
 
 ```bash
 bash ~/.agents/harness/workflow-installer.sh "$PWD" code-workflow
@@ -66,7 +66,7 @@ bash ~/.agents/harness/workflow-installer.sh "$PWD" code-workflow
 
 ## 共享 workflow 变更后的同步
 
-如果当前任务修改了 `~/.agents/harness/workflows/<workflow-name>/`，结束前要显式同步到目标仓库：
+如果当前任务修改了 `~/.agents/harness/workflows/<workflow-name>/`，结束前要显式同步到目标仓库。`code-workflow` 的同步会清理旧版本复制到项目内的受管文件，运行实现仍只保存在 `~/.agents/`：
 
 ```bash
 bash ~/.agents/harness/workflow-sync.sh <repo-root> <workflow-name>
