@@ -6,6 +6,8 @@
 
 CODE_WORKFLOW_MANAGED_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CODE_WORKFLOW_PACKAGE_ROOT="$(cd "$CODE_WORKFLOW_MANAGED_DIR/.." && pwd)"
+CODE_WORKFLOW_SESSION_GATES_REL=".arccgz-harness/state/session-gates"
+CODE_WORKFLOW_LEGACY_SESSION_GATES_REL=".harness/session-gates"
 
 workflow_repo_root() {
   local requested="${WORKFLOW_REPO_ROOT:-}"

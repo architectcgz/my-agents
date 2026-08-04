@@ -210,7 +210,7 @@ def main():
     verify_ref(root, args.merged_into)
 
     worktree_path = resolve_worktree_path(root, branch_name, args.worktree_path)
-    gate_path = worktree_path / ".harness/session-gates" / f"{task_slug}.json"
+    gate_path = worktree_path / ".arccgz-harness" / "state" / "session-gates" / f"{task_slug}.json"
     payload = read_gate(gate_path)
     validate_gate(payload, branch_name, worktree_path)
     validate_worktree(root, worktree_path, args.merged_into)

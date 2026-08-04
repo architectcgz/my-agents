@@ -104,7 +104,7 @@ fi
 branch_name="task/$task_slug"
 worktree_path="$WORKTREE_PARENT/$task_slug"
 plan_file_name="$task_slug-implementation-plan.md"
-gate_dir=".harness/session-gates"
+gate_dir="$CODE_WORKFLOW_SESSION_GATES_REL"
 gate_file_name="$task_slug.json"
 started_at="$(date -u +%FT%TZ)"
 

@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path.cwd()
-SESSION_GATES_DIR = ROOT / ".harness" / "session-gates"
+SESSION_GATES_DIR = ROOT / ".arccgz-harness" / "state" / "session-gates"
 TASK_SLUG_RE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$")
 EFFECTIVE_GATE_STATUSES = {"active", "ready_to_merge"}
 REQUIRED_PLAN_HEADINGS = (
@@ -172,7 +172,7 @@ def main() -> int:
     global ROOT, SESSION_GATES_DIR
     args = parse_args()
     ROOT = resolve_repo_root(args.repo_root)
-    SESSION_GATES_DIR = ROOT / ".harness" / "session-gates"
+    SESSION_GATES_DIR = ROOT / ".arccgz-harness" / "state" / "session-gates"
     gates = load_effective_gates()
 
     if args.print_active_slug or args.print_gate_path:

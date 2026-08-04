@@ -3,6 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANAGED_DIR="$SCRIPT_DIR/managed"
+source "$MANAGED_DIR/common.sh"
 AGENTS_HOME="${AGENTS_HOME:-$(cd "$SCRIPT_DIR/../../.." && pwd)}"
 export AGENTS_HOME
 SCAFFOLD_VERSION="$(python3 -c 'import json,sys; from pathlib import Path; print(json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))["version"])' "$SCRIPT_DIR/manifest.json")"
@@ -95,17 +96,22 @@ check_project_state() {
   local relative path
   local fail=0
 
-  if [[ -d "$root/.harness/session-gates" ]]; then
+  if [[ -d "$root/$CODE_WORKFLOW_SESSION_GATES_REL" ]]; then
     echo "PASS: workflow state directory exists"
   else
-    echo "FAIL: missing workflow state directory: $root/.harness/session-gates" >&2
+    echo "FAIL: missing workflow state directory: $root/$CODE_WORKFLOW_SESSION_GATES_REL" >&2
     fail=1
   fi
 
-  if [[ -f "$root/.gitignore" ]] && grep -qxF '/.harness/session-gates/' "$root/.gitignore"; then
+  if [[ -f "$root/.gitignore" ]] && { grep -qxF '/.arccgz-harness/' "$root/.gitignore" || grep -qxF '/.arccgz-harness/state/session-gates/' "$root/.gitignore"; }; then
     echo "PASS: .gitignore keeps workflow state local"
   else
-    echo "FAIL: .gitignore must contain /.harness/session-gates/" >&2
+    echo "FAIL: .gitignore must contain /.arccgz-harness/ or /.arccgz-harness/state/session-gates/" >&2
+    fail=1
+  fi
+
+  if [[ -e "$root/$CODE_WORKFLOW_LEGACY_SESSION_GATES_REL" ]]; then
+    echo "FAIL: legacy workflow state directory remains: $root/$CODE_WORKFLOW_LEGACY_SESSION_GATES_REL" >&2
     fail=1
   fi
 
@@ -128,18 +134,67 @@ ensure_project_state() {
   local root="$1"
   local dry_run="$2"
   local gitignore="$root/.gitignore"
+  local state_dir="$root/$CODE_WORKFLOW_SESSION_GATES_REL"
+  local legacy_state_dir="$root/$CODE_WORKFLOW_LEGACY_SESSION_GATES_REL"
+  local entry destination
+  local -a legacy_entries=()
+
+  if [[ -e "$legacy_state_dir" && ! -d "$legacy_state_dir" ]]; then
+    echo "FAIL: legacy workflow state path is not a directory: $legacy_state_dir" >&2
+    return 1
+  fi
+
+  if [[ -d "$legacy_state_dir" ]]; then
+    while IFS= read -r -d '' entry; do
+      legacy_entries+=("$entry")
+    done < <(find "$legacy_state_dir" -mindepth 1 -maxdepth 1 -print0)
+
+    for entry in "${legacy_entries[@]}"; do
+      destination="$state_dir/$(basename "$entry")"
+      if [[ -e "$destination" ]]; then
+        echo "FAIL: cannot migrate legacy workflow state because destination already exists: $destination" >&2
+        return 1
+      fi
+    done
+  fi
 
   if [[ "$dry_run" -eq 1 ]]; then
-    echo "DRY RUN: would create $root/.harness/session-gates"
-    echo "DRY RUN: would ensure .gitignore contains /.harness/session-gates/"
+    echo "DRY RUN: would create $state_dir"
+    if [[ -d "$legacy_state_dir" ]]; then
+      echo "DRY RUN: would migrate legacy workflow state from $legacy_state_dir to $state_dir"
+    fi
+    echo "DRY RUN: would ensure .gitignore keeps $CODE_WORKFLOW_SESSION_GATES_REL local"
     return 0
   fi
 
-  mkdir -p "$root/.harness/session-gates"
-  touch "$gitignore"
-  if ! grep -qxF '/.harness/session-gates/' "$gitignore"; then
-    printf '%s\n' '/.harness/session-gates/' >> "$gitignore"
+  mkdir -p "$state_dir"
+  if [[ -d "$legacy_state_dir" ]]; then
+    for entry in "${legacy_entries[@]}"; do
+      mv -- "$entry" "$state_dir/"
+    done
+    rmdir "$legacy_state_dir"
+    rmdir "$root/.harness" 2>/dev/null || true
+    echo "PASS: migrated legacy workflow state to $CODE_WORKFLOW_SESSION_GATES_REL"
   fi
+
+  touch "$gitignore"
+  if ! grep -qxF '/.arccgz-harness/' "$gitignore" && ! grep -qxF '/.arccgz-harness/state/session-gates/' "$gitignore"; then
+    printf '%s\n' '/.arccgz-harness/state/session-gates/' >> "$gitignore"
+  fi
+  python3 - "$gitignore" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+original = path.read_bytes()
+updated = b"".join(
+    line
+    for line in original.splitlines(keepends=True)
+    if line.rstrip(b"\r\n") != b"/.harness/session-gates/"
+)
+if updated != original:
+    path.write_bytes(updated)
+PY
 }
 
 remove_legacy_copies() {
