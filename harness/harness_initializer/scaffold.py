@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import subprocess
 
@@ -14,8 +15,9 @@ HARNESS_SCRIPTS = f"{HARNESS_ROOT}/scripts"
 HARNESS_CHECKS = f"{HARNESS_SCRIPTS}/checks"
 HARNESS_HOOKS = f"{HARNESS_SCRIPTS}/hooks"
 HARNESS_TESTS = f"{HARNESS_SCRIPTS}/tests"
+AGENTS_HOME = Path(os.environ.get("AGENTS_HOME", Path.home() / ".agents"))
 WORKSPACE_AGENT_ENTRYPOINT_CHECK = Path.home() / "workspace" / "projects" / "scripts" / "check-agent-entrypoints.sh"
-AGENTS_SKILLS_DIR = Path.home() / ".agents" / "skills"
+AGENTS_SKILLS_DIR = AGENTS_HOME / "skills"
 CODEX_SKILLS_DIR = Path.home() / ".codex" / "skills"
 STANDARD_DOC_DIRS = [
     "requirements",

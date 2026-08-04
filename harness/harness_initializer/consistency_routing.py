@@ -56,7 +56,7 @@ should_run_entrypoints() {
 should_run_script_guard() {
   [[ "$staged_mode" -eq 0 ]] || staged_path_matches \
     '__HARNESS_CHECKS__/*' '__HARNESS_ROOT__/scripts/hooks/*' \
-    '__HARNESS_ROOT__/scripts/tests/*' '__HARNESS_ROOT__/scripts/workflows/*' \
+    '__HARNESS_ROOT__/scripts/tests/*' \
     '__HARNESS_ROOT__/harness/policies/script-guard.json' \
     '__HARNESS_ROOT__/harness/checks/*' 'harness/*' 'tools/*'
 }

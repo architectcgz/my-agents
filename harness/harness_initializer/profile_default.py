@@ -39,6 +39,8 @@ def configure_current(repo: Path, project_name: str, profile: str) -> tuple[str,
 
 项目根保持 `CLAUDE.md -> AGENTS.md`，让 Claude / Codex 使用同一份入口规则。
 
+共享 workflow 入口：`bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> <command>`。workflow 实现只保存于 `~/.agents/`，初始化不会复制到项目目录。
+
 提交快速检查：`bash {HARNESS_HOOKS}/check-pre-commit.sh`；完整一致性检查：`bash {HARNESS_CHECKS}/check-harness-consistency.sh`。
 架构守卫入口：`bash {HARNESS_CHECKS}/check-architecture.sh`。
 Hook 生效检查：`bash {HARNESS_HOOKS}/check-hooks.sh`；首次接入使用 `bash ~/.agents/harness/install-project-hooks.sh <repo-root>`。
@@ -72,6 +74,7 @@ Hook 生效检查：`bash {HARNESS_HOOKS}/check-hooks.sh`；首次接入使用 `
 
 - `pre-commit`：运行 `{HARNESS_HOOKS}/check-pre-commit.sh`，只对 staged harness 相关路径运行完整一致性检查；普通业务提交走快速路径。
 - 完整一致性检查：显式运行 `{HARNESS_CHECKS}/check-harness-consistency.sh`，用于 CI 或 harness 变更后的完整校验。
+- 共享 workflow：运行 `bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> <command>`；安装或同步不会再复制 workflow 脚本、模板或插件到项目中。
 - Hook 生效检查：运行 `{HARNESS_HOOKS}/check-hooks.sh`；如果尚未接入，运行 `bash ~/.agents/harness/install-project-hooks.sh <repo-root>`。
 - skill sync reminder 保持非阻塞，只提醒把跨项目规则上收全局 skill 或 shared harness。
 - `commit-msg`：运行 `{HARNESS_HOOKS}/check-commit-message.sh`，由共享检查器读取 `{HARNESS_ROOT}/harness/policies/commit-message.json` 校验标题、正文和激活任务的 `Task:` 绑定。

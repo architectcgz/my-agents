@@ -12,6 +12,8 @@ def post_tooluse_aar_hook_script() -> str:
 #
 set -euo pipefail
 
+CODE_WORKFLOW_ENTRY="${AGENTS_HOME:-$HOME/.agents}/harness/workflows/code-workflow/workflow.sh"
+
 # AAR 检查清单
 AAR_CHECKLIST=(
   "是否踩到新坑？需要记录到 Known Gotchas 或 .arccgz-harness/feedback/"
@@ -47,9 +49,11 @@ detect_completion_signal() {
 
 # 检查当前是否有激活的 task gate
 check_active_task_gate() {
-  if [[ -x .arccgz-harness/scripts/workflows/check-startup-gate.sh ]]; then
+  local repo_root
+  repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+  if [[ -n "$repo_root" && -x "$CODE_WORKFLOW_ENTRY" ]]; then
     local active_slug
-    active_slug="$(bash .arccgz-harness/scripts/workflows/check-startup-gate.sh --print-active-slug 2>/dev/null || true)"
+    active_slug="$(bash "$CODE_WORKFLOW_ENTRY" "$repo_root" gate --print-active-slug 2>/dev/null || true)"
     echo "$active_slug"
   fi
 }
@@ -209,7 +213,7 @@ After completing the AAR:
 2. If there are new gotchas, consider adding them to .arccgz-harness/harness/known-antipatterns/
 3. If there are rule changes, document them
 4. Archive the task artifacts with:
-   bash .arccgz-harness/harness/workflow-plugins/code-workflow/archive_task_artifacts.sh
+   bash "$CODE_WORKFLOW_ENTRY" "$repo_root" archive
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF_NOTIFY

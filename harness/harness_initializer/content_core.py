@@ -11,7 +11,8 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cwd="$(cd "$script_dir/../../.." && pwd)"
-python3 ~/.agents/harness/todo/remind_todos.py --cwd "$cwd" "$@"
+  agents_home="${AGENTS_HOME:-$HOME/.agents}"
+  python3 "$agents_home/harness/todo/remind_todos.py" --cwd "$cwd" "$@"
 """
 
 
@@ -21,7 +22,8 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cwd="$(cd "$script_dir/../../.." && pwd)"
-python3 ~/.agents/harness/todo/check_todo_governance.py --cwd "$cwd"
+  agents_home="${AGENTS_HOME:-$HOME/.agents}"
+  python3 "$agents_home/harness/todo/check_todo_governance.py" --cwd "$cwd"
 """
 
 
@@ -31,7 +33,8 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cwd="$(cd "$script_dir/../../.." && pwd)"
-python3 ~/.agents/harness/skill-sync/remind_skill_sync.py --cwd "$cwd" "$@"
+  agents_home="${AGENTS_HOME:-$HOME/.agents}"
+  python3 "$agents_home/harness/skill-sync/remind_skill_sync.py" --cwd "$cwd" "$@"
 """
 
 
@@ -41,7 +44,8 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cwd="$(cd "$script_dir/../../.." && pwd)"
-exec bash "$HOME/.agents/harness/checks/check-project-agent-entrypoints.sh" "$cwd"
+  agents_home="${AGENTS_HOME:-$HOME/.agents}"
+  exec bash "$agents_home/harness/checks/check-project-agent-entrypoints.sh" "$cwd"
 """
 
 
@@ -54,8 +58,6 @@ def script_guard_policy_content() -> str:
     ".arccgz-harness/scripts/hooks/**/*.py",
     ".arccgz-harness/scripts/tests/**/*.sh",
     ".arccgz-harness/scripts/tests/**/*.py",
-    ".arccgz-harness/scripts/workflows/**/*.sh",
-    ".arccgz-harness/scripts/workflows/**/*.py",
     ".arccgz-harness/harness/checks/**/*.sh",
     ".arccgz-harness/harness/checks/**/*.py",
     "tools/*.sh",
@@ -66,7 +68,7 @@ def script_guard_policy_content() -> str:
   ],
   "max_lines": 260,
   "max_lines_by_glob": {},
-  "advice": "If an operator or harness script keeps growing, split the stable entrypoint from helpers, harness/checks modules, or workflow managed assets instead of extending one large file."
+  "advice": "If an operator or harness script keeps growing, split the stable entrypoint from helpers or harness/checks modules instead of extending one large file. Shared workflow implementation belongs under ~/.agents/harness/workflows/."
 }"""
 
 
@@ -76,7 +78,8 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cwd="$(cd "$script_dir/../../.." && pwd)"
-python3 ~/.agents/harness/checks/check_script_guard.py --cwd "$cwd" --policy "$cwd/.arccgz-harness/harness/policies/script-guard.json" "$@"
+  agents_home="${AGENTS_HOME:-$HOME/.agents}"
+  python3 "$agents_home/harness/checks/check_script_guard.py" --cwd "$cwd" --policy "$cwd/.arccgz-harness/harness/policies/script-guard.json" "$@"
 """
 
 
@@ -433,8 +436,9 @@ if [[ ! -f "$policy_file" ]]; then
 fi
 
 cmd=(python3 "$checker" --message-file "$message_file" --policy-file "$policy_file")
-if [[ -x "$root_dir/.arccgz-harness/scripts/workflows/check-startup-gate.sh" ]]; then
-  active_task_slug="$(bash "$root_dir/.arccgz-harness/scripts/workflows/check-startup-gate.sh" --print-active-slug 2>/dev/null || true)"
+workflow_entry="${AGENTS_HOME:-$HOME/.agents}/harness/workflows/code-workflow/workflow.sh"
+if [[ -x "$workflow_entry" ]]; then
+  active_task_slug="$(bash "$workflow_entry" "$root_dir" gate --print-active-slug 2>/dev/null || true)"
   if [[ -n "$active_task_slug" ]]; then
     cmd+=(--active-task-slug "$active_task_slug")
   fi

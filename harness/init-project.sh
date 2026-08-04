@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 usage() {
   cat <<'EOF' >&2
 Usage:
-  bash ~/.agents/harness/init-project.sh <repo-root> [--project-name <name>] [--mode <default|strict-reference>] [--workflow <name>] [--skip-workflow]
+  bash ~/.agents/harness/init-project.sh <repo-root> [--project-name <name>] [--mode <default|strict-reference>] [--workflow <name>] [--skip-workflow] [--full-check]
 
 Description:
-  Initialize project-local harness scaffolding, then optionally install a shared workflow package.
+  Initialize project-local harness scaffolding, then optionally activate the selected shared workflow package.
 
 Defaults:
   - mode: default
   - workflow: code-workflow
+  - full check: skipped; pass --full-check to run it
 EOF
 }
 
@@ -25,6 +28,9 @@ project_name=""
 mode="default"
 workflow_name="code-workflow"
 skip_workflow=0
+full_check=0
+agents_home="${AGENTS_HOME:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+export AGENTS_HOME="$agents_home"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -45,6 +51,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --skip-workflow)
       skip_workflow=1
+      shift
+      ;;
+    --full-check)
+      full_check=1
       shift
       ;;
     -h|--help)
@@ -94,21 +104,23 @@ case "$mode" in
 esac
 
 echo "[init-project] initialize harness"
-python3 ~/.agents/harness/harness-initializer.py \
+python3 "$agents_home/harness/harness-initializer.py" \
   --repo "$repo_root" \
   --project-name "$project_name" \
   --mode "$mode"
 
 if [[ "$skip_workflow" -eq 0 ]]; then
-  echo "[init-project] install workflow package: $workflow_name"
-  bash ~/.agents/harness/workflow-installer.sh "$repo_root" "$workflow_name"
+  echo "[init-project] sync workflow package: $workflow_name"
+  bash "$agents_home/harness/workflow-sync.sh" "$repo_root" "$workflow_name"
 else
   echo "[init-project] skip workflow installation"
 fi
 
-if [[ -x "$repo_root/.arccgz-harness/scripts/checks/check-harness-consistency.sh" ]]; then
+if [[ "$full_check" -eq 1 && -x "$repo_root/.arccgz-harness/scripts/checks/check-harness-consistency.sh" ]]; then
   echo "[init-project] run project harness consistency check"
   bash "$repo_root/.arccgz-harness/scripts/checks/check-harness-consistency.sh"
+else
+  echo "[init-project] skip full harness consistency check (use --full-check to run it)"
 fi
 
 echo "[init-project] done"
@@ -118,4 +130,9 @@ if [[ "$skip_workflow" -eq 0 ]]; then
   echo "- workflow: $workflow_name"
 else
   echo "- workflow: skipped"
+fi
+if [[ "$full_check" -eq 1 ]]; then
+  echo "- full-check: enabled"
+else
+  echo "- full-check: skipped"
 fi

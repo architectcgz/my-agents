@@ -100,7 +100,7 @@ if [[ "$mode" == "full" ]]; then
 fi
 
 if [[ "$structural_check" -eq 1 ]]; then
-  if [[ -x .arccgz-harness/scripts/checks/check-harness-consistency.sh ]]; then
+  if [[ -f .arccgz-harness/scripts/checks/check-harness-consistency.sh ]]; then
     bash .arccgz-harness/scripts/checks/check-harness-consistency.sh --staged
   fi
 else
@@ -112,7 +112,7 @@ if [[ "$cpp_check" -eq 1 ]]; then
 fi
 
 # This is intentionally advisory: reusable harness knowledge can stay project-local.
-if [[ -x .arccgz-harness/scripts/checks/check-skill-sync-reminder.sh ]]; then
+if [[ -f .arccgz-harness/scripts/checks/check-skill-sync-reminder.sh ]]; then
   bash .arccgz-harness/scripts/checks/check-skill-sync-reminder.sh --staged || \
     echo "[pre-commit] skill sync reminder unavailable; skipped" >&2
 fi
@@ -125,5 +125,6 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 root="$(cd "$script_dir/../../.." && pwd)"
-exec bash "$HOME/.agents/harness/checks/check-project-hooks.sh" "$root" "$@"
+agents_home="${AGENTS_HOME:-$HOME/.agents}"
+exec bash "$agents_home/harness/checks/check-project-hooks.sh" "$root" "$@"
 """

@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+AGENTS_HOME_RESOLVED="${AGENTS_HOME:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+
 usage() {
   cat <<'EOF' >&2
 Usage:
@@ -11,7 +14,7 @@ Description:
   Sync a repository to the latest shared workflow package baseline.
 
 Behavior:
-  - default: reinstall the shared workflow package into the repository
+  - default: for code-workflow, remove legacy managed copies and use the global runtime
   - --check: only verify drift, do not write files
 EOF
 }
@@ -47,7 +50,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ "$check_mode" -eq 1 ]]; then
-  exec bash "${AGENTS_HOME:-$HOME/.agents}/harness/workflow-sync-check.sh" "$repo_root" "$workflow_name"
+  exec bash "$AGENTS_HOME_RESOLVED/harness/workflow-sync-check.sh" "$repo_root" "$workflow_name"
 fi
 
-exec bash "${AGENTS_HOME:-$HOME/.agents}/harness/workflow-installer.sh" "$repo_root" "$workflow_name" ${extra_args[@]+"${extra_args[@]}"}
+if [[ "$workflow_name" == "code-workflow" ]]; then
+  workflow_script="$AGENTS_HOME_RESOLVED/harness/workflows/code-workflow/workflow.sh"
+  exec bash "$workflow_script" "$repo_root" --sync ${extra_args[@]+"${extra_args[@]}"}
+fi
+
+exec bash "$AGENTS_HOME_RESOLVED/harness/workflow-installer.sh" "$repo_root" "$workflow_name" ${extra_args[@]+"${extra_args[@]}"}
