@@ -1,6 +1,6 @@
 {
   "name": "code-workflow",
-  "version": "2026-07-19.1",
+  "version": "2026-08-04.1",
   "entrypoint": "workflow.sh",
-  "description": "Shared non-trivial task workflow package for repo-local startup, gate, and archive assets."
+  "description": "Global non-trivial task workflow runtime; target repositories keep only task state and project-specific extensions."
 }

@@ -14,17 +14,17 @@ printf 'initial\n' > "$tmp_repo/README.md"
 git -C "$tmp_repo" add README.md
 git -C "$tmp_repo" commit -m "chore: initial" >/dev/null
 
-bash "$(dirname "${BASH_SOURCE[0]}")/../../workflow-installer.sh" "$tmp_repo" code-workflow >/dev/null
+package_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+workflow_entry="$package_root/workflow.sh"
 
-cleanup_script="$tmp_repo/harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh"
-cleanup_helper="$tmp_repo/harness/workflow-plugins/code-workflow/cleanup_task_worktree.py"
+bash "$workflow_entry" "$tmp_repo" install >/dev/null
 
-[[ -x "$cleanup_script" ]] || {
-  echo "FAIL: cleanup shell entry is missing or not executable" >&2
+[[ ! -e "$tmp_repo/scripts/workflows/start-implementation.sh" ]] || {
+  echo "FAIL: code-workflow must not install a repo-local workflow entrypoint" >&2
   exit 1
 }
-[[ -f "$cleanup_helper" ]] || {
-  echo "FAIL: cleanup Python helper is missing" >&2
+[[ ! -e "$tmp_repo/harness/workflow-plugins/code-workflow/cleanup_task_worktree.py" ]] || {
+  echo "FAIL: code-workflow must not install a repo-local cleanup helper" >&2
   exit 1
 }
 
@@ -47,7 +47,7 @@ EOF
 
 (
   cd "$tmp_repo"
-  bash "$cleanup_script" \
+  bash "$workflow_entry" "$tmp_repo" cleanup \
     --task-slug "$task_slug" \
     --branch "task/$task_slug" \
     --worktree "$tmp_repo" \
@@ -87,7 +87,7 @@ EOF
 
 (
   cd "$tmp_repo"
-  bash "$cleanup_script" \
+  bash "$workflow_entry" "$tmp_repo" cleanup \
     --task-slug "$task_slug" \
     --branch "$task_branch" \
     --worktree "$task_worktree" \

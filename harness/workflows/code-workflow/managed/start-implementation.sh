@@ -4,15 +4,18 @@ set -euo pipefail
 usage() {
   cat <<'EOH' >&2
 Usage:
-  bash scripts/workflows/start-implementation.sh <topic-or-slug> [--title <plan-title>] [--base <git-ref>] [--dry-run]
+  bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> start <topic-or-slug> [--title <plan-title>] [--base <git-ref>] [--dry-run]
 EOH
 }
 
-ROOT="$(git rev-parse --show-toplevel)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+workflow_enter_repo
+ROOT="$WORKFLOW_REPO_ROOT"
 REPO_NAME="$(basename "$ROOT")"
 WORKSPACE_ROOT="$(dirname "$ROOT")"
 WORKTREE_PARENT="${WORKTREE_PARENT:-$WORKSPACE_ROOT/.worktrees/$REPO_NAME}"
-PLAN_TEMPLATE="$ROOT/harness/templates/implementation-plan-skeleton.md"
+PLAN_TEMPLATE="$CODE_WORKFLOW_PACKAGE_ROOT/managed/implementation-plan-skeleton.md"
 
 topic_or_slug=""
 plan_title=""
@@ -158,7 +161,7 @@ fi
 
 mkdir -p "$WORKTREE_PARENT"
 
-bash "$ROOT/scripts/workflows/check-task-intake.sh"
+bash "$CODE_WORKFLOW_PACKAGE_ROOT/managed/check-task-intake.sh"
 
 git -C "$ROOT" rev-parse --verify --quiet "$base_ref" >/dev/null || {
   echo "FAIL: base ref does not exist: $base_ref" >&2

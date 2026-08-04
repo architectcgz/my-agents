@@ -1,105 +1,54 @@
 # code-workflow package
 
-This package owns the repo-local assets for the shared `code-workflow`.
+`code-workflow` 的实现只保存在这个全局目录，不向项目复制 workflow 脚本、模板或运行器。
 
-Install into a repository:
+## 入口
 
 ```bash
+bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> <command>
+```
+
+常用命令：
+
+```bash
+# 为项目准备 workflow 状态目录；不复制实现文件
 bash ~/.agents/harness/workflow-installer.sh <repo-root> code-workflow
-```
 
-Sync a repository after the shared package changes:
-
-```bash
+# 迁移旧版本：移除带 Managed by code-workflow package 标记的项目内副本
 bash ~/.agents/harness/workflow-sync.sh <repo-root> code-workflow
+
+# 检查全局运行时、任务状态目录和残留副本
+bash ~/.agents/harness/workflow-sync-check.sh <repo-root> code-workflow
+
+# 创建非琐碎任务的 worktree、计划和 startup gate
+bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> start <topic-or-slug>
 ```
 
-Check whether a repository still matches this package baseline:
+## 项目边界
+
+项目只保存自身事实和可变状态：
+
+- `/.harness/session-gates/`：任务 startup gate 状态，默认 gitignore。
+- `.arccgz-harness/`：项目文档、策略、检查与其他 harness 资产。
+- `.arccgz-harness/harness/workflow-plugins/code-workflow/<stage>.d/*.sh`：可选的项目专属 stage 插件；初始化器不会预制或复制该目录。
+
+共享实现（任务 intake、worktree 创建、startup gate、stage runner、归档、清理和计划模板）全部由本目录的 `workflow.sh` 与 `managed/` 运行。
+
+## Stage 与 Review
+
+共享 stage runner 支持 `pre-commit-quick`、`completion-full` 和 `workflow-governance`。如项目注册了可选插件，使用：
 
 ```bash
-bash ~/.agents/harness/workflow-sync-check.sh <repo-root> code-workflow
+bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> stage completion-full
 ```
 
-The package entrypoint is `workflow.sh`. Callers should prefer the harness-level commands above instead of invoking the package entrypoint directly.
+`completion-full` 只提供实现上下文的验证证据。后续必须由独立 `code-reviewer` 执行真实 review gate，才进入 workflow-governance、归档和交付。
 
-## Override Model
+任务完成后：
 
-The diagram below only covers where a project should adapt `code-workflow`, and where it should not.
-
-![code-workflow override model](assets/override-model.svg)
-
-Read it in layers:
-
-1. Shared package owns workflow semantics and managed assets.
-2. Projects override through `harness/workflow-plugins/code-workflow/<stage>.d/*.sh`.
-3. The project override layer decides plugin sets and execution order.
-
-## Review Chain
-
-The review gate is intentionally a separate orchestration flow, not part of the override diagram above.
-
-![code-workflow review chain](assets/review-chain.svg)
-
-Read it in order:
-
-1. `completion-full` produces implementation-context evidence.
-2. That evidence is compacted into a review packet.
-3. The packet goes to an independent `code-reviewer` agent.
-4. The reviewer uses project docs, project checks, and local rules as the basis.
-5. Only after review passes does the task enter `workflow-governance` / archive / handoff.
-
-Besides startup-gate and archive assets, the package also owns the shared stage mechanism installed into:
-
-- `harness/workflow-plugins/code-workflow/run_workflow_stage.sh`
-- `harness/workflow-plugins/code-workflow/archive_task_artifacts.sh`
-- `harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh`
-- `harness/workflow-plugins/code-workflow/cleanup_task_worktree.py`
-
-That runner exposes the shared stage names:
-
-- `pre-commit-quick`
-- `completion-full`
-- `workflow-governance`
-
-Repositories should keep deciding their own plugin sets under:
-
-- `harness/workflow-plugins/code-workflow/<stage>.d/*.sh`
-
-Task-intake order for non-trivial task slices:
-
-1. Run the relevant analysis skill, normally `brainstorming`.
-2. Then run `grill-with-docs` to look for gaps in scope, docs, assumptions, and owner boundaries.
-3. Use that output to finish the implementation plan in Chinese by default.
-4. Only then start implementation.
-
-Implementation plans under `docs/plan/impl-plan/` should use Chinese prose by default.
-Keep code, commands, paths, error messages, protocol fields, enum values, external proper nouns, and machine-parsed keys unchanged.
-
-Completion order for non-trivial task slices:
-
-1. Run `completion-full` as implementation-context validation.
-2. Hand off to an independent `code-reviewer` agent for the real completion gate.
-3. Fix material findings and rerun impacted validation when needed.
-4. Only then enter `workflow-governance` / doctor / archive / final handoff.
-
-After merge / final integration:
-
-1. Archive task artifacts so the startup gate moves to `ready_to_merge`.
-2. Merge the task branch or otherwise integrate the task head.
-3. Run `bash harness/workflow-plugins/code-workflow/cleanup_task_worktree.sh` from the integration worktree to safely close the dedicated task worktree. The shell entry delegates to the managed Python helper installed beside it.
-4. The cleanup step marks the gate `archived`; dedicated task worktrees are removed only when they are clean and already merged, and the merged `task/<slug>` branch is deleted by default unless you explicitly keep it.
-
-Startup gate status model:
-
-- `active`: the task is still in active implementation / validation.
-- `ready_to_merge`: plan/task artifacts are already archived, but the task still owns the current worktree for final commit, merge, or cleanup.
-- `archived`: terminal closed state; not treated as an effective current task gate anymore.
-
-The reviewer handoff contract lives at:
-
-```text
-~/.agents/harness/workflows/code-workflow/independent-review-protocol.md
+```bash
+bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> archive
+bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> cleanup
 ```
 
-This package intentionally does not encode reviewer spawning as a shell plugin stage.
-The shell runner stays mechanical; the independent reviewer remains an orchestration concern owned by `code-workflow`.
+startup gate 状态依次为 `active`、`ready_to_merge` 和终态 `archived`。独立 review 的交接协议见 `independent-review-protocol.md`。

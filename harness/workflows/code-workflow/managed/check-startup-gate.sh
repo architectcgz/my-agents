@@ -2,6 +2,7 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$script_dir/../../.."
+source "$script_dir/common.sh"
+workflow_enter_repo
 
-python3 harness/checks/check_startup_gate.py "$@"
+python3 "$script_dir/check_startup_gate.py" --repo-root "$WORKFLOW_REPO_ROOT" "$@"

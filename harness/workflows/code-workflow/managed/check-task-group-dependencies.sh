@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
-# Managed by code-workflow package (version: 2026-06-12.1)
 set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/common.sh"
+workflow_enter_repo
 
 usage() {
   cat <<'EOF' >&2
 Usage:
-  bash scripts/workflows/check-task-group-dependencies.sh [group-slug]
-  bash scripts/workflows/check-task-group-dependencies.sh --list
+  bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> task-group [group-slug]
+  bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> task-group --list
 
 Description:
   Check task group slice dependencies and overall progress.
@@ -21,7 +24,7 @@ Exit codes:
 EOF
 }
 
-REPO_ROOT="$(git rev-parse --show-toplevel)"
+REPO_ROOT="$WORKFLOW_REPO_ROOT"
 PLAN_DIR="$REPO_ROOT/docs/plan/impl-plan"
 SESSION_GATES_DIR="$REPO_ROOT/.harness/session-gates"
 
@@ -135,7 +138,7 @@ get_gate_status() {
     echo "not-started"
     return
   fi
-  python3 -c "import json,sys; print(json.load(open(sys.argv[1])).get('status','unknown'))" "$gate_file" 2>/dev/null || echo "unknown"
+  python3 -c "import json,sys; from pathlib import Path; print(json.loads(Path(sys.argv[1]).read_text(encoding='utf-8')).get('status','unknown'))" "$gate_file" 2>/dev/null || echo "unknown"
 }
 
 has_errors=0

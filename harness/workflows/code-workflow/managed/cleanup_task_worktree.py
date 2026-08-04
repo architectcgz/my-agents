@@ -36,6 +36,7 @@ def parse_args():
         )
     )
     parser.add_argument("--task-slug", default="")
+    parser.add_argument("--repo-root", help="Target repository root; normally supplied by the global workflow entrypoint")
     parser.add_argument("--branch", dest="branch_name", default="")
     parser.add_argument("--worktree", dest="worktree_path", default="")
     parser.add_argument("--merged-into", default="HEAD")
@@ -45,20 +46,21 @@ def parse_args():
     return parser.parse_args()
 
 
-def resolve_repo_root():
-    result = git(["rev-parse", "--show-toplevel"])
+def resolve_repo_root(requested):
+    target = Path(requested) if requested else Path.cwd()
+    result = git(["-C", str(target), "rev-parse", "--show-toplevel"], check=False)
     root = result.stdout.strip()
     if not root:
-        fail("cleanup must run inside a git repository")
+        fail(f"cleanup target is not a git repository: {target}")
     return Path(root).resolve()
 
 
 def active_slug_from_startup_gate(root):
-    script = root / "scripts/workflows/check-startup-gate.sh"
-    if not script.is_file() or not script.stat().st_mode & 0o111:
+    check_script = Path(__file__).with_name("check_startup_gate.py")
+    if not check_script.is_file():
         return ""
     result = subprocess.run(
-        ["bash", str(script), "--print-active-slug"],
+        [sys.executable, str(check_script), "--repo-root", str(root), "--print-active-slug"],
         cwd=root,
         capture_output=True,
         text=True,
@@ -91,19 +93,19 @@ def resolve_task_context(args, root):
     return task_slug, branch_name
 
 
-def verify_ref(ref):
-    if git(["rev-parse", "--verify", "--quiet", ref], check=False).returncode != 0:
+def verify_ref(root, ref):
+    if git(["rev-parse", "--verify", "--quiet", ref], cwd=root, check=False).returncode != 0:
         fail(f"merged target ref does not exist: {ref}")
 
 
-def resolve_worktree_path(branch_name, explicit_path):
+def resolve_worktree_path(root, branch_name, explicit_path):
     if explicit_path:
         path = Path(explicit_path)
         if not path.is_dir():
             fail(f"worktree path not found: {explicit_path}")
         return path.resolve()
 
-    output = git(["worktree", "list", "--porcelain"]).stdout.splitlines()
+    output = git(["worktree", "list", "--porcelain"], cwd=root).stdout.splitlines()
     current = {}
     entries = []
     for line in output:
@@ -138,7 +140,7 @@ def validate_gate(payload, branch_name, worktree_path):
     if status != "ready_to_merge":
         fail(
             f"task gate must be ready_to_merge before cleanup: {status}",
-            "archive task artifacts first with harness/workflow-plugins/code-workflow/archive_task_artifacts.sh",
+            "archive task artifacts first with ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> archive",
         )
 
     gate_branch = payload.get("branch", "")
@@ -203,11 +205,11 @@ def print_success(task_slug, branch_name, merged_into_ref, worktree_path, main_w
 
 def main():
     args = parse_args()
-    root = resolve_repo_root()
+    root = resolve_repo_root(args.repo_root)
     task_slug, branch_name = resolve_task_context(args, root)
-    verify_ref(args.merged_into)
+    verify_ref(root, args.merged_into)
 
-    worktree_path = resolve_worktree_path(branch_name, args.worktree_path)
+    worktree_path = resolve_worktree_path(root, branch_name, args.worktree_path)
     gate_path = worktree_path / ".harness/session-gates" / f"{task_slug}.json"
     payload = read_gate(gate_path)
     validate_gate(payload, branch_name, worktree_path)

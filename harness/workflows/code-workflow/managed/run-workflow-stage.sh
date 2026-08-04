@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOH' >&2
 Usage:
-  bash harness/workflow-plugins/code-workflow/run_workflow_stage.sh <stage>
+  bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> stage <stage>
 
 Stages:
   pre-commit-quick
@@ -32,7 +32,10 @@ if [[ $# -lt 1 ]]; then
   exit 2
 fi
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+workflow_enter_repo
+ROOT_DIR="$WORKFLOW_REPO_ROOT"
 REQUESTED_STAGE="$1"
 shift
 
@@ -45,7 +48,7 @@ case "$REQUESTED_STAGE" in
     ;;
 esac
 
-PLUGIN_DIR="$ROOT_DIR/harness/workflow-plugins/code-workflow/${STAGE}.d"
+PLUGIN_DIR="$ROOT_DIR/.arccgz-harness/harness/workflow-plugins/code-workflow/${STAGE}.d"
 
 cd "$ROOT_DIR"
 
@@ -67,8 +70,8 @@ export WORKFLOW_STAGE="$STAGE"
 export WORKFLOW_REPO_ROOT="$ROOT_DIR"
 export WORKFLOW_CHANGED_FILES="$(changed_files)"
 export WORKFLOW_TASK_SLUG="$(
-  if [[ -x "$ROOT_DIR/scripts/workflows/check-startup-gate.sh" ]]; then
-    bash "$ROOT_DIR/scripts/workflows/check-startup-gate.sh" --print-active-slug 2>/dev/null || true
+  if [[ -x "$(workflow_entry)" ]]; then
+    bash "$(workflow_entry)" "$ROOT_DIR" gate --print-active-slug 2>/dev/null || true
   fi
 )"
 

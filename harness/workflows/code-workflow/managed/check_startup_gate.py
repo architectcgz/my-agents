@@ -8,7 +8,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path.cwd()
 SESSION_GATES_DIR = ROOT / ".harness" / "session-gates"
 TASK_SLUG_RE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$")
 EFFECTIVE_GATE_STATUSES = {"active", "ready_to_merge"}
@@ -34,6 +34,7 @@ LOW_RISK_SUFFIXES = (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="validate local startup gate state for non-trivial work")
+    parser.add_argument("--repo-root", help="Target repository root; normally supplied by the global workflow entrypoint")
     parser.add_argument("--print-active-slug", action="store_true")
     parser.add_argument("--print-required-task-slug", action="store_true")
     parser.add_argument("--print-gate-path", action="store_true")
@@ -45,6 +46,19 @@ def parse_args() -> argparse.Namespace:
     if args.staged and args.base:
         parser.error("--staged and --base cannot be used together")
     return args
+
+
+def resolve_repo_root(requested: str | None) -> Path:
+    target = Path(requested) if requested else Path.cwd()
+    result = subprocess.run(
+        ["git", "-C", str(target), "rev-parse", "--show-toplevel"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0 or not result.stdout.strip():
+        raise SystemExit(f"FAIL: target is not a git repository: {target}")
+    return Path(result.stdout.strip()).resolve()
 
 
 def run_git(*args: str) -> str:
@@ -155,7 +169,10 @@ def validate_effective_gate(path: Path, payload: dict[str, object], *, require_c
 
 
 def main() -> int:
+    global ROOT, SESSION_GATES_DIR
     args = parse_args()
+    ROOT = resolve_repo_root(args.repo_root)
+    SESSION_GATES_DIR = ROOT / ".harness" / "session-gates"
     gates = load_effective_gates()
 
     if args.print_active_slug or args.print_gate_path:
@@ -203,7 +220,10 @@ def main() -> int:
         print("FAIL: startup-gated changes require an effective task gate", file=sys.stderr)
         for path in gated:
             print(f"- {path}", file=sys.stderr)
-        print("Use scripts/workflows/start-implementation.sh before continuing.", file=sys.stderr)
+        print(
+            "Use ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> start <topic-or-slug> before continuing.",
+            file=sys.stderr,
+        )
         return 1
 
     if len(gates) > 1:

@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOH' >&2
 Usage:
-  bash harness/workflow-plugins/code-workflow/archive_task_artifacts.sh [--task-slug <slug>] [--plan <path>] [--task <path> ...] [--dry-run]
+  bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> archive [--task-slug <slug>] [--plan <path>] [--task <path> ...] [--dry-run]
 
 Description:
   Archive the completed implementation plan and any matching docs/tasks artifacts for a task.
@@ -13,8 +13,10 @@ Description:
 EOH
 }
 
-ROOT="$(git rev-parse --show-toplevel)"
-cd "$ROOT"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+workflow_enter_repo
+ROOT="$WORKFLOW_REPO_ROOT"
 
 task_slug=""
 plan_path=""
@@ -59,8 +61,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$task_slug" && -x "scripts/workflows/check-startup-gate.sh" ]]; then
-  task_slug="$(bash scripts/workflows/check-startup-gate.sh --print-active-slug 2>/dev/null || true)"
+if [[ -z "$task_slug" ]]; then
+  task_slug="$(bash "$(workflow_entry)" "$ROOT" gate --print-active-slug 2>/dev/null || true)"
 fi
 
 if [[ -z "$task_slug" ]]; then
@@ -74,9 +76,7 @@ if [[ ! "$task_slug" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z0-9]+(-[a-z0-9]+)*$ ]]; 
 fi
 
 active_gate_path=""
-if [[ -x "scripts/workflows/check-startup-gate.sh" ]]; then
-  active_gate_path="$(bash scripts/workflows/check-startup-gate.sh --print-gate-path 2>/dev/null || true)"
-fi
+active_gate_path="$(bash "$(workflow_entry)" "$ROOT" gate --print-gate-path 2>/dev/null || true)"
 
 if [[ -z "$plan_path" ]]; then
   if [[ -n "$active_gate_path" && -f "$active_gate_path" ]]; then
