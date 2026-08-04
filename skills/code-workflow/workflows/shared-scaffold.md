@@ -26,7 +26,7 @@ No repo-local `scripts/workflows/` entrypoint, workflow plugin runner, shared te
 ## Package operations
 
 ```bash
-# Prepare project state only: /.harness/session-gates/ + gitignore entry
+# Prepare project state only: .arccgz-harness/state/session-gates/ + gitignore entry
 bash ~/.agents/harness/workflow-installer.sh <repo-root> code-workflow
 
 # Remove legacy package-managed copies and use the global runtime

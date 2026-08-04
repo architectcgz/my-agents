@@ -28,7 +28,7 @@ bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> start <to
 
 项目只保存自身事实和可变状态：
 
-- `/.harness/session-gates/`：任务 startup gate 状态，默认 gitignore。
+- `.arccgz-harness/state/session-gates/`：任务 startup gate 状态，默认 gitignore。
 - `.arccgz-harness/`：项目文档、策略、检查与其他 harness 资产。
 - `.arccgz-harness/harness/workflow-plugins/code-workflow/<stage>.d/*.sh`：可选的项目专属 stage 插件；初始化器不会预制或复制该目录。
 
