@@ -33,7 +33,7 @@ git -C "$tmp_repo" add .
 git -C "$tmp_repo" commit -m "chore: install workflow" >/dev/null
 
 task_slug="2026-06-20-cleanup-test"
-gate_dir="$tmp_repo/.harness/session-gates"
+gate_dir="$tmp_repo/.arccgz-harness/state/session-gates"
 gate_path="$gate_dir/$task_slug.json"
 mkdir -p "$gate_dir"
 cat > "$gate_path" <<EOF
@@ -73,7 +73,7 @@ task_worktree="$(mktemp -d /tmp/code-workflow-task-worktree.XXXXXX)"
 rm -rf "$task_worktree"
 git -C "$tmp_repo" worktree add -b "$task_branch" "$task_worktree" HEAD >/dev/null
 
-gate_dir="$task_worktree/.harness/session-gates"
+gate_dir="$task_worktree/.arccgz-harness/state/session-gates"
 gate_path="$gate_dir/$task_slug.json"
 mkdir -p "$gate_dir"
 cat > "$gate_path" <<EOF
