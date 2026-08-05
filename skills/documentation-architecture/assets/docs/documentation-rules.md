@@ -69,18 +69,13 @@
 ## 标准路径
 
 - `docs/README.md`：文档入口、阅读顺序、当前事实源地图和陈旧文档规则。
-- `docs/requirements/`：产品需求、范围定义、验收标准、用户故事、约束和需求差距分析。
 - `docs/contracts/`：API contract、DTO / event schema、协议规格、payload 示例和兼容性说明。
 - `docs/spec/`：实施计划前的可执行功能规格。
 - `docs/design/`：产品设计、UI / UX 设计、设计系统说明、交互流程，以及尚未成为当前架构事实的视觉决策。
-- `docs/todo/`：可执行任务列表、backlog 拆分、清理队列和未解决事项。
+- `docs/todo/`：可执行任务列表、backlog 拆分、清理队列、未解决事项和 agent 发现的改进项；改进状态写在条目正文中。
 - `docs/architecture/`：当前系统设计、模块边界、数据流、依赖决策、ADR 风格记录、长期技术约束。
 - `docs/plan/`：实施计划、迁移计划、发布计划、阶段性重构计划和临时执行计划。
-- `docs/operations/`：runbook、本地运维、部署说明、故障处理、维护命令和运维验证记录。
 - `docs/reviews/`：代码 review、架构 review、UI / UX review、审计快照和 review 发现。
-- `docs/reports/`：状态报告、差距报告、实施总结、调查报告和限时分析输出。
-- `docs/improvements/`：agent 发现的改进项和提升状态，不作为通用任务 backlog。
-- `docs/refs/`：外部参考、研究笔记、源材料、供应商文档摘要、论文，以及不应直接视为项目决策的复制上下文。
 
 ## Review 证据规则
 
@@ -96,7 +91,7 @@
 
 - 只有当 `docs/architecture/` 和 `docs/contracts/` 与代码和测试匹配时，才把它们视为当前技术事实。
 - `docs/spec/` 是计划输入。
-- `docs/plan/`、`docs/reviews/` 和 `docs/reports/` 是过程历史，除非稳定结论被提升到 architecture、contracts 或 requirements。
+- `docs/plan/` 和 `docs/reviews/` 是过程历史，除非稳定结论被提升到 architecture 或 contracts。
 - 过程历史不会因为最新就自动成为当前事实。
 - `docs/README.md` 负责说明哪些文档是当前事实，哪些是历史。
 - 草案设计被采纳后，把稳定结论移动到 `docs/architecture/` 或 `docs/contracts/`。

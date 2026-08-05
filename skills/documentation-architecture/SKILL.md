@@ -28,24 +28,18 @@ Use this structure unless the repository already has a stronger convention:
 docs/
 ├── documentation-rules.md
 ├── README.md
-├── requirements/
 ├── contracts/
 ├── spec/
 ├── design/
 ├── todo/
 ├── architecture/
 ├── plan/
-├── operations/
-├── reviews/
-├── reports/
-├── improvements/
-└── refs/
+└── reviews/
 ```
 
 ## Assets
 
 - `assets/docs/documentation-rules.md`: documentation ownership and path registration rules.
 - `assets/docs/README.md`: documentation index template.
-- `assets/docs/improvements/README.md`: improvement tracker folder guide.
 
 Keep assets here. `project-template` should only coordinate when to apply them.

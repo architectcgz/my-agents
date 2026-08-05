@@ -27,7 +27,7 @@ Upstream strict reference mapping:
 - concepts -> a project-local constraints index plus links to architecture and AGENTS rules
 - thinking -> design/review rationale already present in architecture, plan, and review docs
 - practice -> implementation plans and focused experiments
-- feedback -> `docs/improvements/`, review findings, incident notes
+- actionable feedback and improvement items -> `docs/todo/`; review findings and incident notes remain in their owning records
 - prompts -> project-local prompts or skills only when they are actually reused
-- references -> `docs/refs/`, contracts, external research
+- references -> links in the owning contract, architecture, plan, review, or todo document; do not create a standalone external-reference tree
 - scripts/check-consistency.sh -> a project-tailored consistency script

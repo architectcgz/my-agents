@@ -73,7 +73,7 @@ State the route briefly in commentary before substantial work.
 | Validate completed work | `test-engineer` |
 | Create or update a skill | `skill-creator` |
 | Create or update reusable prompts or workflows | read the project prompt directory AGENTS file; update `harness/prompts/` or `prompts/` only when the prompt remains project-local and reusable |
-| Repeated mistake, missing project rule, process gap | update `feedback/`; use `improvement-tracker` if available and appropriate |
+| Repeated mistake, missing project rule, process gap | update `feedback/`; record actionable follow-up in `docs/todo/` when needed |
 | External article, repo, research, or reference material | update `references/` |
 | Practice run, workflow experiment, implementation history | update `practice/` |
 | Presentable template/report/map | update `works/` |

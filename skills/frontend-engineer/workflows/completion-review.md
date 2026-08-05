@@ -6,7 +6,7 @@ Read this file before finalizing frontend implementation, refactor, interaction 
 
 - Do not treat typecheck or a few happy-path tests as sufficient closure when the leader or pipeline has classified the work as non-trivial; completion requires a distinct review pass for interaction regressions, state-ownership drift, oversized component debt, contract mismatches, and test gaps.
 - Report frontend risk signals instead of redefining trivial/non-trivial policy locally: async flow, form, route sync, store, modal or drawer state, cross-component contract, user-visible workflow, extraction, or oversized component/service growth.
-- If a reusable frontend rule gap, repeated miss, missing checklist item, or frontend engineering optimization should be preserved for future runs, use `improvement-tracker` to record it under `docs/improvements/`.
+- If a reusable frontend rule gap, repeated miss, missing checklist item, or frontend engineering optimization should be preserved for future runs, record it directly under the canonical `docs/todo/` path.
 
 ## Output protocol
 
@@ -41,7 +41,7 @@ Rules:
 3. Name the owner of each async workflow, state source of truth, validation path, and remote mutation.
 4. Keep route views, components, composables, and stores use-case-oriented; do not extract code only to reduce line count.
 5. Do not include irrelevant conditional sections.
-6. If a reusable frontend rule gap is discovered, use `improvement-tracker` and list the created file under `Improvement Records`.
+6. If a reusable frontend rule gap is discovered, list the created `docs/todo/` file under `Improvement Records`.
 
 Field guidance:
 
@@ -51,7 +51,7 @@ Field guidance:
 - `Component Contract`: state relevant props, emits, `v-model`, local draft state, and API-to-UI mapping boundaries.
 - `Verification`: list only commands or checks actually run. If not run, state why and name the highest-risk unverified paths.
 - `Review / Completion Gate`: state frontend risk signals, self-review result, independent review status when required, and whether leader or pipeline gating remains.
-- `Improvement Records`: list created `docs/improvements/...` files, or state `None` if no reusable agent or policy gap was found.
+- `Improvement Records`: list created `docs/todo/...` files, or state `None` if no reusable agent or policy gap was found.
 
 ## Output expectations
 

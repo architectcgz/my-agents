@@ -12,24 +12,19 @@
 
 ## 当前事实源
 
-- `docs/requirements/`：产品需求、范围、验收标准和约束。
 - `docs/contracts/`：API、event、data 和兼容性 contract。
 - `docs/spec/`：实施计划前的可执行功能规格。
 - `docs/design/`：尚未成为当前架构事实的产品和 UX 设计。
 - `docs/architecture/`：当前系统设计和长期技术约束。
-- `docs/operations/`：runbook、部署说明、维护命令和运维验证。
 
 ## 流程和历史
 
 - `docs/plan/`：实施、迁移、发布和重构计划。
 - `docs/reviews/`：review 证据和发现；正式轮次应绑定 commit 或等价不可变 artifact，并以独立 `round-<n>` 文件保存。
-- `docs/reports/`：限时报告、调查总结和状态快照。
-- `docs/todo/`：可执行 backlog、清理队列和未解决工作。
-- `docs/improvements/`：agent 发现的改进项和提升状态。
-- `docs/refs/`：外部参考和研究笔记。
+- `docs/todo/`：可执行 backlog、清理队列、未解决工作和 agent 发现的改进项；改进状态写在条目正文中。
 
 ## 陈旧文档规则
 
 - 当前事实源地图中链接的文档，必须匹配代码，或明确标注为草案、已废弃或历史记录。
-- 过程文档形成稳定决策后，把稳定结论移动到 requirements、contracts、architecture 或 operations。
+- 过程文档形成稳定决策后，把稳定结论移动到 contracts 或 architecture。
 - 新增长期路径时，在 `docs/documentation-rules.md` 和本索引或最近父级索引登记。
