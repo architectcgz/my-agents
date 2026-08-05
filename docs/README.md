@@ -17,6 +17,10 @@
 - `agent-rules/risky-operations.md`：高风险操作确认。
 - `agent-rules/output-style.md`：输出风格。
 
+## 计划
+
+- `plan/exploratory/2026-08-05-simplify-harness-init.md`：精简 harness 初始化默认内容并清理已有项目残留。
+
 ## 记忆系统
 
 - [memory-loading.md](memory-loading.md) — 记忆自动加载配置状态和技术方案
