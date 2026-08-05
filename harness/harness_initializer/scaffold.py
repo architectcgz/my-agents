@@ -238,7 +238,7 @@ def _remove_gitignore_block(text: str, kind: str) -> str:
     return text
 
 
-def add_gitignore_exceptions(repo: Path) -> None:
+def add_gitignore_exceptions(repo: Path, with_checks: bool = False) -> None:
     path = repo / ".gitignore"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
 
@@ -251,9 +251,10 @@ def add_gitignore_exceptions(repo: Path) -> None:
         f"/{HARNESS_ROOT}/",
         "/.claude/",
         "/.codex/",
-        "/.githooks/",
         "/AGENTS.md",
         "/CLAUDE.md",
     ]
+    if with_checks:
+        harness_ignore.insert(3, "/.githooks/")
     text = upsert_gitignore_block(text, "harness-artifacts", harness_ignore)
     path.write_text(text, encoding="utf-8")

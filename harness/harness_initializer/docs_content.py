@@ -4,9 +4,29 @@
 from __future__ import annotations
 
 
-def strict_docs(project_name: str, profile: str) -> dict[str, str]:
+def strict_docs(
+    project_name: str, profile: str, with_checks: bool = False
+) -> dict[str, str]:
     project_line = f"{project_name} 项目。"
     risk_line = "重点关注仓库事实源、规则漂移、验证闭环和 agent 可读性。"
+    if with_checks:
+        mechanical_enforcement = """- `.arccgz-harness/scripts/checks/check-harness-consistency.sh` 检查 harness 目录、导航和计数声明。
+- `.arccgz-harness/scripts/hooks/check-pre-commit.sh` 按 staged 路径选择快速检查；完整一致性检查保留给 harness 变更、CI 或显式调用。"""
+        sensor_line = "`.arccgz-harness/scripts/checks/check-harness-consistency.sh`、hook、review 记录"
+        practice_setup = """- 创建 `.arccgz-harness/scripts/checks/check-harness-consistency.sh` 和 staged 路径分流入口。
+- 将快速分流入口接入 `.githooks/pre-commit`。"""
+        practice_verification = """```bash
+bash .arccgz-harness/scripts/checks/check-harness-consistency.sh
+```"""
+        practice_check = "`.arccgz-harness/scripts/checks/check-harness-consistency.sh` 是否覆盖新增目录。"
+        strict_prompt = "并创建 `.arccgz-harness/scripts/checks/check-harness-consistency.sh` 和 hook 接入。"
+    else:
+        mechanical_enforcement = "默认只建立文档和导航；项目级检查脚本与 hooks 通过 `--with-checks` 显式启用。"
+        sensor_line = "项目自身的 CI、测试和 review 记录"
+        practice_setup = "只创建参考目录和各目录的 `AGENTS.md`，不默认接入项目级检查脚本或 hook。"
+        practice_verification = "确认目录、入口和事实源索引存在，并检查 `CLAUDE.md -> AGENTS.md`。"
+        practice_check = "默认不生成项目级检查脚本；需要机械化检查时显式使用 `--with-checks`。"
+        strict_prompt = "如需机械化检查，再显式加上 `--with-checks`。"
     return {
         "concepts/AGENTS.md": """# concepts/ — AGENTS 补充说明
 
@@ -54,14 +74,13 @@ Harness Engineering 在本仓库中的含义：人类维护约束、事实源、
 - Review 证据进入 `.arccgz-harness/docs/reviews/`。
 - 反复出现的问题进入 `.arccgz-harness/feedback/` 或 `.arccgz-harness/docs/improvements/`。
 """,
-        "concepts/02-mechanical-enforcement.md": """# Mechanical Enforcement
+        "concepts/02-mechanical-enforcement.md": f"""# Mechanical Enforcement
 
 机械化执行：文档负责解释，脚本和 hook 负责阻止漂移。
 
 ## 本项目落点
 
-- `.arccgz-harness/scripts/checks/check-harness-consistency.sh` 检查 harness 目录、导航和计数声明。
-- `.arccgz-harness/scripts/hooks/check-pre-commit.sh` 按 staged 路径选择快速检查；完整一致性检查保留给 harness 变更、CI 或显式调用。
+{mechanical_enforcement}
 - 适合脚本化的规则应优先进入检查脚本，而不是只写进说明。
 """,
         "concepts/03-feedback-loop.md": """# Feedback Loop
@@ -94,14 +113,14 @@ Harness Engineering 在本仓库中的含义：人类维护约束、事实源、
 - 小切片优先，避免把无关改动合并进一次交付。
 - 检查脚本提供快速反馈，review 文档提供可追溯证据。
 """,
-        "concepts/06-harness-definition.md": """# Harness Definition
+        "concepts/06-harness-definition.md": f"""# Harness Definition
 
 本仓库的 harness 是一组可版本化工件：导航、事实源、反馈记录、提示词、实践实验和机械化检查。
 
 ## 组件清单
 
 - Guides：`AGENTS.md`、`concepts/`、`prompts/`
-- Sensors：`.arccgz-harness/scripts/checks/check-harness-consistency.sh`、hook、review 记录
+- Sensors：{sensor_line}
 - Memory：`.arccgz-harness/feedback/`、`thinking/`、`references/`
 - Practice：`practice/`
 - Output：`works/`
@@ -154,25 +173,20 @@ Harness 层负责让 agent 找到事实源和反馈，不把所有业务架构�
 
 ## 方法
 
-- 创建 `concepts/ thinking/ practice/ .arccgz-harness/feedback/ works/ prompts/ references/`。
-- 为每个目录创建 `AGENTS.md`。
-- 创建 `.arccgz-harness/scripts/checks/check-harness-consistency.sh` 和 staged 路径分流入口。
-- 将快速分流入口接入 `.githooks/pre-commit`。
+{practice_setup}
 
 ## 验证
 
-```bash
-bash .arccgz-harness/scripts/checks/check-harness-consistency.sh
-```
+{practice_verification}
 """,
-        "practice/01-harness-initialization/AGENTS.md": """# practice/01-harness-initialization
+        "practice/01-harness-initialization/AGENTS.md": f"""# practice/01-harness-initialization
 
 本实验只记录 harness 初始化，不承载业务代码。
 
 更新本实验时同步检查：
 
 - 根 `AGENTS.md` 是否指向严格 harness 目录。
-- `.arccgz-harness/scripts/checks/check-harness-consistency.sh` 是否覆盖新增目录。
+- {practice_check}
 - `.arccgz-harness/feedback/` 是否记录初始化过程中的偏差。
 """,
         "feedback/AGENTS.md": """# .arccgz-harness/feedback/ — 反馈记录
@@ -197,7 +211,7 @@ bash .arccgz-harness/scripts/checks/check-harness-consistency.sh
 
 ## 解决方案
 
-改为创建参考仓库同构的顶层目录：`concepts/`、`thinking/`、`practice/`、`.arccgz-harness/feedback/`、`works/`、`prompts/`、`references/`，并用 `.arccgz-harness/scripts/checks/check-harness-consistency.sh` 检查这些目录和导航。
+改为创建参考仓库同构的顶层目录：`concepts/`、`thinking/`、`practice/`、`.arccgz-harness/feedback/`、`works/`、`prompts/`、`references/`；如果显式启用 checks，再由对应检查器覆盖这些目录和导航。
 
 ## 收获
 
@@ -235,7 +249,7 @@ bash .arccgz-harness/scripts/checks/check-harness-consistency.sh
 - 单条 Prompt：用途、提示词正文、效果评价。
 - Prompt 工作流：目标、步骤、链路、适用范围。
 """,
-        "prompts/harness-initialization.md": """# Harness Initialization Prompt
+        "prompts/harness-initialization.md": f"""# Harness Initialization Prompt
 
 ## 用途
 
@@ -243,7 +257,7 @@ bash .arccgz-harness/scripts/checks/check-harness-consistency.sh
 
 ## Prompt
 
-请严格参考 `https://github.com/deusyu/harness-engineering` 的仓库结构，为当前项目创建顶层 `concepts/ thinking/ practice/ .arccgz-harness/feedback/ works/ prompts/ references/`，每个目录都有 `AGENTS.md`，并创建 `.arccgz-harness/scripts/checks/check-harness-consistency.sh` 和 hook 接入。不要把 harness 折叠进现有 `docs/` 目录。
+请严格参考 `https://github.com/deusyu/harness-engineering` 的仓库结构，为当前项目创建顶层 `concepts/ thinking/ practice/ .arccgz-harness/feedback/ works/ prompts/ references/`，每个目录都有 `AGENTS.md`。{strict_prompt}不要把 harness 折叠进现有 `docs/` 目录。
 
 ## 效果评价
 
@@ -288,9 +302,11 @@ bash .arccgz-harness/scripts/checks/check-harness-consistency.sh
     }
 
 
-def current_docs(project_name: str, profile: str) -> dict[str, str]:
+def current_docs(
+    project_name: str, profile: str, with_checks: bool = False
+) -> dict[str, str]:
     project_line = f"{project_name} 项目。"
-    return {
+    docs = {
         "state/reuse-decisions/.gitkeep": "",
         "state/reuse-index/README.md": """# Local Reuse Index
 
@@ -426,14 +442,6 @@ Use this prompt before non-trivial work in `{project_name}`.
 
 {project_line}
 """,
-        "harness/checks/common.py": """from __future__ import annotations
-
-from pathlib import Path
-
-
-def repo_root() -> Path:
-    return Path(__file__).resolve().parents[2]
-""",
         "feedback/AGENTS.md": """# feedback
 
 Record workflow mistakes, corrections, review lessons, and reusable process findings.
@@ -443,3 +451,13 @@ Each feedback record should include `## Sedimentation Status` or a project-local
 Once a lesson is fully captured by a global skill, project policy, or mechanical check, remove the long feedback body and rely on the index or Git history for traceability.
 """,
     }
+    if with_checks:
+        docs["harness/checks/common.py"] = """from __future__ import annotations
+
+from pathlib import Path
+
+
+def repo_root() -> Path:
+    return Path(__file__).resolve().parents[2]
+"""
+    return docs

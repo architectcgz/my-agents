@@ -33,6 +33,25 @@ if ! grep -q 'skip full harness consistency check' "$tmp_repo/init.out"; then
   echo "FAIL: init-project.sh did not report the default full-check skip" >&2
   exit 1
 fi
+if grep -q 'sync workflow package' "$tmp_repo/init.out"; then
+  echo "FAIL: init-project.sh must not activate a workflow by default" >&2
+  exit 1
+fi
+if git -C "$tmp_repo" config --get core.hooksPath >/dev/null 2>&1; then
+  echo "FAIL: default initialization must not configure Git hooks" >&2
+  exit 1
+fi
+
+for path in \
+  ".arccgz-harness/scripts/checks" \
+  ".arccgz-harness/scripts/hooks" \
+  ".arccgz-harness/scripts/tests" \
+  ".githooks"; do
+  if [[ -e "$tmp_repo/$path" ]]; then
+    echo "FAIL: default initialization generated optional harness asset: $path" >&2
+    exit 1
+  fi
+done
 
 for path in \
   "scripts/workflows/start-implementation.sh" \
@@ -45,10 +64,37 @@ for path in \
   fi
 done
 
-[[ -d "$tmp_repo/.arccgz-harness/state/session-gates" ]] || {
-  echo "FAIL: workflow state directory was not initialized" >&2
+[[ ! -d "$tmp_repo/.arccgz-harness/state/session-gates" ]] || {
+  echo "FAIL: default initialization created workflow state" >&2
   exit 1
 }
+
+bash "$init_script" "$tmp_repo" --workflow code-workflow > "$tmp_repo/workflow.out"
+if ! grep -q 'sync workflow package: code-workflow' "$tmp_repo/workflow.out"; then
+  echo "FAIL: --workflow did not activate the requested package" >&2
+  exit 1
+fi
+[[ -d "$tmp_repo/.arccgz-harness/state/session-gates" ]] || {
+  echo "FAIL: explicit workflow initialization did not create workflow state" >&2
+  exit 1
+}
+
+bash "$init_script" "$tmp_repo" --with-checks --skip-workflow > "$tmp_repo/checks.out"
+for path in \
+  ".arccgz-harness/scripts/checks/check-harness-consistency.sh" \
+  ".arccgz-harness/scripts/hooks/check-pre-commit.sh" \
+  ".arccgz-harness/scripts/tests/test-trigger-rate.sh" \
+  ".githooks/pre-commit" \
+  ".githooks/commit-msg"; do
+  if [[ ! -x "$tmp_repo/$path" ]]; then
+    echo "FAIL: --with-checks did not generate executable asset: $path" >&2
+    exit 1
+  fi
+done
+if [[ "$(git -C "$tmp_repo" config --get core.hooksPath)" != ".githooks" ]]; then
+  echo "FAIL: --with-checks did not configure Git hooks" >&2
+  exit 1
+fi
 
 legacy_gate_dir="$tmp_repo/.harness/session-gates"
 legacy_gate_path="$legacy_gate_dir/2026-08-04-state-migration.json"
@@ -84,4 +130,4 @@ fi
 
 bash "$sync_check" "$tmp_repo" code-workflow >/dev/null
 
-echo "PASS: init-project default skips full check and keeps code-workflow global"
+echo "PASS: init-project defaults to a minimal harness and keeps checks/workflow opt-in"

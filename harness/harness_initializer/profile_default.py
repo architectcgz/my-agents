@@ -11,12 +11,14 @@ from .profile_common import quick_routing_shell, write_common_scaffold
 from .scaffold import HARNESS_CHECKS, HARNESS_HOOKS, HARNESS_ROOT, ensure_documentation_scaffold, harness_dir, insert_or_replace, write
 
 
-def configure_current(repo: Path, project_name: str, profile: str) -> tuple[str, str]:
+def configure_current(
+    repo: Path, project_name: str, profile: str, with_checks: bool = False
+) -> tuple[str, str]:
     root = harness_dir(repo)
     ensure_documentation_scaffold(repo)
-    for relative, content in current_docs(project_name, profile).items():
+    for relative, content in current_docs(project_name, profile, with_checks).items():
         write(root / relative, content)
-    write_common_scaffold(repo, profile, current_check_script())
+    write_common_scaffold(repo, profile, current_check_script(), with_checks)
     insert_or_replace(
         repo / "AGENTS.md",
         "root-navigation",
@@ -28,10 +30,9 @@ def configure_current(repo: Path, project_name: str, profile: str) -> tuple[str,
 |------|------|------|
 | `{HARNESS_ROOT}/state/` | 当前任务状态 | 只保存短期执行证据和当前 reuse 决策 |
 | `{HARNESS_ROOT}/state/reuse-index/` | 本地私有索引 | 用户自用的长期复用线索，默认 gitignore，`index.yaml` + 镜像 `README.md` |
-| `{HARNESS_ROOT}/harness/policies/` | 项目策略 | 可被检查脚本读取的本地规则 |
+| `{HARNESS_ROOT}/harness/policies/` | 项目策略 | 项目级复用和约束配置 |
 | `{HARNESS_ROOT}/harness/templates/` | 模板 | 当前项目重复使用的决策或记录模板 |
 | `{HARNESS_ROOT}/harness/prompts/` | Prompt 入口 | 仓库内稳定入口、局部补充，以及仍然项目专属的 prompt |
-| `{HARNESS_ROOT}/harness/checks/` | 检查脚本 | 机械化一致性和规则检查 |
 | `{HARNESS_ROOT}/feedback/` | 反馈记录 | 踩坑、修正和可复用流程经验 |
 | `{HARNESS_ROOT}/docs/documentation-rules.md` | 文档规范 | 改文档前置读取与新增路径登记 |
 | `{HARNESS_ROOT}/docs/README.md` | 文档索引 | 当前事实源地图和文档阅读顺序 |
@@ -39,11 +40,7 @@ def configure_current(repo: Path, project_name: str, profile: str) -> tuple[str,
 
 项目根保持 `CLAUDE.md -> AGENTS.md`，让 Claude / Codex 使用同一份入口规则。
 
-共享 workflow 入口：`bash ~/.agents/harness/workflows/code-workflow/workflow.sh <repo-root> <command>`。workflow 实现只保存于 `~/.agents/`，初始化不会复制到项目目录。
-
-提交快速检查：`bash {HARNESS_HOOKS}/check-pre-commit.sh`；完整一致性检查：`bash {HARNESS_CHECKS}/check-harness-consistency.sh`。
-架构守卫入口：`bash {HARNESS_CHECKS}/check-architecture.sh`。
-Hook 生效检查：`bash {HARNESS_HOOKS}/check-hooks.sh`；首次接入使用 `bash ~/.agents/harness/install-project-hooks.sh <repo-root>`。
+共享 workflow 不默认安装；需要时显式运行 `bash ~/.agents/harness/init-project.sh <repo-root> --workflow code-workflow`。
 
 开发过程中，如果某个模块第一次形成稳定复用模式，主动补 `{HARNESS_ROOT}/state/reuse-index/<source-path>/README.md`；如果模块内部也已经分出稳定层次，再继续补该子路径下的镜像 `README.md`。这是本地提醒，不作为 pre-commit 阻塞项。
 
@@ -59,7 +56,7 @@ Hook 生效检查：`bash {HARNESS_HOOKS}/check-hooks.sh`；首次接入使用 `
         "todo-reminder",
         f"""## Todo Reminder
 
-开始新任务前，先运行 `bash {HARNESS_CHECKS}/check-open-todos.sh --quiet-if-empty`，先过一遍 `{HARNESS_ROOT}/docs/todo/` 里的未完成事项；如果命中当前主题，首条回复先提醒。已完成但还没归档的 todo 也会在这里提示。""",
+开始新任务前，先读取 `{HARNESS_ROOT}/docs/todo/` 里的未完成事项；如果命中当前主题，先把它纳入任务范围。已完成但还没归档的 todo 也应顺手处理。""",
     )
     insert_or_replace(
         repo / "AGENTS.md",
@@ -67,8 +64,7 @@ Hook 生效检查：`bash {HARNESS_HOOKS}/check-hooks.sh`；首次接入使用 `
         f"""## Test Workflow
 
 - After changing tests, run the smallest relevant test command that covers the touched surface.
-- After the test command, run the relevant script check such as `bash {HARNESS_CHECKS}/check-test-workflow.sh` or `bash {HARNESS_CHECKS}/check-harness-consistency.sh` before claiming completion.
-- 如果当前仓库已经有 `{HARNESS_CHECKS}/check-harness-consistency.sh`、git hooks 或 CI guardrail，测试相关脚本检查必须接入这些实际检查链路，不能只停留在提示词里。""",
+- Follow any project-specific test, build, or lint checks documented by the repository; the harness does not install a generic follow-up check by default.""",
     )
     hook_docs = f"""## Harness 检查
 

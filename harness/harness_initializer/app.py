@@ -25,6 +25,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--project-name", default=None)
     parser.add_argument("--profile", default="generic")
     parser.add_argument("--mode", default="default", choices=["default", "strict-reference"])
+    parser.add_argument(
+        "--with-checks",
+        action="store_true",
+        help="生成项目级 checks、hooks 和测试脚本，并接入 Git hooks",
+    )
     return parser.parse_args()
 
 
@@ -33,14 +38,19 @@ def main() -> None:
     repo = Path(args.repo).resolve()
     project_name = args.project_name or repo.name
     if args.mode == "strict-reference":
-        message, hook_docs = configure_strict_reference(repo, project_name, args.profile)
+        message, hook_docs = configure_strict_reference(
+            repo, project_name, args.profile, args.with_checks
+        )
     else:
-        message, hook_docs = configure_current(repo, project_name, args.profile)
-    insert_hook(repo / ".githooks/pre-commit")
-    insert_commit_msg_hook(repo / ".githooks/commit-msg")
-    insert_or_replace(repo / ".githooks/README.md", "hook-docs", hook_docs)
+        message, hook_docs = configure_current(
+            repo, project_name, args.profile, args.with_checks
+        )
+    if args.with_checks:
+        insert_hook(repo / ".githooks/pre-commit")
+        insert_commit_msg_hook(repo / ".githooks/commit-msg")
+        insert_or_replace(repo / ".githooks/README.md", "hook-docs", hook_docs)
+        ensure_git_hooks_path(repo)
     ensure_claude_symlink(repo)
-    ensure_git_hooks_path(repo)
     run_agent_entrypoint_check(repo)
-    add_gitignore_exceptions(repo)
+    add_gitignore_exceptions(repo, with_checks=args.with_checks)
     print(f"{message} for {project_name} at {repo}")

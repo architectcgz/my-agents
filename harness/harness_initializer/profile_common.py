@@ -32,7 +32,12 @@ from .content import (
 from .scaffold import HARNESS_CHECKS, HARNESS_HOOKS, HARNESS_TESTS, HARNESS_ROOT, harness_dir, write, write_if_missing
 
 
-def write_common_scaffold(repo: Path, profile: str, consistency_script: str) -> None:
+def write_common_scaffold(
+    repo: Path, profile: str, consistency_script: str, with_checks: bool = False
+) -> None:
+    if not with_checks:
+        return
+
     root = harness_dir(repo)
     # `root` already points at `.arccgz-harness`; use child directories here so
     # re-initialization refreshes the canonical files instead of nesting them.
@@ -78,16 +83,16 @@ def quick_routing_shell() -> str:
 
 | Task type | Required reads | Workflow / Skill |
 |-----------|---------------|------------------|
-| Backend feature | <!-- FILL: backend patterns + tests/README --> | <!-- FILL: backend skill --> + `code-workflow` |
-| Frontend feature | <!-- FILL: frontend rules --> | <!-- FILL: frontend skill --> + `code-workflow` |
+| Backend feature | <!-- FILL: backend patterns + tests/README --> | <!-- FILL: backend skill --> |
+| Frontend feature | <!-- FILL: frontend rules --> | <!-- FILL: frontend skill --> |
 | Review | <!-- FILL: review 规范 --> | `reviewer` |
 | Bug fix | <!-- FILL: 相关 rules/tests --> | `systematic-debugging` |
-| Add/Edit test | <!-- FILL: tests/README --> | `test-driven-development` |
+| Add/Edit test | <!-- FILL: tests/README --> | `test-engineer` |
 | Architecture change | `{HARNESS_ROOT}/docs/architecture/` | `brainstorming` then `writing-plans` |
 | Documentation update | <!-- FILL: 文档规范 --> | Direct edit |
 | Commit changes | — | `committing-changes` |
-| New non-trivial task | `bash {HARNESS_CHECKS}/check-open-todos.sh --quiet-if-empty` | `harness-router` then `writing-plans` |
-| Other | Read this AGENTS.md fully, then ask user | `harness-router` |
+| New non-trivial task | Read this AGENTS.md and the relevant project docs | `writing-plans` |
+| Other | Read this AGENTS.md fully, then ask user | Direct routing |
 
 ## Auto-Triggers
 
