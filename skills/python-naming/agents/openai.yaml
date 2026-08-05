@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Naming"
+  short_description: "Apply clear, idiomatic Python naming conventions"
+  default_prompt: "Use $python-naming to choose or review idiomatic Python names for this code."
