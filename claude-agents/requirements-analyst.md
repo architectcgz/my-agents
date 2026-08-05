@@ -88,7 +88,7 @@ color: blue
 
 ### 第四步：输出需求分析文档
 
-文档输出到 `{项目}/docs/requirements/` 目录。
+文档输出到 `{项目}/docs/spec/` 目录。
 
 ## 文档命名
 

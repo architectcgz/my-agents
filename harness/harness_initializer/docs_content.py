@@ -72,7 +72,7 @@ Harness Engineering 在本仓库中的含义：人类维护约束、事实源、
 - API 合同进入 `.arccgz-harness/docs/contracts/`。
 - 结构性实施进入 `.arccgz-harness/docs/plan/`。
 - Review 证据进入 `.arccgz-harness/docs/reviews/`。
-- 反复出现的问题进入 `.arccgz-harness/feedback/` 或 `.arccgz-harness/docs/improvements/`。
+- 反复出现的问题进入 `.arccgz-harness/feedback/`；需要执行的改进项进入 `.arccgz-harness/docs/todo/`。
 """,
         "concepts/02-mechanical-enforcement.md": f"""# Mechanical Enforcement
 
@@ -90,7 +90,7 @@ Harness Engineering 在本仓库中的含义：人类维护约束、事实源、
 ## 本项目落点
 
 - `.arccgz-harness/feedback/` 记录 harness 使用中的踩坑和修正。
-- `.arccgz-harness/docs/improvements/` 记录工程改进项。
+- `.arccgz-harness/docs/todo/` 同时记录可执行待办和 agent 发现的改进项，条目正文保留状态。
 - 当反馈已经固化为规则或脚本，回链到对应文件。
 """,
         "concepts/04-agent-readability.md": """# Agent Readability

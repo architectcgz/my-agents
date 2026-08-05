@@ -81,15 +81,11 @@ check_file "{HARNESS_ROOT}/harness/checks/common.py"
 check_file "{HARNESS_ROOT}/feedback/AGENTS.md"
 check_file "{HARNESS_ROOT}/docs/documentation-rules.md"
 check_file "{HARNESS_ROOT}/docs/README.md"
-check_file "{HARNESS_ROOT}/docs/improvements/README.md"
 check_file "{HARNESS_CHECKS}/check-open-todos.sh"
 check_file "{HARNESS_CHECKS}/check-todo-governance.sh"
 check_file "{HARNESS_CHECKS}/check-skill-sync-reminder.sh"
-for dir in requirements contracts spec design todo architecture plan operations reviews reports improvements refs; do
+for dir in contracts spec design todo architecture plan reviews; do
   check_dir "{HARNESS_ROOT}/docs/$dir"
-done
-for dir in not-impl implemented agent-recorded rejected archived; do
-  check_dir "{HARNESS_ROOT}/docs/improvements/$dir"
 done
 
 echo "[C4] root navigation references current harness shape"

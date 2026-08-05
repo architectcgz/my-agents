@@ -20,25 +20,13 @@ WORKSPACE_AGENT_ENTRYPOINT_CHECK = Path.home() / "workspace" / "projects" / "scr
 AGENTS_SKILLS_DIR = AGENTS_HOME / "skills"
 CODEX_SKILLS_DIR = Path.home() / ".codex" / "skills"
 STANDARD_DOC_DIRS = [
-    "requirements",
     "contracts",
     "spec",
     "design",
     "todo",
     "architecture",
     "plan",
-    "operations",
     "reviews",
-    "reports",
-    "improvements",
-    "refs",
-]
-IMPROVEMENT_STATUS_DIRS = [
-    "not-impl",
-    "implemented",
-    "agent-recorded",
-    "rejected",
-    "archived",
 ]
 
 
@@ -79,11 +67,8 @@ def ensure_documentation_scaffold(repo: Path) -> None:
     root = harness_dir(repo)
     for directory in STANDARD_DOC_DIRS:
         (root / "docs" / directory).mkdir(parents=True, exist_ok=True)
-    for directory in IMPROVEMENT_STATUS_DIRS:
-        (root / "docs" / "improvements" / directory).mkdir(parents=True, exist_ok=True)
     write_if_missing(root / "docs" / "documentation-rules.md", read_asset("documentation-rules.md"))
     write_if_missing(root / "docs" / "README.md", read_asset("README.md"))
-    write_if_missing(root / "docs" / "improvements" / "README.md", read_asset("improvements/README.md"))
     write_if_missing(
         root / "docs" / "architecture" / "README.md",
         """# Architecture Index

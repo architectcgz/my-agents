@@ -25,6 +25,32 @@ git -C "$tmp_repo" commit -m "chore: initial" >/dev/null
 
 bash "$init_script" "$tmp_repo" > "$tmp_repo/init.out"
 
+for path in \
+  ".arccgz-harness/docs/contracts" \
+  ".arccgz-harness/docs/spec" \
+  ".arccgz-harness/docs/design" \
+  ".arccgz-harness/docs/todo" \
+  ".arccgz-harness/docs/architecture" \
+  ".arccgz-harness/docs/plan" \
+  ".arccgz-harness/docs/reviews"; do
+  if [[ ! -d "$tmp_repo/$path" ]]; then
+    echo "FAIL: default initialization did not create retained documentation directory: $path" >&2
+    exit 1
+  fi
+done
+
+for path in \
+  ".arccgz-harness/docs/requirements" \
+  ".arccgz-harness/docs/operations" \
+  ".arccgz-harness/docs/refs" \
+  ".arccgz-harness/docs/reports" \
+  ".arccgz-harness/docs/improvements"; do
+  if [[ -e "$tmp_repo/$path" ]]; then
+    echo "FAIL: default initialization generated removed documentation directory: $path" >&2
+    exit 1
+  fi
+done
+
 if grep -q 'run project harness consistency check' "$tmp_repo/init.out"; then
   echo "FAIL: init-project.sh must not run the full consistency gate by default" >&2
   exit 1
@@ -68,6 +94,40 @@ done
   echo "FAIL: default initialization created workflow state" >&2
   exit 1
 }
+
+strict_repo="${tmp_repo%/*}/strict-reference"
+git init "$strict_repo" >/dev/null
+git -C "$strict_repo" config user.email "agent@example.invalid"
+git -C "$strict_repo" config user.name "Agent Test"
+printf 'initial\n' > "$strict_repo/README.md"
+git -C "$strict_repo" add README.md
+git -C "$strict_repo" commit -m "chore: initial" >/dev/null
+
+bash "$init_script" "$strict_repo" --mode strict-reference --skip-workflow > "$strict_repo/init.out"
+for path in \
+  ".arccgz-harness/docs/contracts" \
+  ".arccgz-harness/docs/spec" \
+  ".arccgz-harness/docs/design" \
+  ".arccgz-harness/docs/todo" \
+  ".arccgz-harness/docs/architecture" \
+  ".arccgz-harness/docs/plan" \
+  ".arccgz-harness/docs/reviews"; do
+  if [[ ! -d "$strict_repo/$path" ]]; then
+    echo "FAIL: strict-reference initialization did not create retained documentation directory: $path" >&2
+    exit 1
+  fi
+done
+for path in \
+  ".arccgz-harness/docs/requirements" \
+  ".arccgz-harness/docs/operations" \
+  ".arccgz-harness/docs/refs" \
+  ".arccgz-harness/docs/reports" \
+  ".arccgz-harness/docs/improvements"; do
+  if [[ -e "$strict_repo/$path" ]]; then
+    echo "FAIL: strict-reference initialization generated removed documentation directory: $path" >&2
+    exit 1
+  fi
+done
 
 bash "$init_script" "$tmp_repo" --workflow code-workflow > "$tmp_repo/workflow.out"
 if ! grep -q 'sync workflow package: code-workflow' "$tmp_repo/workflow.out"; then
