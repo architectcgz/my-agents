@@ -58,6 +58,20 @@ bash ~/.agents/harness/checks/check-agent-home.sh
 bash ~/.agents/harness/init-project.sh "$PWD"
 ```
 
+默认只创建项目级 harness 基础目录和 `CLAUDE.md -> AGENTS.md` 入口，不生成项目 checks / hooks，也不安装共享 workflow。
+
+需要项目级检查和 hooks 时显式启用：
+
+```bash
+bash ~/.agents/harness/init-project.sh "$PWD" --with-checks
+```
+
+需要共享 workflow 时显式指定：
+
+```bash
+bash ~/.agents/harness/init-project.sh "$PWD" --workflow code-workflow
+```
+
 如果项目已经有 harness，只需要启用共享 workflow：
 
 ```bash
